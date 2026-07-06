@@ -1,0 +1,59 @@
+{
+    "nav": {
+        "home": "Home",
+        "projects": "Projects",
+        "articles": "News",
+        "about": "About",
+        "contact": "Contact"
+    },
+    "common": {
+        "openMenu": "Open menu",
+        "closeMenu": "Close menu",
+        "switchLanguage": "Language",
+        "skipToContent": "Skip to content",
+        "mobileNavDescription": "Site navigation menu"
+    },
+    "footer": {
+        "tagline": "Electrical engineering solutions you can rely on.",
+        "quickLinks": "Quick links",
+        "contact": "Contact",
+        "rights": "All rights reserved."
+    },
+    "content": {
+        "noProjects": "No projects yet.",
+        "noArticles": "No articles yet.",
+        "client": "Client",
+        "location": "Location",
+        "completed": "Completed",
+        "allCategories": "All categories",
+        "backToProjects": "Back to projects",
+        "backToArticles": "Back to news"
+    },
+    "contact": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "message": "Message",
+        "submit": "Send message",
+        "success": "Thanks! Your message has been sent — we'll be in touch shortly."
+    },
+    "errors": {
+        "backHome": "Back to homepage",
+        "403": {
+            "title": "403: Forbidden",
+            "description": "You don't have permission to view this page."
+        },
+        "404": {
+            "title": "404: Page not found",
+            "description": "Sorry, the page you're looking for could not be found."
+        },
+        "500": {
+            "title": "500: Server error",
+            "description": "Something went wrong on our servers. Please try again shortly."
+        },
+        "503": {
+            "title": "503: Under maintenance",
+            "description": "We're performing scheduled maintenance. Please check back soon."
+        }
+    }
+}

@@ -1,8 +1,30 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+declare(strict_types=1);
 
-Route::get('/', function () {
-    return Inertia::render('Index');
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProjectController;
+use Illuminate\Support\Facades\Route;
+
+Route::localized(function (): void {
+    Route::get('/', HomeController::class)->name('home');
+
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/projects/{slug}', [ProjectController::class, 'show'])->name('projects.show');
+
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
+
+    Route::get('/contact', [ContactController::class, 'show'])->name('contact');
+    Route::post('/contact', [ContactController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('contact.store');
+
+    // Catch-all for admin-managed static pages (about, privacy-policy,
+    // terms-and-conditions, and whatever else gets added later) — must
+    // stay last so the literal routes above take precedence.
+    Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
 });

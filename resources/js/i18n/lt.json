@@ -1,0 +1,59 @@
+{
+    "nav": {
+        "home": "Pradžia",
+        "projects": "Projektai",
+        "articles": "Naujienos",
+        "about": "Apie mus",
+        "contact": "Kontaktai"
+    },
+    "common": {
+        "openMenu": "Atidaryti meniu",
+        "closeMenu": "Uždaryti meniu",
+        "switchLanguage": "Kalba",
+        "skipToContent": "Pereiti prie turinio",
+        "mobileNavDescription": "Svetainės navigacijos meniu"
+    },
+    "footer": {
+        "tagline": "Elektros inžinerijos sprendimai, kuriais galite pasitikėti.",
+        "quickLinks": "Nuorodos",
+        "contact": "Kontaktai",
+        "rights": "Visos teisės saugomos."
+    },
+    "content": {
+        "noProjects": "Kol kas projektų nėra.",
+        "noArticles": "Kol kas straipsnių nėra.",
+        "client": "Klientas",
+        "location": "Vieta",
+        "completed": "Baigta",
+        "allCategories": "Visos kategorijos",
+        "backToProjects": "Grįžti į projektus",
+        "backToArticles": "Grįžti į naujienas"
+    },
+    "contact": {
+        "name": "Vardas",
+        "email": "El. paštas",
+        "phone": "Telefonas",
+        "message": "Žinutė",
+        "submit": "Siųsti žinutę",
+        "success": "Ačiū! Jūsų žinutė išsiųsta, netrukus su jumis susisieksime."
+    },
+    "errors": {
+        "backHome": "Grįžti į pradžią",
+        "403": {
+            "title": "403: Prieiga uždrausta",
+            "description": "Neturite leidimo peržiūrėti šio puslapio."
+        },
+        "404": {
+            "title": "404: Puslapis nerastas",
+            "description": "Ieškomo puslapio nepavyko rasti."
+        },
+        "500": {
+            "title": "500: Serverio klaida",
+            "description": "Įvyko klaida mūsų serveryje. Bandykite dar kartą vėliau."
+        },
+        "503": {
+            "title": "503: Techninė priežiūra",
+            "description": "Šiuo metu atliekame techninę priežiūrą. Netrukus grįšime."
+        }
+    }
+}
