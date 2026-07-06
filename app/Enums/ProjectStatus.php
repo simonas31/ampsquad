@@ -13,9 +13,6 @@ enum ProjectStatus: string implements HasLabel
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::Draft => 'Draft',
-            self::Published => 'Published',
-        };
+        return __('admin.enums.project_status.'.$this->value);
     }
 }

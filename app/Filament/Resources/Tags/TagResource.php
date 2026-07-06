@@ -29,6 +29,16 @@ class TagResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    public static function getModelLabel(): string
+    {
+        return __('admin.tags.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.tags.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return TagForm::configure($schema);

@@ -22,21 +22,27 @@ class ContactRequestsTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('admin.fields.name'))
                     ->searchable(),
                 TextColumn::make('email')
+                    ->label(__('admin.fields.email'))
                     ->searchable(),
                 TextColumn::make('message')
+                    ->label(__('admin.fields.message'))
                     ->limit(60)
                     ->wrap(),
                 TextColumn::make('status')
+                    ->label(__('admin.fields.status'))
                     ->badge(),
                 TextColumn::make('created_at')
+                    ->label(__('admin.fields.created_at'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('status')
+                    ->label(__('admin.fields.status'))
                     ->options(ContactRequestStatus::class),
                 TrashedFilter::make(),
             ])

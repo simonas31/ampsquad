@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
             PageSeeder::class,
             VideoSeeder::class,
+            CalculatorCategorySeeder::class,
         ]);
     }
 }

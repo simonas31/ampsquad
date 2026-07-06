@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Schemas;
+namespace App\Filament\Resources\Projects\Schemas;
 
-use App\Enums\ContentType;
 use App\Enums\ProjectStatus;
+use App\Filament\Schemas\ContentBlocksBuilder;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -18,73 +17,80 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
-/**
- * Shared by ProjectForm and ArticleForm — both are the same underlying
- * Project model/table, differing only in the fixed content_type and
- * whether the project-only fields (location/client/completed_at) show.
- */
-class ContentForm
+class ProjectForm
 {
-    public static function configure(Schema $schema, ContentType $type): Schema
+    public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Hidden::make('content_type')->default($type->value),
                 Select::make('category_id')
-                    ->label('Category')
-                    ->relationship(
-                        'category',
-                        'name',
-                        fn ($query) => $query->where('applies_to', $type->value)->orWhereNull('applies_to'),
-                    )
+                    ->label(__('admin.fields.category'))
+                    ->relationship('category', 'name')
                     ->searchable()
                     ->preload()
                     ->required(),
                 Select::make('tags')
+                    ->label(__('admin.fields.tags'))
                     ->relationship('tags', 'name')
                     ->multiple()
                     ->searchable()
                     ->preload(),
                 TextInput::make('title')
+                    ->label(__('admin.fields.title'))
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? '')))
                     ->columnSpanFull(),
                 TextInput::make('slug')
+                    ->label(__('admin.fields.slug'))
                     ->required(),
                 Textarea::make('excerpt')
+                    ->label(__('admin.fields.excerpt'))
                     ->rows(2)
                     ->columnSpanFull(),
                 SpatieMediaLibraryFileUpload::make('featured_image')
+                    ->label(__('admin.fields.featured_image'))
                     ->collection('featured_image')
                     ->image()
                     ->imageEditor()
                     ->columnSpanFull(),
                 SpatieMediaLibraryFileUpload::make('gallery')
+                    ->label(__('admin.fields.gallery'))
                     ->collection('gallery')
                     ->image()
                     ->multiple()
                     ->reorderable()
                     ->columnSpanFull(),
                 ContentBlocksBuilder::make()
+                    ->label(__('admin.fields.blocks'))
                     ->columnSpanFull(),
                 Select::make('status')
+                    ->label(__('admin.fields.status'))
                     ->options(ProjectStatus::class)
                     ->default(ProjectStatus::Draft)
                     ->required(),
-                DateTimePicker::make('published_at'),
-                Toggle::make('is_featured'),
+                DateTimePicker::make('published_at')
+                    ->label(__('admin.fields.published_at'))
+                    ->native(false)
+                    ->displayFormat('Y-m-d H:i:s')
+                    ->format('Y-m-d H:i:s')
+                    ->seconds(),
+                Toggle::make('is_featured')
+                    ->label(__('admin.fields.is_featured')),
                 TextInput::make('order')
+                    ->label(__('admin.fields.order'))
                     ->required()
                     ->numeric()
                     ->default(0),
                 TextInput::make('location')
-                    ->visible($type === ContentType::Project),
+                    ->label(__('admin.fields.location')),
                 TextInput::make('client_name')
-                    ->label('Client')
-                    ->visible($type === ContentType::Project),
+                    ->label(__('admin.fields.client')),
                 DatePicker::make('completed_at')
-                    ->visible($type === ContentType::Project),
+                    ->label(__('admin.fields.completed_at'))
+                    ->native(false)
+                    ->displayFormat('Y-m-d')
+                    ->format('Y-m-d'),
             ]);
     }
 }

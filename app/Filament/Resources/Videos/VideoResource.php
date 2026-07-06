@@ -29,7 +29,20 @@ class VideoResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $navigationLabel = 'Video Carousel';
+    public static function getModelLabel(): string
+    {
+        return __('admin.videos.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.videos.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.videos.nav_label');
+    }
 
     public static function form(Schema $schema): Schema
     {

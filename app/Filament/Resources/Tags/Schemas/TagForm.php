@@ -16,10 +16,12 @@ class TagForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label(__('admin.fields.name'))
                     ->required()
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? ''))),
                 TextInput::make('slug')
+                    ->label(__('admin.fields.slug'))
                     ->required(),
             ]);
     }

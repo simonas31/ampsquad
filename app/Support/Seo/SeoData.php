@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Seo;
 
+use App\Settings\GeneralSettings;
 use Illuminate\Contracts\Support\Arrayable;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -85,8 +86,35 @@ final readonly class SeoData implements Arrayable
             noindex: $noindex,
             canonical: url()->current(),
             alternates: [...$alternates->all(), ['locale' => 'x-default', 'url' => $defaultUrl]],
-            jsonLd: $jsonLd,
+            jsonLd: [self::organizationJsonLd(), ...$jsonLd],
         );
+    }
+
+    /**
+     * Included on every page (not just the homepage) — Google's guidance
+     * for Organization markup is that it should appear sitewide, typically
+     * on every page's <head>, not just one "about" page.
+     *
+     * @return array<string, mixed>
+     */
+    private static function organizationJsonLd(): array
+    {
+        $general = app(GeneralSettings::class);
+
+        return array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => config('app.name'),
+            'url' => url('/'),
+            'email' => $general->email,
+            'telephone' => $general->phone,
+            'address' => $general->address,
+            'sameAs' => array_values(array_filter([
+                $general->facebookUrl,
+                $general->instagramUrl,
+                $general->linkedinUrl,
+            ])),
+        ]);
     }
 
     /**

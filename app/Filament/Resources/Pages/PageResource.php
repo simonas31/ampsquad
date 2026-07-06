@@ -29,6 +29,16 @@ class PageResource extends Resource
 
     protected static ?int $navigationSort = 6;
 
+    public static function getModelLabel(): string
+    {
+        return __('admin.pages.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.pages.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PageForm::configure($schema);

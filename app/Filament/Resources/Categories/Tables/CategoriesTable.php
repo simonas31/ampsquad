@@ -17,16 +17,17 @@ class CategoriesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('admin.fields.name'))
                     ->searchable(),
                 TextColumn::make('parent.name')
+                    ->label(__('admin.fields.parent'))
                     ->placeholder('—'),
-                TextColumn::make('applies_to')
-                    ->badge()
-                    ->placeholder('Any'),
                 TextColumn::make('order')
+                    ->label(__('admin.fields.order'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('admin.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

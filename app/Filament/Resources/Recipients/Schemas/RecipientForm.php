@@ -17,17 +17,19 @@ class RecipientForm
         return $schema
             ->components([
                 TextInput::make('email')
+                    ->label(__('admin.fields.email'))
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
                 Toggle::make('is_active')
+                    ->label(__('admin.fields.is_active'))
                     ->default(true)
                     ->required(),
                 CheckboxList::make('notification_types')
-                    ->label('Notifications')
+                    ->label(__('admin.fields.notifications'))
                     ->options(NotificationType::class)
                     ->columns(1)
-                    ->helperText('Which system emails this recipient should receive.'),
+                    ->helperText(__('admin.recipients.notifications_helper')),
             ]);
     }
 }

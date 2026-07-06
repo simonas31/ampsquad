@@ -19,9 +19,6 @@ enum NotificationType: string implements HasLabel
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::ContactFormSubmitted => 'Contact form submitted',
-            self::NewProjectPublished => 'New project published',
-        };
+        return __('admin.enums.notification_type.'.$this->value);
     }
 }

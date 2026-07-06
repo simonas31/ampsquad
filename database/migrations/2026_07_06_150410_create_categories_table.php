@@ -16,11 +16,6 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
-            // Nullable hint only (null = "any") used to pre-filter which
-            // categories are offered for which content type in the admin
-            // form — categories themselves stay freely admin-manageable,
-            // not locked to a single content type.
-            $table->string('applies_to')->nullable();
             $table->json('name');
             $table->json('slug');
             $table->json('description')->nullable();

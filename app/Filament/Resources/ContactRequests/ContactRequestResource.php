@@ -27,6 +27,16 @@ class ContactRequestResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getModelLabel(): string
+    {
+        return __('admin.contact_requests.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.contact_requests.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ContactRequestForm::configure($schema);

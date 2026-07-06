@@ -18,16 +18,21 @@ class VideosTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label(__('admin.fields.title'))
                     ->searchable()
                     ->placeholder('—'),
                 TextColumn::make('type')
+                    ->label(__('admin.fields.type'))
                     ->badge(),
                 TextColumn::make('order')
+                    ->label(__('admin.fields.order'))
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_active')
+                    ->label(__('admin.fields.is_active'))
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label(__('admin.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

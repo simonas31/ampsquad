@@ -17,19 +17,24 @@ class ContactRequestForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label(__('admin.fields.name'))
                     ->disabled(),
                 TextInput::make('email')
+                    ->label(__('admin.fields.email'))
                     ->disabled(),
                 TextInput::make('phone')
+                    ->label(__('admin.fields.phone'))
                     ->disabled(),
                 Textarea::make('message')
+                    ->label(__('admin.fields.message'))
                     ->disabled()
                     ->rows(5)
                     ->columnSpanFull(),
                 TextInput::make('ip_address')
-                    ->label('IP address')
+                    ->label(__('admin.fields.ip_address'))
                     ->disabled(),
                 Select::make('status')
+                    ->label(__('admin.fields.status'))
                     ->options(ContactRequestStatus::class)
                     ->required(),
             ]);

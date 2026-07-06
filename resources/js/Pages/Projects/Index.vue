@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/vue3";
 import { useI18n } from "vue-i18n";
+import Reveal from "@/components/common/Reveal.vue";
 import Breadcrumbs from "@/components/content/Breadcrumbs.vue";
 import ContentCard from "@/components/content/ContentCard.vue";
 import Pagination from "@/components/content/Pagination.vue";
@@ -66,7 +67,13 @@ function filterByCategory(categoryId: unknown) {
                 v-if="props.projects.data.length > 0"
                 class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
-                <ContentCard v-for="project in props.projects.data" :key="project.id" :project="project" />
+                <Reveal
+                    v-for="(project, index) in props.projects.data"
+                    :key="project.id"
+                    :delay="(index % 6) * 75"
+                >
+                    <ContentCard :project="project" />
+                </Reveal>
             </div>
             <p v-else class="text-muted-foreground py-12 text-center">
                 {{ t("content.noProjects") }}

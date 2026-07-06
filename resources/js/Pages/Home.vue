@@ -1,23 +1,63 @@
 <script setup lang="ts">
+import { usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
+import CalculatorTeaserSection from "@/components/home/CalculatorTeaserSection.vue";
+import ContactCtaSection from "@/components/home/ContactCtaSection.vue";
+import FeaturedProjectsSection from "@/components/home/FeaturedProjectsSection.vue";
+import HeroSection from "@/components/home/HeroSection.vue";
+import IntroSection from "@/components/home/IntroSection.vue";
+import VideoCarouselSection from "@/components/home/VideoCarouselSection.vue";
 import Seo from "@/components/seo/Seo.vue";
-import { Button } from "@/components/ui/button";
 import AppLayout from "@/layouts/AppLayout.vue";
-import type { SeoData } from "@/types";
+import type { CalculatorCategoryTeaser, Project, SeoData, SharedData, Video } from "@/types";
 
-defineProps<{ seo: SeoData }>();
+const props = defineProps<{
+    seo: SeoData;
+    hero: { title: string; subtitle: string };
+    intro: { title: string; content: string };
+    cta: { title: string; buttonLabel: string };
+    featuredProjects: Project[];
+    videos: Video[];
+    calculatorCategories: CalculatorCategoryTeaser[];
+    contact: { email: string; phone: string; address: string };
+}>();
+
+const page = usePage<SharedData>();
+
+const contactUrl = computed(
+    () => page.props.navigation.find((link) => link.labelKey === "nav.contact")?.url ?? "/contact",
+);
+const projectsUrl = computed(
+    () => page.props.navigation.find((link) => link.labelKey === "nav.projects")?.url ?? "/projects",
+);
 </script>
 
 <template>
     <Seo :seo="seo" />
 
     <AppLayout>
-        <section class="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-24 sm:px-6 lg:px-8">
-            <h1 class="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">AmpSquad</h1>
-            <p class="text-muted-foreground max-w-xl text-lg">
-                Laravel + Filament + Inertia + Vue 3 + TypeScript foundations are wired up. The real
-                homepage sections replace this placeholder in a later build phase.
-            </p>
-            <Button>Coming soon</Button>
-        </section>
+        <HeroSection
+            :title="hero.title"
+            :subtitle="hero.subtitle"
+            :contact-url="contactUrl"
+            :projects-url="projectsUrl"
+        />
+
+        <IntroSection :title="intro.title" :content="intro.content" />
+
+        <FeaturedProjectsSection :projects="featuredProjects" :projects-url="projectsUrl" />
+
+        <VideoCarouselSection :videos="videos" />
+
+        <CalculatorTeaserSection :categories="calculatorCategories" :contact-url="contactUrl" />
+
+        <ContactCtaSection
+            :title="cta.title"
+            :button-label="cta.buttonLabel"
+            :contact-url="contactUrl"
+            :email="props.contact.email"
+            :phone="props.contact.phone"
+            :address="props.contact.address"
+        />
     </AppLayout>
 </template>

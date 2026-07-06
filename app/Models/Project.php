@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\ContentType;
 use App\Enums\ProjectStatus;
 use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasSeo;
@@ -21,12 +20,11 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
 
 /**
- * Backs both "projects" and "blog articles" — the same underlying content
- * shape (category/tag-driven, block-content body, gallery/featured-image),
- * discriminated by `content_type`. Only content that genuinely fits this
- * shape belongs here; a future content type that doesn't (e.g. a "Team
- * Member" or "FAQ" entry) should get its own table the way `pages` did,
- * rather than growing this one with more nullable columns.
+ * A completed or ongoing electrical engineering project (category/tag-driven,
+ * block-content body, gallery/featured-image). A future content type that
+ * doesn't fit this shape (e.g. a "Team Member" or "FAQ" entry) should get its
+ * own table the way `pages` did, rather than growing this one with more
+ * nullable columns.
  */
 class Project extends Model implements HasMedia
 {
@@ -45,7 +43,6 @@ class Project extends Model implements HasMedia
      * @var list<string>
      */
     protected $fillable = [
-        'content_type',
         'category_id',
         'author_id',
         'title',
@@ -77,7 +74,6 @@ class Project extends Model implements HasMedia
     protected function casts(): array
     {
         return [
-            'content_type' => ContentType::class,
             'status' => ProjectStatus::class,
             'blocks' => 'array',
             'published_at' => 'datetime',
@@ -113,11 +109,6 @@ class Project extends Model implements HasMedia
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
-    }
-
-    public function scopeOfType(Builder $query, ContentType $type): Builder
-    {
-        return $query->where('content_type', $type);
     }
 
     public function scopePublished(Builder $query): Builder

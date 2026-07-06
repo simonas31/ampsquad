@@ -2,7 +2,6 @@
     "nav": {
         "home": "Home",
         "projects": "Projects",
-        "articles": "News",
         "about": "About",
         "contact": "Contact"
     },
@@ -21,13 +20,11 @@
     },
     "content": {
         "noProjects": "No projects yet.",
-        "noArticles": "No articles yet.",
         "client": "Client",
         "location": "Location",
         "completed": "Completed",
         "allCategories": "All categories",
-        "backToProjects": "Back to projects",
-        "backToArticles": "Back to news"
+        "backToProjects": "Back to projects"
     },
     "contact": {
         "name": "Name",
@@ -36,6 +33,24 @@
         "message": "Message",
         "submit": "Send message",
         "success": "Thanks! Your message has been sent — we'll be in touch shortly."
+    },
+    "home": {
+        "hero": {
+            "cta": "Get in touch",
+            "secondaryCta": "View our projects"
+        },
+        "featuredProjects": {
+            "title": "Featured projects",
+            "viewAll": "View all projects"
+        },
+        "videos": {
+            "title": "See us in action"
+        },
+        "calculator": {
+            "title": "Estimate your project",
+            "subtitle": "Get a feel for what we cover — reach out for a personalised quote.",
+            "cta": "Request a quote"
+        }
     },
     "errors": {
         "backHome": "Back to homepage",

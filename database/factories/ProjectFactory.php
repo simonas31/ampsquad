@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\ContentType;
 use App\Enums\ProjectStatus;
 use App\Models\Category;
 use App\Models\Project;
@@ -30,37 +29,20 @@ class ProjectFactory extends Factory
         ['lt' => 'Gamyklos elektros saugos audito atlikimas', 'en' => 'Factory Electrical Safety Audit'],
     ];
 
-    /**
-     * @var array<int, array{lt: string, en: string}>
-     */
-    private static array $articleTitles = [
-        ['lt' => 'Kaip pasirinkti tinkamą elektros skydą savo namams', 'en' => 'How to Choose the Right Electrical Panel for Your Home'],
-        ['lt' => '5 ženklai, kad reikia atnaujinti elektros instaliaciją', 'en' => '5 Signs Your Home Needs an Electrical Rewiring'],
-        ['lt' => 'Saulės elektrinių nauda ir grąža investicijoms', 'en' => 'Solar Power Benefits and Return on Investment'],
-        ['lt' => 'Elektros saugos patarimai gyventojams', 'en' => 'Electrical Safety Tips for Homeowners'],
-    ];
-
     private static int $projectTitleIndex = 0;
-
-    private static int $articleTitleIndex = 0;
 
     /**
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        // A round-robin index instead of fake()->unique(): the latter
-        // throws OverflowException once the pool is exhausted, and shares
-        // its "have I returned this before" tracking across every
-        // unique()->randomElement() call process-wide — including the
-        // unrelated pool in article(), below — which made it overflow
-        // long before either pool was genuinely exhausted.
+        // A round-robin index instead of fake()->unique(): the latter throws
+        // OverflowException once the pool is exhausted.
         $pair = self::$projectTitles[self::$projectTitleIndex % count(self::$projectTitles)];
         self::$projectTitleIndex++;
 
         return [
-            'content_type' => ContentType::Project,
-            'category_id' => Category::factory()->forProjects(),
+            'category_id' => Category::factory(),
             'author_id' => null,
             'title' => ['lt' => $pair['lt'], 'en' => $pair['en']],
             'slug' => ['lt' => Str::slug($pair['lt']), 'en' => Str::slug($pair['en'])],
@@ -77,24 +59,6 @@ class ProjectFactory extends Factory
             'client_name' => fake()->company(),
             'completed_at' => fake()->dateTimeBetween('-1 year'),
         ];
-    }
-
-    public function article(): static
-    {
-        return $this->state(function () {
-            $pair = self::$articleTitles[self::$articleTitleIndex % count(self::$articleTitles)];
-            self::$articleTitleIndex++;
-
-            return [
-                'content_type' => ContentType::Article,
-                'category_id' => Category::factory()->forArticles(),
-                'title' => ['lt' => $pair['lt'], 'en' => $pair['en']],
-                'slug' => ['lt' => Str::slug($pair['lt']), 'en' => Str::slug($pair['en'])],
-                'location' => null,
-                'client_name' => null,
-                'completed_at' => null,
-            ];
-        });
     }
 
     public function featured(): static

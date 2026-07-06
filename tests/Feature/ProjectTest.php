@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Enums\ContentType;
 use App\Models\Project;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,15 +13,6 @@ use Tests\TestCase;
 class ProjectTest extends TestCase
 {
     use RefreshDatabase;
-
-    public function test_of_type_scope_filters_by_content_type(): void
-    {
-        Project::factory()->count(2)->create();
-        Project::factory()->article()->count(3)->create();
-
-        $this->assertSame(2, Project::query()->ofType(ContentType::Project)->count());
-        $this->assertSame(3, Project::query()->ofType(ContentType::Article)->count());
-    }
 
     public function test_published_scope_excludes_drafts_and_future_dated_posts(): void
     {
@@ -68,14 +58,13 @@ class ProjectTest extends TestCase
         $this->assertSame('h2', $project->resolvedBlocks('lt')[0]['data']['level']);
     }
 
-    public function test_slug_is_unique_per_content_type_and_locale_at_the_database_level(): void
+    public function test_slug_is_unique_per_locale_at_the_database_level(): void
     {
         Project::factory()->create(['slug' => ['lt' => 'unikalus', 'en' => 'unique-en']]);
 
         $this->expectException(QueryException::class);
 
         DB::table('projects')->insert([
-            'content_type' => ContentType::Project->value,
             'category_id' => Project::factory()->create()->category_id,
             'title' => json_encode(['lt' => 'X', 'en' => 'Y']),
             'slug' => json_encode(['lt' => 'unikalus', 'en' => 'different']),

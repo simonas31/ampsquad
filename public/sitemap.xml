@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+    <url>
+    <loc>http://localhost</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost" />
+    <priority>1.0</priority>
+            </url>
+    <url>
+    <loc>http://localhost/projects</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/projects" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/projects" />
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/projects/gyvenamojo-namo-elektros-instaliacijos-modernizavimas</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/projects/residential-electrical-rewiring" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/projects/gyvenamojo-namo-elektros-instaliacijos-modernizavimas" />
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/projects/pramoninio-sandelio-elektros-skydines-montavimas</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/projects/industrial-warehouse-switchboard-installation" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/projects/pramoninio-sandelio-elektros-skydines-montavimas" />
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/projects/saules-elektrines-irengimas-privaciam-namui</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/projects/solar-power-system-installation-for-a-private-home" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/projects/saules-elektrines-irengimas-privaciam-namui" />
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/projects/biuro-pastato-apsvietimo-sistemos-atnaujinimas</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/projects/office-building-lighting-system-upgrade" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/projects/biuro-pastato-apsvietimo-sistemos-atnaujinimas" />
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/projects/elektromobiliu-ikrovimo-stoteliu-instaliacija</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/projects/ev-charging-station-installation" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/projects/elektromobiliu-ikrovimo-stoteliu-instaliacija" />
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/projects/prekybos-centro-elektros-tinklo-rekonstrukcija</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/projects/shopping-center-electrical-network-reconstruction" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/projects/prekybos-centro-elektros-tinklo-rekonstrukcija" />
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/apie-mus</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/about" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/apie-mus" />
+    <priority>0.5</priority>
+            </url>
+    <url>
+    <loc>http://localhost/privatumo-politika</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/privatumo-politika" />
+    <priority>0.5</priority>
+            </url>
+    <url>
+    <loc>http://localhost/taisykles-ir-salygos</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="http://localhost/en/terms-and-conditions" />
+    <xhtml:link rel="alternate" hreflang="lt" href="http://localhost/taisykles-ir-salygos" />
+    <priority>0.5</priority>
+            </url>
+</urlset>

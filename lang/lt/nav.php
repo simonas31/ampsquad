@@ -10,7 +10,6 @@ declare(strict_types=1);
 return [
     'home' => 'Pradžia',
     'projects' => 'Projektai',
-    'articles' => 'Naujienos',
     'about' => 'Apie mus',
     'contact' => 'Kontaktai',
 ];

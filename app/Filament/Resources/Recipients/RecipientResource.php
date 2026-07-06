@@ -26,6 +26,16 @@ class RecipientResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getModelLabel(): string
+    {
+        return __('admin.recipients.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.recipients.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return RecipientForm::configure($schema);

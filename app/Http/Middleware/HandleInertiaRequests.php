@@ -68,7 +68,6 @@ class HandleInertiaRequests extends Middleware
         return collect([
             ['name' => 'home', 'params' => [], 'labelKey' => 'nav.home'],
             ['name' => 'projects.index', 'params' => [], 'labelKey' => 'nav.projects'],
-            ['name' => 'articles.index', 'params' => [], 'labelKey' => 'nav.articles'],
             ['name' => 'contact', 'params' => [], 'labelKey' => 'nav.contact'],
         ])
             ->filter(fn (array $link) => Route::has($link['name']))

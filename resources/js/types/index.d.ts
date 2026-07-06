@@ -115,6 +115,22 @@ export interface Project {
     blocks?: ContentBlock[];
 }
 
+export interface Video {
+    id: number;
+    title: string | null;
+    type: "instagram_embed" | "upload";
+    embedUrl: string | null;
+    videoUrl: string | null;
+    posterUrl: string | null;
+}
+
+export interface CalculatorCategoryTeaser {
+    id: number;
+    name: string;
+    icon: string | null;
+    options: string[];
+}
+
 export interface Page {
     id: number;
     key: string;

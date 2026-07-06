@@ -13,9 +13,6 @@ enum VideoType: string implements HasLabel
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::InstagramEmbed => 'Instagram embed',
-            self::Upload => 'Uploaded video',
-        };
+        return __('admin.enums.video_type.'.$this->value);
     }
 }

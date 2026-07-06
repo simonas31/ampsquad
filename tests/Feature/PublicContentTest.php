@@ -19,7 +19,6 @@ class PublicContentTest extends TestCase
     {
         Project::factory()->count(2)->create();
         Project::factory()->draft()->create();
-        Project::factory()->article()->create();
 
         $response = $this->get('/projects');
 
@@ -32,8 +31,8 @@ class PublicContentTest extends TestCase
 
     public function test_projects_index_filters_by_category(): void
     {
-        $categoryA = Category::factory()->forProjects()->create();
-        $categoryB = Category::factory()->forProjects()->create();
+        $categoryA = Category::factory()->create();
+        $categoryB = Category::factory()->create();
         Project::factory()->count(2)->create(['category_id' => $categoryA->id]);
         Project::factory()->create(['category_id' => $categoryB->id]);
 
@@ -66,26 +65,6 @@ class PublicContentTest extends TestCase
         $project = Project::factory()->draft()->create();
 
         $this->get("/projects/{$project->slug}")->assertNotFound();
-    }
-
-    public function test_article_content_type_does_not_leak_into_projects_show(): void
-    {
-        $article = Project::factory()->article()->create();
-
-        $this->get("/projects/{$article->slug}")->assertNotFound();
-    }
-
-    public function test_articles_index_only_lists_article_content_type(): void
-    {
-        Project::factory()->count(2)->create();
-        Project::factory()->article()->count(3)->create();
-
-        $response = $this->get('/articles');
-
-        $response->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('Articles/Index')
-            ->has('articles.data', 3)
-        );
     }
 
     public function test_static_page_renders_by_locale_slug(): void

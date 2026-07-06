@@ -17,11 +17,14 @@ class PagesTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label(__('admin.fields.title'))
                     ->searchable(),
                 TextColumn::make('key')
+                    ->label(__('admin.pages.key'))
                     ->badge()
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label(__('admin.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -33,12 +33,8 @@ const twitterCard = computed(() => (props.seo.ogImage ? "summary_large_image" : 
         <meta v-if="seo.description" name="twitter:description" :content="seo.description" />
         <meta v-if="seo.ogImage" name="twitter:image" :content="seo.ogImage" />
 
-        <component
-            :is="'script'"
-            v-for="(schema, index) in seo.jsonLd"
-            :key="index"
-            type="application/ld+json"
-            v-html="JSON.stringify(schema)"
-        />
+        <component :is="'script'" v-for="(schema, index) in seo.jsonLd" :key="index" type="application/ld+json">{{
+            JSON.stringify(schema)
+        }}</component>
     </Head>
 </template>

@@ -2,6 +2,7 @@
 import { useForm, usePage } from "@inertiajs/vue3";
 import { CheckCircle2 } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
+import Reveal from "@/components/common/Reveal.vue";
 import Breadcrumbs from "@/components/content/Breadcrumbs.vue";
 import Seo from "@/components/seo/Seo.vue";
 import { Button } from "@/components/ui/button";
@@ -46,55 +47,63 @@ function submit() {
                 {{ t("nav.contact") }}
             </h1>
 
-            <div
-                v-if="page.flash?.contactSubmitted"
-                class="border-primary bg-accent mb-8 flex items-center gap-3 rounded-lg border p-4"
+            <Transition
+                enter-active-class="transition-all duration-300 ease-out"
+                enter-from-class="opacity-0 -translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
             >
-                <CheckCircle2 class="text-primary size-5 shrink-0" />
-                <p class="text-sm">{{ t("contact.success") }}</p>
-            </div>
-
-            <form class="space-y-5" @submit.prevent="submit">
-                <div class="space-y-2">
-                    <Label for="name">{{ t("contact.name") }}</Label>
-                    <Input id="name" v-model="form.name" required autocomplete="name" />
-                    <p v-if="form.errors.name" class="text-destructive text-sm">{{ form.errors.name }}</p>
+                <div
+                    v-if="page.flash?.contactSubmitted"
+                    class="border-primary bg-accent mb-8 flex items-center gap-3 rounded-lg border p-4"
+                >
+                    <CheckCircle2 class="text-primary size-5 shrink-0" />
+                    <p class="text-sm">{{ t("contact.success") }}</p>
                 </div>
+            </Transition>
 
-                <div class="space-y-2">
-                    <Label for="email">{{ t("contact.email") }}</Label>
-                    <Input id="email" v-model="form.email" type="email" required autocomplete="email" />
-                    <p v-if="form.errors.email" class="text-destructive text-sm">{{ form.errors.email }}</p>
-                </div>
+            <Reveal>
+                <form class="space-y-5" @submit.prevent="submit">
+                    <div class="space-y-2">
+                        <Label for="name">{{ t("contact.name") }}</Label>
+                        <Input id="name" v-model="form.name" required autocomplete="name" />
+                        <p v-if="form.errors.name" class="text-destructive text-sm">{{ form.errors.name }}</p>
+                    </div>
 
-                <div class="space-y-2">
-                    <Label for="phone">{{ t("contact.phone") }}</Label>
-                    <Input id="phone" v-model="form.phone" type="tel" autocomplete="tel" />
-                    <p v-if="form.errors.phone" class="text-destructive text-sm">{{ form.errors.phone }}</p>
-                </div>
+                    <div class="space-y-2">
+                        <Label for="email">{{ t("contact.email") }}</Label>
+                        <Input id="email" v-model="form.email" type="email" required autocomplete="email" />
+                        <p v-if="form.errors.email" class="text-destructive text-sm">{{ form.errors.email }}</p>
+                    </div>
 
-                <div class="space-y-2">
-                    <Label for="message">{{ t("contact.message") }}</Label>
-                    <Textarea id="message" v-model="form.message" rows="5" required />
-                    <p v-if="form.errors.message" class="text-destructive text-sm">{{ form.errors.message }}</p>
-                </div>
+                    <div class="space-y-2">
+                        <Label for="phone">{{ t("contact.phone") }}</Label>
+                        <Input id="phone" v-model="form.phone" type="tel" autocomplete="tel" />
+                        <p v-if="form.errors.phone" class="text-destructive text-sm">{{ form.errors.phone }}</p>
+                    </div>
 
-                <!-- Honeypot: hidden from real visitors, bots fill it in blindly. -->
-                <div class="sr-only" aria-hidden="true">
-                    <label for="company">Company</label>
-                    <input
-                        id="company"
-                        v-model="form.company"
-                        type="text"
-                        tabindex="-1"
-                        autocomplete="off"
-                    />
-                </div>
+                    <div class="space-y-2">
+                        <Label for="message">{{ t("contact.message") }}</Label>
+                        <Textarea id="message" v-model="form.message" rows="5" required />
+                        <p v-if="form.errors.message" class="text-destructive text-sm">{{ form.errors.message }}</p>
+                    </div>
 
-                <Button type="submit" size="lg" :disabled="form.processing" class="w-full">
-                    {{ t("contact.submit") }}
-                </Button>
-            </form>
+                    <!-- Honeypot: hidden from real visitors, bots fill it in blindly. -->
+                    <div class="sr-only" aria-hidden="true">
+                        <label for="company">Company</label>
+                        <input
+                            id="company"
+                            v-model="form.company"
+                            type="text"
+                            tabindex="-1"
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    <Button type="submit" size="lg" :disabled="form.processing" class="w-full transition-transform duration-200 hover:scale-[1.01]">
+                        {{ t("contact.submit") }}
+                    </Button>
+                </form>
+            </Reveal>
         </section>
     </AppLayout>
 </template>

@@ -2,7 +2,6 @@
     "nav": {
         "home": "Pradžia",
         "projects": "Projektai",
-        "articles": "Naujienos",
         "about": "Apie mus",
         "contact": "Kontaktai"
     },
@@ -21,13 +20,11 @@
     },
     "content": {
         "noProjects": "Kol kas projektų nėra.",
-        "noArticles": "Kol kas straipsnių nėra.",
         "client": "Klientas",
         "location": "Vieta",
         "completed": "Baigta",
         "allCategories": "Visos kategorijos",
-        "backToProjects": "Grįžti į projektus",
-        "backToArticles": "Grįžti į naujienas"
+        "backToProjects": "Grįžti į projektus"
     },
     "contact": {
         "name": "Vardas",
@@ -36,6 +33,24 @@
         "message": "Žinutė",
         "submit": "Siųsti žinutę",
         "success": "Ačiū! Jūsų žinutė išsiųsta, netrukus su jumis susisieksime."
+    },
+    "home": {
+        "hero": {
+            "cta": "Susisiekite",
+            "secondaryCta": "Peržiūrėti projektus"
+        },
+        "featuredProjects": {
+            "title": "Išskirtiniai projektai",
+            "viewAll": "Visi projektai"
+        },
+        "videos": {
+            "title": "Pamatykite mus darbe"
+        },
+        "calculator": {
+            "title": "Įvertinkite savo projektą",
+            "subtitle": "Susipažinkite, ką siūlome — susisiekite dėl asmeninio pasiūlymo.",
+            "cta": "Gauti pasiūlymą"
+        }
     },
     "errors": {
         "backHome": "Grįžti į pradžią",

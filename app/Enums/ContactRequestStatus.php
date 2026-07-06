@@ -14,10 +14,6 @@ enum ContactRequestStatus: string implements HasLabel
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::New => 'New',
-            self::Read => 'Read',
-            self::Archived => 'Archived',
-        };
+        return __('admin.enums.contact_request_status.'.$this->value);
     }
 }

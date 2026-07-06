@@ -19,33 +19,39 @@ class VideoForm
         return $schema
             ->components([
                 TextInput::make('title')
-                    ->helperText('Optional caption shown with the video.'),
+                    ->label(__('admin.fields.title'))
+                    ->helperText(__('admin.videos.title_helper')),
                 Select::make('type')
+                    ->label(__('admin.fields.type'))
                     ->options(VideoType::class)
                     ->required()
                     ->live()
                     ->native(false),
                 TextInput::make('embed_url')
-                    ->label('Instagram post/reel URL')
+                    ->label(__('admin.videos.instagram_url'))
                     ->url()
                     ->required()
                     ->visible(fn (Get $get): bool => $get('type') === VideoType::InstagramEmbed->value),
                 SpatieMediaLibraryFileUpload::make('video')
+                    ->label(__('admin.fields.video'))
                     ->collection('video')
                     ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
                     ->maxSize(102400)
                     ->required()
                     ->visible(fn (Get $get): bool => $get('type') === VideoType::Upload->value),
                 SpatieMediaLibraryFileUpload::make('poster')
+                    ->label(__('admin.fields.poster'))
                     ->collection('poster')
                     ->image()
                     ->imageEditor()
-                    ->helperText('Thumbnail shown before the video plays.'),
+                    ->helperText(__('admin.videos.poster_helper')),
                 TextInput::make('order')
+                    ->label(__('admin.fields.order'))
                     ->required()
                     ->numeric()
                     ->default(0),
                 Toggle::make('is_active')
+                    ->label(__('admin.fields.is_active'))
                     ->default(true)
                     ->required(),
             ]);

@@ -15,11 +15,6 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            // ContentType::class: 'project' | 'article' — the structural
-            // discriminator (routing prefix, which fields are relevant,
-            // which JSON-LD schema to emit). Categories are NOT type-locked
-            // to this; they're a separate, freely admin-managed taxonomy.
-            $table->string('content_type');
             $table->foreignId('category_id')->constrained('categories')->restrictOnDelete();
             $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
             $table->json('title');
@@ -36,24 +31,21 @@ return new class extends Migration
             $table->unsignedInteger('order')->default(0);
             // Project-only fields, kept directly on the table rather than a
             // separate project_details table — just 3 nullable columns,
-            // doesn't earn the extra join. Meaningless (left null) for
-            // content_type = article.
+            // doesn't earn the extra join.
             $table->json('location')->nullable();
             $table->string('client_name')->nullable();
             $table->date('completed_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
 
-            // Slug uniqueness is scoped to (content_type, locale), not just
-            // locale, so an Article can reuse a slug a Project already has.
             // Generated virtual columns pull the locale-specific slug out
-            // of the translatable JSON so a real composite unique index can
-            // enforce this at the DB layer instead of only at the app
-            // layer, which is the usual limitation of JSON-column slugs.
+            // of the translatable JSON so a real unique index can enforce
+            // this at the DB layer instead of only at the app layer, which
+            // is the usual limitation of JSON-column slugs.
             $table->string('slug_lt')->virtualAs('json_unquote(json_extract(`slug`, \'$."lt"\'))');
             $table->string('slug_en')->virtualAs('json_unquote(json_extract(`slug`, \'$."en"\'))');
-            $table->unique(['content_type', 'slug_lt']);
-            $table->unique(['content_type', 'slug_en']);
+            $table->unique('slug_lt');
+            $table->unique('slug_en');
         });
     }
 

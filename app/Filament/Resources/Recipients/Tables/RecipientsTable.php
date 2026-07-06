@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Recipients\Tables;
 
+use App\Enums\NotificationType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,12 +19,15 @@ class RecipientsTable
         return $table
             ->columns([
                 TextColumn::make('email')
+                    ->label(__('admin.fields.email'))
                     ->searchable(),
                 IconColumn::make('is_active')
+                    ->label(__('admin.fields.is_active'))
                     ->boolean(),
                 TextColumn::make('notification_types')
+                    ->label(__('admin.fields.notifications'))
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state?->label() ?? (string) $state),
+                    ->formatStateUsing(fn (NotificationType $state) => $state->getLabel()),
             ])
             ->filters([
                 //

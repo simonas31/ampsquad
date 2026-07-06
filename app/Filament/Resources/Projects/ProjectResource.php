@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Projects;
 
-use App\Enums\ContentType;
 use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\Pages\ListProjects;
-use App\Filament\Schemas\ContentForm;
-use App\Filament\Schemas\ContentTable;
+use App\Filament\Resources\Projects\Schemas\ProjectForm;
+use App\Filament\Resources\Projects\Tables\ProjectsTable;
 use App\Models\Project;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -32,19 +31,24 @@ class ProjectResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getModelLabel(): string
+    {
+        return __('admin.projects.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.projects.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
-        return ContentForm::configure($schema, ContentType::Project);
+        return ProjectForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return ContentTable::configure($table);
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->ofType(ContentType::Project);
+        return ProjectsTable::configure($table);
     }
 
     public static function getRelations(): array

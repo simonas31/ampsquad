@@ -13,7 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 
 /**
- * The flexible "Content Builder" field shared by Project/Article and Page
+ * The flexible "Content Builder" field shared by Project and Page
  * resources. Blocks share one structure across locales — only the leaf
  * text fields carry both languages (see App\Models\Concerns\
  * HasTranslatableBlocks for why) — so each translatable field here is a
@@ -27,43 +27,49 @@ class ContentBlocksBuilder
         return Builder::make($name)
             ->blocks([
                 Block::make('heading')
+                    ->label(__('admin.content_blocks.heading'))
                     ->schema([
                         Grid::make(2)->schema([
-                            TextInput::make('text.lt')->label('Heading (LT)')->required(),
-                            TextInput::make('text.en')->label('Heading (EN)')->required(),
+                            TextInput::make('text.lt')->label(__('admin.content_blocks.heading_lt'))->required(),
+                            TextInput::make('text.en')->label(__('admin.content_blocks.heading_en'))->required(),
                         ]),
                         Select::make('level')
+                            ->label(__('admin.content_blocks.level'))
                             ->options(['h2' => 'H2', 'h3' => 'H3', 'h4' => 'H4'])
                             ->default('h2')
                             ->required(),
                     ])
                     ->columns(1),
                 Block::make('rich_text')
-                    ->label('Rich text')
+                    ->label(__('admin.content_blocks.rich_text'))
                     ->schema([
                         Grid::make(2)->schema([
-                            RichEditor::make('content.lt')->label('Content (LT)')->required(),
-                            RichEditor::make('content.en')->label('Content (EN)')->required(),
+                            RichEditor::make('content.lt')->label(__('admin.content_blocks.content_lt'))->required(),
+                            RichEditor::make('content.en')->label(__('admin.content_blocks.content_en'))->required(),
                         ]),
                     ])
                     ->columns(1),
                 Block::make('image')
+                    ->label(__('admin.content_blocks.image'))
                     ->schema([
                         FileUpload::make('image')
+                            ->label(__('admin.content_blocks.image'))
                             ->image()
                             ->imageEditor()
                             ->disk('public')
                             ->directory('content-blocks')
                             ->required(),
                         Grid::make(2)->schema([
-                            TextInput::make('caption.lt')->label('Caption (LT)'),
-                            TextInput::make('caption.en')->label('Caption (EN)'),
+                            TextInput::make('caption.lt')->label(__('admin.content_blocks.caption_lt')),
+                            TextInput::make('caption.en')->label(__('admin.content_blocks.caption_en')),
                         ]),
                     ])
                     ->columns(1),
                 Block::make('gallery')
+                    ->label(__('admin.content_blocks.gallery'))
                     ->schema([
                         FileUpload::make('images')
+                            ->label(__('admin.content_blocks.gallery'))
                             ->image()
                             ->multiple()
                             ->reorderable()
@@ -73,33 +79,35 @@ class ContentBlocksBuilder
                     ])
                     ->columns(1),
                 Block::make('video_embed')
-                    ->label('Video embed')
+                    ->label(__('admin.content_blocks.video_embed'))
                     ->schema([
                         TextInput::make('url')
-                            ->label('Video URL (YouTube, Vimeo, etc.)')
+                            ->label(__('admin.content_blocks.video_url'))
                             ->url()
                             ->required(),
                     ])
                     ->columns(1),
                 Block::make('quote')
+                    ->label(__('admin.content_blocks.quote'))
                     ->schema([
                         Grid::make(2)->schema([
-                            TextInput::make('text.lt')->label('Quote (LT)')->required(),
-                            TextInput::make('text.en')->label('Quote (EN)')->required(),
+                            TextInput::make('text.lt')->label(__('admin.content_blocks.quote_lt'))->required(),
+                            TextInput::make('text.en')->label(__('admin.content_blocks.quote_en'))->required(),
                         ]),
                         TextInput::make('author')
-                            ->helperText('Not translated — proper nouns stay as-is in both languages.'),
+                            ->label(__('admin.content_blocks.author'))
+                            ->helperText(__('admin.content_blocks.author_helper')),
                     ])
                     ->columns(1),
                 Block::make('cta')
-                    ->label('Call to action')
+                    ->label(__('admin.content_blocks.cta'))
                     ->schema([
                         Grid::make(2)->schema([
-                            TextInput::make('label.lt')->label('Button label (LT)')->required(),
-                            TextInput::make('label.en')->label('Button label (EN)')->required(),
+                            TextInput::make('label.lt')->label(__('admin.content_blocks.button_label_lt'))->required(),
+                            TextInput::make('label.en')->label(__('admin.content_blocks.button_label_en'))->required(),
                         ]),
                         TextInput::make('url')
-                            ->label('Button URL')
+                            ->label(__('admin.content_blocks.button_url'))
                             ->required(),
                     ])
                     ->columns(1),
