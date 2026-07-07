@@ -25,7 +25,10 @@
         "location": "Vieta",
         "completed": "Baigta",
         "allCategories": "Visos kategorijos",
-        "backToProjects": "Grįžti į projektus"
+        "backToProjects": "Grįžti į projektus",
+        "imagePreview": "Nuotraukos peržiūra",
+        "previousImage": "Ankstesnė nuotrauka",
+        "nextImage": "Kita nuotrauka"
     },
     "contact": {
         "name": "Vardas",

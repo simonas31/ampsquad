@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { router } from "@inertiajs/vue3";
+import { FolderSearch } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 import Reveal from "@/components/common/Reveal.vue";
 import Breadcrumbs from "@/components/content/Breadcrumbs.vue";
@@ -41,13 +42,13 @@ function filterByCategory(categoryId: unknown) {
         <Breadcrumbs :items="breadcrumbs" />
 
         <section class="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
-            <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <Reveal class="mb-10 flex flex-wrap items-end justify-between gap-4">
                 <h1 class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
                     {{ t("nav.projects") }}
                 </h1>
 
                 <Select @update:model-value="filterByCategory">
-                    <SelectTrigger class="w-48">
+                    <SelectTrigger class="w-full sm:w-48">
                         <SelectValue :placeholder="t('content.allCategories')" />
                     </SelectTrigger>
                     <SelectContent>
@@ -61,7 +62,7 @@ function filterByCategory(categoryId: unknown) {
                         </SelectItem>
                     </SelectContent>
                 </Select>
-            </div>
+            </Reveal>
 
             <div
                 v-if="props.projects.data.length > 0"
@@ -75,9 +76,14 @@ function filterByCategory(categoryId: unknown) {
                     <ContentCard :project="project" />
                 </Reveal>
             </div>
-            <p v-else class="text-muted-foreground py-12 text-center">
-                {{ t("content.noProjects") }}
-            </p>
+            <div v-else class="flex flex-col items-center gap-3 py-16 text-center">
+                <span class="bg-muted text-muted-foreground flex size-14 items-center justify-center rounded-full">
+                    <FolderSearch class="size-6" />
+                </span>
+                <p class="text-muted-foreground">
+                    {{ t("content.noProjects") }}
+                </p>
+            </div>
 
             <div class="mt-12">
                 <Pagination :links="props.projects.links" />

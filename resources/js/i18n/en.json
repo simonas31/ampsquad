@@ -25,7 +25,10 @@
         "location": "Location",
         "completed": "Completed",
         "allCategories": "All categories",
-        "backToProjects": "Back to projects"
+        "backToProjects": "Back to projects",
+        "imagePreview": "Image preview",
+        "previousImage": "Previous image",
+        "nextImage": "Next image"
     },
     "contact": {
         "name": "Name",
