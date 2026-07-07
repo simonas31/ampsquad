@@ -12,7 +12,7 @@ const { t } = useI18n();
 </script>
 
 <template>
-    <section v-if="projects.length" class="bg-secondary/30 py-20">
+    <section v-if="projects.length" class="bg-section-wash py-20">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <Reveal class="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <h2 class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">

@@ -7,7 +7,8 @@ defineProps<{ title: string; content: string }>();
 <template>
     <section class="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:px-8">
         <Reveal>
-            <h2 class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+            <span class="bg-primary mx-auto block h-1 w-12 rounded-full" aria-hidden="true" />
+            <h2 class="font-heading mt-6 text-3xl font-semibold tracking-tight sm:text-4xl">
                 {{ title }}
             </h2>
             <p class="text-muted-foreground mt-6 text-lg text-pretty">

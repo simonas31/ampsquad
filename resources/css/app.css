@@ -162,4 +162,8 @@
     .bg-gradient-warm {
         @apply from-primary/15 via-background to-background bg-gradient-to-br;
     }
+
+    .bg-section-wash {
+        @apply from-background via-secondary/30 to-background bg-gradient-to-b;
+    }
 }
