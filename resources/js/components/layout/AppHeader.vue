@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from "@inertiajs/vue3";
+import { useScroll } from "@vueuse/core";
 import { Languages, Menu } from "@lucide/vue";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -10,6 +11,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useActiveLink } from "@/composables/useActiveLink";
 import { useLocale } from "@/composables/useLocale";
 import type { SharedData } from "@/types";
 import MobileNav from "./MobileNav.vue";
@@ -17,16 +19,21 @@ import MobileNav from "./MobileNav.vue";
 const { t } = useI18n();
 const page = usePage<SharedData>();
 const { current, available } = useLocale();
+const { isActive } = useActiveLink();
 const mobileNavOpen = ref(false);
 
 const homeUrl = computed(
     () => page.props.navigation.find((link) => link.labelKey === "nav.home")?.url ?? "/",
 );
+
+const { y: scrollY } = useScroll(window);
+const isScrolled = computed(() => scrollY.value > 8);
 </script>
 
 <template>
     <header
-        class="border-border/60 bg-background/80 supports-backdrop-filter:bg-background/60 sticky top-0 z-40 w-full border-b backdrop-blur"
+        class="bg-background/80 supports-backdrop-filter:bg-background/60 sticky top-0 z-40 w-full border-b backdrop-blur transition-shadow duration-200"
+        :class="isScrolled ? 'border-border/60 shadow-sm' : 'border-transparent'"
     >
         <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <Link
@@ -41,9 +48,16 @@ const homeUrl = computed(
                     v-for="link in page.props.navigation"
                     :key="link.url"
                     :href="link.url"
-                    class="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                    :aria-current="isActive(link.url) ? 'page' : undefined"
+                    class="relative py-1 text-sm font-medium transition-colors"
+                    :class="isActive(link.url) ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'"
                 >
                     {{ t(link.labelKey) }}
+                    <span
+                        v-if="isActive(link.url)"
+                        class="bg-primary absolute -bottom-1 left-0 h-0.5 w-full rounded-full"
+                        aria-hidden="true"
+                    />
                 </Link>
             </nav>
 

@@ -141,8 +141,12 @@
     body {
         /* Nothing else in the app clips horizontal overflow; without this,
            absolutely-positioned elements (e.g. carousel arrows) can push the
-           page wider than the viewport on small screens. */
-        @apply overflow-x-hidden;
+           page wider than the viewport on small screens. `clip` (not
+           `hidden`) matters here: setting `overflow-x: hidden` forces
+           `overflow-y` to compute as `auto` too, which turns body/html into
+           their own scroll container and breaks `position: sticky` on the
+           header. `clip` only affects the x-axis. */
+        @apply overflow-x-clip;
     }
 
     body {

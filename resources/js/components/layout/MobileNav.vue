@@ -8,12 +8,14 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
+import { useActiveLink } from "@/composables/useActiveLink";
 import type { SharedData } from "@/types";
 
 const open = defineModel<boolean>("open", { default: false });
 
 const { t } = useI18n();
 const page = usePage<SharedData>();
+const { isActive } = useActiveLink();
 </script>
 
 <template>
@@ -31,7 +33,13 @@ const page = usePage<SharedData>();
                     v-for="link in page.props.navigation"
                     :key="link.url"
                     :href="link.url"
-                    class="hover:bg-accent hover:text-accent-foreground rounded-md px-3 py-2.5 text-base font-medium transition-colors"
+                    :aria-current="isActive(link.url) ? 'page' : undefined"
+                    class="rounded-md px-3 py-2.5 text-base font-medium transition-colors"
+                    :class="
+                        isActive(link.url)
+                            ? 'bg-accent text-accent-foreground'
+                            : 'hover:bg-accent hover:text-accent-foreground'
+                    "
                     @click="open = false"
                 >
                     {{ t(link.labelKey) }}

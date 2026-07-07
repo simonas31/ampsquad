@@ -22,7 +22,7 @@ const embedUrl = computed(() => {
 </script>
 
 <template>
-    <div class="aspect-video overflow-hidden rounded-lg bg-black">
+    <div class="shadow-warm-md aspect-video overflow-hidden rounded-lg bg-black">
         <iframe
             :src="embedUrl"
             class="h-full w-full"

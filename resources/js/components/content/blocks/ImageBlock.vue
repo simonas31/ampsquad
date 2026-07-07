@@ -10,7 +10,7 @@ defineProps<{ block: ImageBlock }>();
             :src="`/storage/${block.data.image}`"
             :alt="block.data.caption ?? ''"
             loading="lazy"
-            class="w-full rounded-lg"
+            class="shadow-warm-md w-full rounded-lg"
         />
         <figcaption v-if="block.data.caption" class="text-muted-foreground mt-2 text-sm">
             {{ block.data.caption }}

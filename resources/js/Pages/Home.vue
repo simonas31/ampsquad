@@ -43,6 +43,8 @@ const projectsUrl = computed(
             :projects-url="projectsUrl"
         />
 
+        <div class="via-border mx-auto h-px w-full max-w-xs bg-gradient-to-r from-transparent to-transparent" aria-hidden="true" />
+
         <IntroSection :title="intro.title" :content="intro.content" />
 
         <FeaturedProjectsSection :projects="featuredProjects" :projects-url="projectsUrl" />
@@ -50,6 +52,8 @@ const projectsUrl = computed(
         <VideoCarouselSection :videos="videos" />
 
         <CalculatorTeaserSection :categories="calculatorCategories" :contact-url="contactUrl" />
+
+        <div class="via-border mx-auto h-px w-full max-w-xs bg-gradient-to-r from-transparent to-transparent" aria-hidden="true" />
 
         <ContactCtaSection
             :title="cta.title"

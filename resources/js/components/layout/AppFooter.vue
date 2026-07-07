@@ -10,7 +10,9 @@ const year = computed(() => new Date().getFullYear());
 </script>
 
 <template>
-    <footer class="border-border/60 bg-secondary/40 border-t">
+    <footer class="bg-secondary/40 relative">
+        <div class="via-border absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent" aria-hidden="true" />
+
         <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
             <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
                 <div class="space-y-3">
@@ -37,8 +39,9 @@ const year = computed(() => new Date().getFullYear());
                 </div>
             </div>
 
-            <div class="border-border/60 text-muted-foreground mt-10 border-t pt-6 text-sm">
-                &copy; {{ year }} AmpSquad. {{ t("footer.rights") }}
+            <div class="relative mt-10 pt-6">
+                <div class="via-border absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent" aria-hidden="true" />
+                <p class="text-muted-foreground text-sm">&copy; {{ year }} AmpSquad. {{ t("footer.rights") }}</p>
             </div>
         </div>
     </footer>
