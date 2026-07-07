@@ -10,7 +10,8 @@
         "closeMenu": "Uždaryti meniu",
         "switchLanguage": "Kalba",
         "skipToContent": "Pereiti prie turinio",
-        "mobileNavDescription": "Svetainės navigacijos meniu"
+        "mobileNavDescription": "Svetainės navigacijos meniu",
+        "goToSlide": "Eiti į skaidrę {number}"
     },
     "footer": {
         "tagline": "Elektros inžinerijos sprendimai, kuriais galite pasitikėti.",

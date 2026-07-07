@@ -13,7 +13,7 @@ let scriptPromise: Promise<void> | null = null;
  * and reused, since re-injecting the script on every carousel mount would
  * re-fetch it needlessly across SPA navigations.
  */
-export function useInstagramEmbeds(): { reprocess: () => void } {
+export function useInstagramEmbeds(): { reprocess: () => Promise<void> } {
     function loadScript(): Promise<void> {
         if (window.instgrm) {
             return Promise.resolve();
@@ -30,8 +30,10 @@ export function useInstagramEmbeds(): { reprocess: () => void } {
         return scriptPromise;
     }
 
-    function reprocess(): void {
-        void loadScript().then(() => window.instgrm?.Embeds.process());
+    function reprocess(): Promise<void> {
+        return loadScript().then(() => {
+            window.instgrm?.Embeds.process();
+        });
     }
 
     return { reprocess };

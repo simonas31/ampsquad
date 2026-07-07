@@ -10,7 +10,8 @@
         "closeMenu": "Close menu",
         "switchLanguage": "Language",
         "skipToContent": "Skip to content",
-        "mobileNavDescription": "Site navigation menu"
+        "mobileNavDescription": "Site navigation menu",
+        "goToSlide": "Go to slide {number}"
     },
     "footer": {
         "tagline": "Electrical engineering solutions you can rely on.",

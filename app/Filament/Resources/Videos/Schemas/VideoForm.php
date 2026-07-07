@@ -31,14 +31,14 @@ class VideoForm
                     ->label(__('admin.videos.instagram_url'))
                     ->url()
                     ->required()
-                    ->visible(fn (Get $get): bool => $get('type') === VideoType::InstagramEmbed->value),
+                    ->visible(fn (Get $get): bool => $get('type') === VideoType::InstagramEmbed),
                 SpatieMediaLibraryFileUpload::make('video')
                     ->label(__('admin.fields.video'))
                     ->collection('video')
                     ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
                     ->maxSize(102400)
                     ->required()
-                    ->visible(fn (Get $get): bool => $get('type') === VideoType::Upload->value),
+                    ->visible(fn (Get $get): bool => $get('type') === VideoType::Upload),
                 SpatieMediaLibraryFileUpload::make('poster')
                     ->label(__('admin.fields.poster'))
                     ->collection('poster')

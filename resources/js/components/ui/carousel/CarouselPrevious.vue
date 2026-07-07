@@ -26,7 +26,7 @@ const { orientation, canScrollPrev, scrollPrev } = useCarousel()
     :class="cn(
       'rounded-full absolute touch-manipulation',
       orientation === 'horizontal'
-        ? 'top-1/2 -left-12 -translate-y-1/2'
+        ? 'top-1/2 left-2 -translate-y-1/2 sm:-left-12'
         : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
       props.class,
     )"

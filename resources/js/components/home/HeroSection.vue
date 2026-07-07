@@ -16,7 +16,7 @@ const { t } = useI18n();
 <template>
     <section class="relative overflow-hidden">
         <div
-            class="from-primary/15 via-background to-background pointer-events-none absolute inset-0 bg-gradient-to-br"
+            class="bg-gradient-warm pointer-events-none absolute inset-0"
             aria-hidden="true"
         />
 

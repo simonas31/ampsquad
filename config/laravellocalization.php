@@ -119,7 +119,7 @@ return [
         // 'la'          => ['name' => 'Latin',                  'script' => 'Latn', 'native' => 'latine', 'regional' => ''],
         // 'lv'          => ['name' => 'Latvian',                'script' => 'Latn', 'native' => 'latviešu', 'regional' => 'lv_LV'],
         // 'to'          => ['name' => 'Tongan',                 'script' => 'Latn', 'native' => 'lea fakatonga', 'regional' => ''],
-        'lt' => ['name' => 'Lithuanian',             'script' => 'Latn', 'native' => 'lietuvių', 'regional' => 'lt_LT'],
+        'lt' => ['name' => 'Lithuanian',             'script' => 'Latn', 'native' => 'Lietuvių', 'regional' => 'lt_LT'],
         // 'li'          => ['name' => 'Limburgish',             'script' => 'Latn', 'native' => 'Limburgs', 'regional' => 'li_BE'],
         // 'ln'          => ['name' => 'Lingala',                'script' => 'Latn', 'native' => 'lingála', 'regional' => ''],
         // 'lg'          => ['name' => 'Ganda',                  'script' => 'Latn', 'native' => 'Luganda', 'regional' => 'lg_UG'],
