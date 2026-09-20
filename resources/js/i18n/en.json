@@ -74,6 +74,41 @@
       "title": "Estimate your project",
       "subtitle": "Get a feel for what we cover — reach out for a personalised quote.",
       "cta": "Request a quote"
+    },
+    "priceCalculator": {
+      "title": "Price calculator",
+      "subtitle": "Choose your options and see a preliminary price straight away.",
+      "propertyType": {
+        "label": "Property type",
+        "apartment": "Apartment",
+        "cottage": "Cottage",
+        "house": "House"
+      },
+      "rooms": {
+        "label": "Number of rooms",
+        "line": "Rooms × {count}"
+      },
+      "bathrooms": {
+        "label": "Number of bathrooms",
+        "line": "Bathrooms × {count}"
+      },
+      "panel": {
+        "label": "Electrical panel",
+        "line": "Panel: {name}",
+        "standard": "Standard",
+        "secure": "Secure",
+        "maximum": "Maximum security"
+      },
+      "extras": "Extras",
+      "facadeLighting": {
+        "label": "Facade lighting"
+      },
+      "decrease": "Decrease {label}",
+      "increase": "Increase {label}",
+      "summary": {
+        "title": "Preliminary price",
+        "vat": "+ VAT"
+      }
     }
   },
   "errors": {

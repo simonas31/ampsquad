@@ -74,6 +74,41 @@
       "title": "Įvertinkite savo projektą",
       "subtitle": "Susipažinkite, ką siūlome — susisiekite dėl asmeninio pasiūlymo.",
       "cta": "Gauti pasiūlymą"
+    },
+    "priceCalculator": {
+      "title": "Kainos skaičiuoklė",
+      "subtitle": "Pasirinkite parametrus ir iškart pamatysite preliminarią kainą.",
+      "propertyType": {
+        "label": "Būsto tipas",
+        "apartment": "Butas",
+        "cottage": "Kotedžas",
+        "house": "Namas"
+      },
+      "rooms": {
+        "label": "Kambarių skaičius",
+        "line": "Kambariai × {count}"
+      },
+      "bathrooms": {
+        "label": "Vonios kambarių skaičius",
+        "line": "Vonios kambariai × {count}"
+      },
+      "panel": {
+        "label": "Skydas",
+        "line": "Skydas: {name}",
+        "standard": "Paprastas",
+        "secure": "Saugus",
+        "maximum": "Maksimalus saugumas"
+      },
+      "extras": "Papildomai",
+      "facadeLighting": {
+        "label": "Fasado apšvietimas"
+      },
+      "decrease": "Sumažinti: {label}",
+      "increase": "Padidinti: {label}",
+      "summary": {
+        "title": "Preliminari kaina",
+        "vat": "+ PVM"
+      }
     }
   },
   "errors": {

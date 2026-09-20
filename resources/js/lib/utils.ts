@@ -1,6 +1,9 @@
 import type { ClassValue } from "clsx";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Locale } from "@/types";
+
+const INTL_LOCALES: Record<Locale, string> = { lt: "lt-LT", en: "en-IE" };
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -24,4 +27,18 @@ export function formatDate(date: string, locale: string): string {
     dateStyle: "long",
     timeZone: "UTC",
   }).format(new Date(date));
+}
+
+/** Formats a euro amount for the site locale ("1 967,00 €" in lt, "€1,967.00" in en). */
+export function formatPrice(
+  amount: number,
+  locale: Locale,
+  fractionDigits = 0,
+): string {
+  return new Intl.NumberFormat(INTL_LOCALES[locale], {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  }).format(amount);
 }

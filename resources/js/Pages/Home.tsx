@@ -4,6 +4,7 @@ import { ContactCtaSection } from "@/components/home/ContactCtaSection";
 import { FeaturedProjectsSection } from "@/components/home/FeaturedProjectsSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { IntroSection } from "@/components/home/IntroSection";
+import { PriceCalculatorSection } from "@/components/home/PriceCalculatorSection";
 import { VideoCarouselSection } from "@/components/home/VideoCarouselSection";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import type {
@@ -44,6 +45,7 @@ export default function Home({
         projectsUrl={projectsUrl}
       />
       <IntroSection title={intro.title} content={intro.content} />
+      <PriceCalculatorSection contactUrl={contactUrl} />
       <FeaturedProjectsSection
         projects={featuredProjects}
         projectsUrl={projectsUrl}

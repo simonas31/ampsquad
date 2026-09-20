@@ -46,7 +46,7 @@ export function useT(): Translate {
   return useCallback(
     (key, params) => {
       const template =
-        lookup(messages[current], key) ?? lookup(messages.en, key) ?? key;
+        lookup(messages[current], key) ?? lookup(messages.lt, key) ?? key;
 
       return template.replace(/\{(\w+)\}/g, (placeholder, name: string) =>
         String(params?.[name] ?? placeholder),
