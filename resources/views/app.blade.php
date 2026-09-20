@@ -12,42 +12,44 @@
         them in — this app has no SSR, so the very first response is the
         only one they ever see. Every tag below (other than <title>, which
         Inertia already reconciles by itself) is marked data-seo="server"
-        and gets stripped by app.ts right before Vue mounts, so real
+        and gets stripped by app.tsx right before React mounts, so real
         browser sessions hand off cleanly to Inertia's own head management
         without ending up with duplicate tags.
     --}}
     @php $seo = $page['props']['seo'] ?? null; @endphp
     @if ($seo)
         <title inertia>{{ $seo['title'] }}</title>
-        @if (! empty($seo['description']))
+        @if (!empty($seo['description']))
             <meta name="description" content="{{ $seo['description'] }}" data-seo="server" />
         @endif
-        @if (! empty($seo['noindex']))
+        @if (!empty($seo['noindex']))
             <meta name="robots" content="noindex, nofollow" data-seo="server" />
         @endif
-        @if (! empty($seo['canonical']))
+        @if (!empty($seo['canonical']))
             <link rel="canonical" href="{{ $seo['canonical'] }}" data-seo="server" />
         @endif
         @foreach ($seo['alternates'] ?? [] as $alternate)
-            <link rel="alternate" hreflang="{{ $alternate['locale'] }}" href="{{ $alternate['url'] }}" data-seo="server" />
+            <link rel="alternate" hreflang="{{ $alternate['locale'] }}" href="{{ $alternate['url'] }}"
+                data-seo="server" />
         @endforeach
         <meta property="og:title" content="{{ $seo['title'] }}" data-seo="server" />
-        @if (! empty($seo['description']))
+        @if (!empty($seo['description']))
             <meta property="og:description" content="{{ $seo['description'] }}" data-seo="server" />
         @endif
         <meta property="og:type" content="{{ $seo['ogType'] }}" data-seo="server" />
-        @if (! empty($seo['canonical']))
+        @if (!empty($seo['canonical']))
             <meta property="og:url" content="{{ $seo['canonical'] }}" data-seo="server" />
         @endif
-        @if (! empty($seo['ogImage']))
+        @if (!empty($seo['ogImage']))
             <meta property="og:image" content="{{ $seo['ogImage'] }}" data-seo="server" />
         @endif
-        <meta name="twitter:card" content="{{ ! empty($seo['ogImage']) ? 'summary_large_image' : 'summary' }}" data-seo="server" />
+        <meta name="twitter:card" content="{{ !empty($seo['ogImage']) ? 'summary_large_image' : 'summary' }}"
+            data-seo="server" />
         <meta name="twitter:title" content="{{ $seo['title'] }}" data-seo="server" />
-        @if (! empty($seo['description']))
+        @if (!empty($seo['description']))
             <meta name="twitter:description" content="{{ $seo['description'] }}" data-seo="server" />
         @endif
-        @if (! empty($seo['ogImage']))
+        @if (!empty($seo['ogImage']))
             <meta name="twitter:image" content="{{ $seo['ogImage'] }}" data-seo="server" />
         @endif
         @foreach ($seo['jsonLd'] ?? [] as $schema)
@@ -57,7 +59,13 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
     @endif
 
-    @vite('resources/js/app.ts')
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" />
+
+    @viteReactRefresh
+    @vite('resources/js/app.tsx')
     @inertiaHead
 </head>
 

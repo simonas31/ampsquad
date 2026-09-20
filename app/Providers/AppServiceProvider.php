@@ -27,11 +27,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->registerLocalizedRouteMacro();
 
-        // Inertia props are consumed directly by Vue components, not by an
+        // Inertia props are consumed directly by React components, not by an
         // external JSON:API client, so the extra {"data": {...}} envelope
         // JsonResource adds by default just means every single-resource
         // prop (e.g. new PageResource($page)) needs an unwanted ".data" in
-        // the template. Paginated collections are unaffected — they keep
+        // the component. Paginated collections are unaffected — they keep
         // their data/links/meta shape, which Paginated<T> already expects.
         JsonResource::withoutWrapping();
     }

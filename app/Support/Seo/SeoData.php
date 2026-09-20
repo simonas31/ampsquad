@@ -36,7 +36,7 @@ final readonly class SeoData implements Arrayable
      * $pageTitle is just the page-specific fragment (e.g. "Contact"), not
      * the full browser-tab title — this computes the final "Fragment -
      * AppName" (or bare AppName on the homepage, when left empty) once,
-     * so Blade's initial render and Vue's client-side <Head> can't
+     * so Blade's initial render and React's client-side <Head> can't
      * disagree about what the title should be the way they would if each
      * appended the app name suffix independently.
      *

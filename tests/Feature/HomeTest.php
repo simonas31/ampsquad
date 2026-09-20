@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Settings\GeneralSettings;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
@@ -74,5 +75,22 @@ class HomeTest extends TestCase
             $this->assertSame($seo['canonical'], $seo['alternates'][2]['url']);
             $this->assertSame('x-default', $seo['alternates'][2]['locale']);
         });
+    }
+
+    public function test_site_contact_details_are_shared_with_every_page(): void
+    {
+        $general = app(GeneralSettings::class);
+
+        $response = $this->get('/contact');
+
+        $response->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Contact')
+            ->where('site.contact.email', $general->email)
+            ->where('site.contact.phone', $general->phone)
+            ->where('site.contact.address', $general->address)
+            ->where('site.social.facebook', $general->facebookUrl)
+            ->where('site.social.instagram', $general->instagramUrl)
+            ->where('site.social.linkedin', $general->linkedinUrl)
+        );
     }
 }

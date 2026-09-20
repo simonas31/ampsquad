@@ -1,164 +1,191 @@
+export type Locale = "lt" | "en";
+
 export interface LocaleOption {
-    code: string;
-    name: string;
-    url: string;
+  code: Locale;
+  name: string;
+  url: string;
 }
 
 export interface SeoData {
-    title: string;
-    description: string | null;
-    canonical: string;
-    ogImage: string | null;
-    ogType: string;
-    noindex: boolean;
-    alternates: Array<{ locale: string; url: string }>;
-    jsonLd: Record<string, unknown>[];
+  title: string;
+  description: string | null;
+  canonical: string;
+  ogImage: string | null;
+  ogType: string;
+  noindex: boolean;
+  alternates: Array<{ locale: string; url: string }>;
+  jsonLd: Record<string, unknown>[];
 }
 
 export interface Breadcrumb {
-    label: string;
-    url: string | null;
+  label: string;
+  url: string | null;
 }
 
 export interface NavigationLink {
-    labelKey: string;
-    url: string;
+  labelKey: "nav.home" | "nav.projects" | "nav.about" | "nav.contact";
+  url: string;
+}
+
+export interface SiteData {
+  contact: {
+    email: string;
+    phone: string;
+    address: string;
+  };
+  social: {
+    facebook: string | null;
+    instagram: string | null;
+    linkedin: string | null;
+  };
 }
 
 export interface SharedData {
-    locale: {
-        current: string;
-        available: LocaleOption[];
-    };
-    navigation: NavigationLink[];
-    [key: string]: unknown;
+  locale: {
+    current: Locale;
+    available: LocaleOption[];
+  };
+  navigation: NavigationLink[];
+  site: SiteData;
 }
 
 export interface Category {
-    id: number;
-    name: string;
-    slug: string;
+  id: number;
+  name: string;
+  slug: string;
 }
 
 export interface Tag {
-    id: number;
-    name: string;
-    slug: string;
+  id: number;
+  name: string;
+  slug: string;
 }
 
 export interface GalleryImage {
-    large: string;
-    thumbnail: string;
+  large: string;
+  thumbnail: string;
 }
 
 export interface HeadingBlock {
-    type: 'heading';
-    data: { text: string; level: 'h2' | 'h3' | 'h4' };
+  type: "heading";
+  data: { text: string; level: "h2" | "h3" | "h4" };
 }
 
 export interface RichTextBlock {
-    type: 'rich_text';
-    data: { content: string };
+  type: "rich_text";
+  data: { content: string };
 }
 
 export interface ImageBlock {
-    type: 'image';
-    data: { image: string; caption: string | null };
+  type: "image";
+  data: { image: string; caption: string | null };
 }
 
 export interface GalleryBlock {
-    type: 'gallery';
-    data: { images: string[] };
+  type: "gallery";
+  data: { images: string[] };
 }
 
 export interface VideoEmbedBlock {
-    type: 'video_embed';
-    data: { url: string };
+  type: "video_embed";
+  data: { url: string };
 }
 
 export interface QuoteBlock {
-    type: 'quote';
-    data: { text: string; author: string | null };
+  type: "quote";
+  data: { text: string; author: string | null };
 }
 
 export interface CtaBlock {
-    type: 'cta';
-    data: { label: string; url: string };
+  type: "cta";
+  data: { label: string; url: string };
 }
 
 export type ContentBlock =
-    | HeadingBlock
-    | RichTextBlock
-    | ImageBlock
-    | GalleryBlock
-    | VideoEmbedBlock
-    | QuoteBlock
-    | CtaBlock;
+  | HeadingBlock
+  | RichTextBlock
+  | ImageBlock
+  | GalleryBlock
+  | VideoEmbedBlock
+  | QuoteBlock
+  | CtaBlock;
 
 export interface Project {
-    id: number;
-    title: string;
-    excerpt: string | null;
-    status: 'draft' | 'published';
-    publishedAt: string | null;
-    isFeatured: boolean;
-    location: string | null;
-    clientName: string | null;
-    completedAt: string | null;
-    url: string;
-    category: Category;
-    tags: Tag[];
-    author: string | null;
-    featuredImageUrl: string | null;
-    featuredImageThumbUrl: string | null;
-    gallery: GalleryImage[];
-    blocks?: ContentBlock[];
+  id: number;
+  title: string;
+  excerpt: string | null;
+  status: "draft" | "published";
+  publishedAt: string | null;
+  isFeatured: boolean;
+  location: string | null;
+  clientName: string | null;
+  completedAt: string | null;
+  url: string;
+  category: Category;
+  tags: Tag[];
+  author: string | null;
+  featuredImageUrl: string | null;
+  featuredImageThumbUrl: string | null;
+  gallery: GalleryImage[];
+  blocks?: ContentBlock[];
 }
 
 export interface Video {
-    id: number;
-    title: string | null;
-    type: "instagram_embed" | "upload";
-    embedUrl: string | null;
-    videoUrl: string | null;
-    posterUrl: string | null;
+  id: number;
+  title: string | null;
+  type: "instagram_embed" | "upload";
+  embedUrl: string | null;
+  videoUrl: string | null;
+  posterUrl: string | null;
 }
 
 export interface CalculatorCategoryTeaser {
-    id: number;
-    name: string;
-    icon: string | null;
-    options: string[];
+  id: number;
+  name: string;
+  icon: string | null;
+  options: string[];
 }
 
 export interface Page {
-    id: number;
-    key: string;
-    title: string;
-    blocks: ContentBlock[];
-    featuredImageUrl: string | null;
+  id: number;
+  key: string;
+  title: string;
+  blocks: ContentBlock[];
+  featuredImageUrl: string | null;
 }
 
 export interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
+  url: string | null;
+  label: string;
+  active: boolean;
 }
 
+/**
+ * Shape of a paginated Eloquent API resource collection: `links` holds the
+ * first/last/prev/next URLs, while the numbered page links (with `active`)
+ * live under `meta.links`.
+ */
 export interface Paginated<T> {
-    data: T[];
+  data: T[];
+  links: {
+    first: string | null;
+    last: string | null;
+    prev: string | null;
+    next: string | null;
+  };
+  meta: {
+    current_page: number;
+    last_page: number;
+    total: number;
     links: PaginationLink[];
-    meta: {
-        current_page: number;
-        last_page: number;
-        total: number;
-    };
+  };
 }
 
 declare module "@inertiajs/core" {
-    export interface InertiaConfig {
-        flashDataType: {
-            contactSubmitted?: boolean;
-        };
-    }
+  export interface InertiaConfig {
+    sharedPageProps: SharedData;
+    flashDataType: {
+      contactSubmitted?: boolean;
+    };
+  }
 }

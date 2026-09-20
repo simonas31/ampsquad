@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Models\Page;
+use App\Settings\GeneralSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
@@ -53,6 +54,32 @@ class HandleInertiaRequests extends Middleware
                     ->values(),
             ],
             'navigation' => $this->navigationLinks(),
+            'site' => fn () => $this->siteContact(),
+        ];
+    }
+
+    /**
+     * Company contact details and social profiles shown in the header,
+     * footer and contact page on every request, so they're shared once here
+     * instead of each controller passing them separately.
+     *
+     * @return array{contact: array{email: string, phone: string, address: string}, social: array{facebook: ?string, instagram: ?string, linkedin: ?string}}
+     */
+    private function siteContact(): array
+    {
+        $general = app(GeneralSettings::class);
+
+        return [
+            'contact' => [
+                'email' => $general->email,
+                'phone' => $general->phone,
+                'address' => $general->address,
+            ],
+            'social' => [
+                'facebook' => $general->facebookUrl,
+                'instagram' => $general->instagramUrl,
+                'linkedin' => $general->linkedinUrl,
+            ],
         ];
     }
 

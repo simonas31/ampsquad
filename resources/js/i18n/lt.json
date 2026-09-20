@@ -1,78 +1,104 @@
 {
-    "nav": {
-        "home": "Pradžia",
-        "projects": "Projektai",
-        "about": "Apie mus",
-        "contact": "Kontaktai"
+  "nav": {
+    "home": "Pradžia",
+    "projects": "Projektai",
+    "about": "Apie mus",
+    "contact": "Kontaktai"
+  },
+  "common": {
+    "openMenu": "Atidaryti meniu",
+    "closeMenu": "Uždaryti meniu",
+    "switchLanguage": "Kalba",
+    "skipToContent": "Pereiti prie turinio",
+    "mobileNavDescription": "Svetainės navigacijos meniu",
+    "goToSlide": "Eiti į skaidrę {number}",
+    "requestQuote": "Gauti pasiūlymą",
+    "breadcrumb": "Naršymo kelias",
+    "previousSlide": "Ankstesnė skaidrė",
+    "nextSlide": "Kita skaidrė",
+    "pauseSlideshow": "Sustabdyti automatinį perjungimą",
+    "playSlideshow": "Tęsti automatinį perjungimą",
+    "mainNavigation": "Pagrindinė navigacija",
+    "language": "Kalba",
+    "callUs": "Skambinkite",
+    "emailUs": "Rašykite",
+    "opensInNewTab": "(atsidaro naujame skirtuke)",
+    "slideOf": "{number} iš {total}"
+  },
+  "footer": {
+    "tagline": "Elektros inžinerijos sprendimai, kuriais galite pasitikėti.",
+    "quickLinks": "Nuorodos",
+    "contact": "Kontaktai",
+    "rights": "Visos teisės saugomos.",
+    "followUs": "Sekite mus"
+  },
+  "content": {
+    "noProjects": "Kol kas projektų nėra.",
+    "client": "Klientas",
+    "location": "Vieta",
+    "completed": "Baigta",
+    "allCategories": "Visos kategorijos",
+    "backToProjects": "Grįžti į projektus",
+    "imagePreview": "Nuotraukos peržiūra",
+    "previousImage": "Ankstesnė nuotrauka",
+    "nextImage": "Kita nuotrauka",
+    "filterByCategory": "Filtruoti pagal kategoriją",
+    "embeddedVideo": "Įterptas vaizdo įrašas"
+  },
+  "contact": {
+    "name": "Vardas",
+    "email": "El. paštas",
+    "phone": "Telefonas",
+    "message": "Žinutė",
+    "submit": "Siųsti žinutę",
+    "success": "Ačiū! Jūsų žinutė išsiųsta, netrukus su jumis susisieksime.",
+    "intro": "Papasakokite apie savo projektą – netrukus jums atsakysime.",
+    "details": "Kontaktinė informacija",
+    "address": "Adresas",
+    "requiredHint": "Laukai, pažymėti *, yra privalomi.",
+    "sending": "Siunčiama…"
+  },
+  "home": {
+    "hero": {
+      "cta": "Susisiekite",
+      "secondaryCta": "Peržiūrėti projektus"
     },
-    "common": {
-        "openMenu": "Atidaryti meniu",
-        "closeMenu": "Uždaryti meniu",
-        "switchLanguage": "Kalba",
-        "skipToContent": "Pereiti prie turinio",
-        "mobileNavDescription": "Svetainės navigacijos meniu",
-        "goToSlide": "Eiti į skaidrę {number}"
+    "featuredProjects": {
+      "title": "Išskirtiniai projektai",
+      "viewAll": "Visi projektai"
     },
-    "footer": {
-        "tagline": "Elektros inžinerijos sprendimai, kuriais galite pasitikėti.",
-        "quickLinks": "Nuorodos",
-        "contact": "Kontaktai",
-        "rights": "Visos teisės saugomos."
+    "videos": {
+      "title": "Pamatykite mus darbe"
     },
-    "content": {
-        "noProjects": "Kol kas projektų nėra.",
-        "client": "Klientas",
-        "location": "Vieta",
-        "completed": "Baigta",
-        "allCategories": "Visos kategorijos",
-        "backToProjects": "Grįžti į projektus",
-        "imagePreview": "Nuotraukos peržiūra",
-        "previousImage": "Ankstesnė nuotrauka",
-        "nextImage": "Kita nuotrauka"
-    },
-    "contact": {
-        "name": "Vardas",
-        "email": "El. paštas",
-        "phone": "Telefonas",
-        "message": "Žinutė",
-        "submit": "Siųsti žinutę",
-        "success": "Ačiū! Jūsų žinutė išsiųsta, netrukus su jumis susisieksime."
-    },
-    "home": {
-        "hero": {
-            "cta": "Susisiekite",
-            "secondaryCta": "Peržiūrėti projektus"
-        },
-        "featuredProjects": {
-            "title": "Išskirtiniai projektai",
-            "viewAll": "Visi projektai"
-        },
-        "videos": {
-            "title": "Pamatykite mus darbe"
-        },
-        "calculator": {
-            "title": "Įvertinkite savo projektą",
-            "subtitle": "Susipažinkite, ką siūlome — susisiekite dėl asmeninio pasiūlymo.",
-            "cta": "Gauti pasiūlymą"
-        }
-    },
-    "errors": {
-        "backHome": "Grįžti į pradžią",
-        "403": {
-            "title": "403: Prieiga uždrausta",
-            "description": "Neturite leidimo peržiūrėti šio puslapio."
-        },
-        "404": {
-            "title": "404: Puslapis nerastas",
-            "description": "Ieškomo puslapio nepavyko rasti."
-        },
-        "500": {
-            "title": "500: Serverio klaida",
-            "description": "Įvyko klaida mūsų serveryje. Bandykite dar kartą vėliau."
-        },
-        "503": {
-            "title": "503: Techninė priežiūra",
-            "description": "Šiuo metu atliekame techninę priežiūrą. Netrukus grįšime."
-        }
+    "calculator": {
+      "title": "Įvertinkite savo projektą",
+      "subtitle": "Susipažinkite, ką siūlome — susisiekite dėl asmeninio pasiūlymo.",
+      "cta": "Gauti pasiūlymą"
     }
+  },
+  "errors": {
+    "backHome": "Grįžti į pradžią",
+    "403": {
+      "title": "403: Prieiga uždrausta",
+      "description": "Neturite leidimo peržiūrėti šio puslapio."
+    },
+    "404": {
+      "title": "404: Puslapis nerastas",
+      "description": "Ieškomo puslapio nepavyko rasti."
+    },
+    "500": {
+      "title": "500: Serverio klaida",
+      "description": "Įvyko klaida mūsų serveryje. Bandykite dar kartą vėliau."
+    },
+    "503": {
+      "title": "503: Techninė priežiūra",
+      "description": "Šiuo metu atliekame techninę priežiūrą. Netrukus grįšime."
+    }
+  },
+  "pagination": {
+    "label": "Puslapiavimas",
+    "previous": "Ankstesnis puslapis",
+    "next": "Kitas puslapis",
+    "goToPage": "Eiti į puslapį {number}"
+  }
 }

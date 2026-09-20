@@ -1,78 +1,104 @@
 {
-    "nav": {
-        "home": "Home",
-        "projects": "Projects",
-        "about": "About",
-        "contact": "Contact"
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "common": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "switchLanguage": "Language",
+    "skipToContent": "Skip to content",
+    "mobileNavDescription": "Site navigation menu",
+    "goToSlide": "Go to slide {number}",
+    "requestQuote": "Request a quote",
+    "breadcrumb": "Breadcrumb",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "pauseSlideshow": "Pause autoplay",
+    "playSlideshow": "Resume autoplay",
+    "mainNavigation": "Main navigation",
+    "language": "Language",
+    "callUs": "Call us",
+    "emailUs": "Email us",
+    "opensInNewTab": "(opens in a new tab)",
+    "slideOf": "{number} of {total}"
+  },
+  "footer": {
+    "tagline": "Electrical engineering solutions you can rely on.",
+    "quickLinks": "Quick links",
+    "contact": "Contact",
+    "rights": "All rights reserved.",
+    "followUs": "Follow us"
+  },
+  "content": {
+    "noProjects": "No projects yet.",
+    "client": "Client",
+    "location": "Location",
+    "completed": "Completed",
+    "allCategories": "All categories",
+    "backToProjects": "Back to projects",
+    "imagePreview": "Image preview",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "filterByCategory": "Filter by category",
+    "embeddedVideo": "Embedded video"
+  },
+  "contact": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "submit": "Send message",
+    "success": "Thanks! Your message has been sent — we'll be in touch shortly.",
+    "intro": "Tell us about your project and we'll get back to you shortly.",
+    "details": "Contact details",
+    "address": "Address",
+    "requiredHint": "Fields marked * are required.",
+    "sending": "Sending…"
+  },
+  "home": {
+    "hero": {
+      "cta": "Get in touch",
+      "secondaryCta": "View our projects"
     },
-    "common": {
-        "openMenu": "Open menu",
-        "closeMenu": "Close menu",
-        "switchLanguage": "Language",
-        "skipToContent": "Skip to content",
-        "mobileNavDescription": "Site navigation menu",
-        "goToSlide": "Go to slide {number}"
+    "featuredProjects": {
+      "title": "Featured projects",
+      "viewAll": "View all projects"
     },
-    "footer": {
-        "tagline": "Electrical engineering solutions you can rely on.",
-        "quickLinks": "Quick links",
-        "contact": "Contact",
-        "rights": "All rights reserved."
+    "videos": {
+      "title": "See us in action"
     },
-    "content": {
-        "noProjects": "No projects yet.",
-        "client": "Client",
-        "location": "Location",
-        "completed": "Completed",
-        "allCategories": "All categories",
-        "backToProjects": "Back to projects",
-        "imagePreview": "Image preview",
-        "previousImage": "Previous image",
-        "nextImage": "Next image"
-    },
-    "contact": {
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone",
-        "message": "Message",
-        "submit": "Send message",
-        "success": "Thanks! Your message has been sent — we'll be in touch shortly."
-    },
-    "home": {
-        "hero": {
-            "cta": "Get in touch",
-            "secondaryCta": "View our projects"
-        },
-        "featuredProjects": {
-            "title": "Featured projects",
-            "viewAll": "View all projects"
-        },
-        "videos": {
-            "title": "See us in action"
-        },
-        "calculator": {
-            "title": "Estimate your project",
-            "subtitle": "Get a feel for what we cover — reach out for a personalised quote.",
-            "cta": "Request a quote"
-        }
-    },
-    "errors": {
-        "backHome": "Back to homepage",
-        "403": {
-            "title": "403: Forbidden",
-            "description": "You don't have permission to view this page."
-        },
-        "404": {
-            "title": "404: Page not found",
-            "description": "Sorry, the page you're looking for could not be found."
-        },
-        "500": {
-            "title": "500: Server error",
-            "description": "Something went wrong on our servers. Please try again shortly."
-        },
-        "503": {
-            "title": "503: Under maintenance",
-            "description": "We're performing scheduled maintenance. Please check back soon."
-        }
+    "calculator": {
+      "title": "Estimate your project",
+      "subtitle": "Get a feel for what we cover — reach out for a personalised quote.",
+      "cta": "Request a quote"
     }
+  },
+  "errors": {
+    "backHome": "Back to homepage",
+    "403": {
+      "title": "403: Forbidden",
+      "description": "You don't have permission to view this page."
+    },
+    "404": {
+      "title": "404: Page not found",
+      "description": "Sorry, the page you're looking for could not be found."
+    },
+    "500": {
+      "title": "500: Server error",
+      "description": "Something went wrong on our servers. Please try again shortly."
+    },
+    "503": {
+      "title": "503: Under maintenance",
+      "description": "We're performing scheduled maintenance. Please check back soon."
+    }
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "goToPage": "Go to page {number}"
+  }
 }
