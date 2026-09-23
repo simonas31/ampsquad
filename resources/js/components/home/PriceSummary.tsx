@@ -39,7 +39,7 @@ export function PriceSummary({ total, lines, contactUrl }: PriceSummaryProps) {
           <p
             aria-live="polite"
             aria-atomic="true"
-            className="display text-ink mt-2 text-3xl tabular-nums sm:text-4xl lg:text-5xl"
+            className="display text-ink mt-2 text-3xl tabular-nums sm:text-4xl lg:text-4xl"
           >
             {total}
           </p>

@@ -8,22 +8,29 @@
 @source '../../storage/framework/views/*.php';
 
 /*
- * Design system: an architectural material palette for an electrical
- * contractor. Four materials do all the work, in this order of dominance:
+ * Design system: navy, gray and orange, taken off the company mark.
  *
- *   plaster  - the page. A warm-neutral off-white, the colour of a wall
- *              before the last coat goes on.
- *   graphite - type, rules, and the single dark passage that closes the
- *              page. Near-black, never pure black.
- *   concrete - the supporting mid-tone: image beds, tints, hairlines.
- *   signal   - the accent, taken straight off the company mark: the
- *              orange the logo is drawn in, #FF7F00.
+ *   NAVY (--ink, --ink-raised) is the brand and the dominant dark. It sets
+ *   every heading, the navigation, body type, and the graphite-free dark
+ *   passage that closes each page. --ink is the logo's own navy, #041C44.
  *
- * Contrast notes (WCAG AA): --signal carries graphite text at 6.1:1, but
- * only 2.5:1 against white and 2.3:1 against plaster. So it is only ever a
- * FILL behind graphite type, or a rule/marker. Never white-on-orange, and
- * never orange text on a light surface. --ink-soft on --paper is ~6.5:1;
- * --bone-soft on --ink is ~7:1. Both clear AA for body copy.
+ *   GRAY (--paper, --plaster, --concrete, --rule, --ink-soft, --input, and
+ *   --bone / --bone-soft on navy) is the supporting neutral: page and
+ *   section backgrounds, image beds, hairlines, secondary text and form
+ *   structure. The ramp is tinted toward the navy hue rather than neutral,
+ *   so the two never read as two unrelated families.
+ *
+ *   ORANGE (--signal) is the accent only: primary calls to action, the
+ *   active navigation state, checked controls, hover underlines and the
+ *   focus ring on navy. It is deliberately confined to those roles. If a
+ *   new surface wants orange, the answer is almost always navy or gray.
+ *
+ * Contrast notes (WCAG AA): --signal carries navy text at 6.6:1 but only
+ * 2.3:1 against white or paper, so it is only ever a FILL behind navy type,
+ * or a rule/marker. Never white-on-orange, never orange text on a light
+ * surface. Orange ON navy is 6.6:1 and is fine. --ink on --paper is 15.5:1,
+ * --ink-soft on --paper 6.3:1, --bone-soft on --ink 7.8:1, and --input on
+ * --paper 4.9:1, which clears 1.4.11's 3:1 for control borders.
  *
  * Shape: radius is zero everywhere. Square corners are the whole point of
  * the language, so the radius tokens exist only to neutralise component
@@ -59,7 +66,6 @@
     --color-ring: var(--ring);
 
     --color-destructive: var(--destructive);
-    --color-success: var(--success);
 
     --radius-sm: 0;
     --radius-md: 0;
@@ -70,27 +76,30 @@
 :root {
     color-scheme: light;
 
-    --paper: oklch(0.967 0.004 95);
-    --plaster: oklch(0.938 0.005 95);
-    --concrete: oklch(0.878 0.006 95);
-    --rule: oklch(0.852 0.007 95);
+    /* Gray: one ramp, tinted toward the navy hue so the neutrals read as
+       part of the brand rather than as a separate grey family. */
+    --paper: oklch(0.972 0.003 260);
+    --plaster: oklch(0.945 0.005 260);
+    --concrete: oklch(0.885 0.008 260);
+    --rule: oklch(0.862 0.01 260);
 
-    --ink: oklch(0.205 0.006 80);
-    --ink-raised: oklch(0.268 0.006 80);
-    --ink-soft: oklch(0.452 0.008 85);
-    --bone: oklch(0.955 0.004 95);
-    --bone-soft: oklch(0.735 0.008 90);
+    /* Navy: --ink is the logo's #041C44. --ink-raised lifts it for hover
+       states on dark and for the footer's bled wordmark. */
+    --ink: oklch(0.236 0.082 260);
+    --ink-raised: oklch(0.32 0.072 260);
+    --ink-soft: oklch(0.47 0.03 260);
+    --bone: oklch(0.966 0.004 260);
+    --bone-soft: oklch(0.76 0.022 260);
 
-    /* #FF7F00 and a darkened hover, converted from the logo artwork. */
+    /* Orange: #FF7F00 and a darkened hover, converted from the logo. */
     --signal: oklch(0.73 0.186 52.6);
     --signal-hover: oklch(0.676 0.172 52.6);
 
     --destructive: oklch(0.48 0.19 27);
-    --success: oklch(0.45 0.11 150);
 
     /* Control borders are non-text UI, so this clears WCAG 1.4.11's
        3:1 against --paper rather than the 4.5:1 text threshold. */
-    --input: oklch(0.52 0.009 85);
+    --input: oklch(0.53 0.025 260);
     --ring: var(--ink);
 }
 
