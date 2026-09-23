@@ -29,12 +29,12 @@ export function PriceCountField({
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-4">
-        <p id={labelId} className="meta text-ink-soft">
+        <p id={labelId} className="meta text-ink-soft min-w-0">
           {label}
         </p>
         <p className="display text-ink text-3xl tabular-nums">{value}</p>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
         <Button
           type="button"
           variant="outline"

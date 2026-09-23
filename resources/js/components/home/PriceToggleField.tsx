@@ -19,7 +19,7 @@ export function PriceToggleField({
 
   return (
     <div className="border-rule has-data-[state=checked]:border-ink has-data-[state=checked]:bg-plaster hover:border-ink flex items-center justify-between gap-4 border transition-colors">
-      <label htmlFor={id} className="flex-1 cursor-pointer p-4 pr-0">
+      <label htmlFor={id} className="min-w-0 flex-1 cursor-pointer p-4 pr-0">
         <span className="text-ink block font-medium">{label}</span>
         <span
           id={priceId}

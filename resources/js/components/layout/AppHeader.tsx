@@ -53,7 +53,7 @@ export function AppHeader() {
           size="wide"
           className="flex h-16 items-center justify-between gap-6 lg:h-20 lg:gap-10"
         >
-          <Logo />
+          <Logo className="h-11 lg:h-14" />
 
           <nav
             aria-label={t("common.mainNavigation")}

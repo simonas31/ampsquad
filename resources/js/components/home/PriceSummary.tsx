@@ -31,8 +31,8 @@ export function PriceSummary({ total, lines, contactUrl }: PriceSummaryProps) {
       role="region"
       className="border-ink sticky bottom-3 z-10 border-2 p-4 lg:top-28 lg:bottom-auto lg:p-6"
     >
-      <div className="flex items-center justify-between gap-4 lg:flex-col lg:items-stretch lg:gap-6">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-4 lg:flex-col lg:items-stretch lg:gap-6">
+        <div className="min-w-0">
           <p className="meta text-ink-soft">
             {t("home.priceCalculator.summary.title" as TranslationKey)}
           </p>
@@ -48,7 +48,7 @@ export function PriceSummary({ total, lines, contactUrl }: PriceSummaryProps) {
           </p>
         </div>
 
-        <Button asChild variant="accent" size="lg" className="lg:w-full">
+        <Button asChild variant="accent" size="lg" className="grow lg:w-full">
           <Link href={contactUrl}>{t("common.requestQuote")}</Link>
         </Button>
       </div>

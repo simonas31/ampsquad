@@ -37,7 +37,7 @@ export function PriceChoiceGroup<T extends string>({
         aria-labelledby={labelId}
         value={value}
         onValueChange={(next) => onValueChange(next as T)}
-        className="grid gap-px sm:grid-cols-3"
+        className="grid gap-3 sm:grid-cols-3"
       >
         {options.map((option) => (
           <RadioGroup.Item
@@ -45,7 +45,7 @@ export function PriceChoiceGroup<T extends string>({
             value={option.value}
             className="group border-rule data-[state=checked]:border-ink data-[state=checked]:bg-plaster hover:border-ink flex items-center justify-between gap-3 border p-4 text-left transition-colors"
           >
-            <span>
+            <span className="min-w-0">
               <span className="text-ink block font-medium">{option.label}</span>
               <span className="text-ink-soft mt-1 block font-mono text-xs tabular-nums">
                 {option.price}

@@ -4,11 +4,10 @@ import { projectFrame } from "@/lib/project-image";
 import type { Project } from "@/types";
 
 /**
- * A project as a ruled index entry rather than a card. The photograph is
- * held back on wide screens and uncovers on hover or keyboard focus, so a
- * long list reads as a typographic index first and a gallery second. On
- * small screens there is no hover to depend on, so the photograph leads
- * the entry instead.
+ * A project as a ruled index entry rather than a card: year, title,
+ * location and photograph reading across one row. The photograph leads the
+ * entry on small screens and moves to the last column from lg up, where it
+ * scales slightly under hover.
  */
 export function ProjectRow({ project }: { project: Project }) {
   const frame = projectFrame(project, "row", { thumbnail: true });
@@ -26,7 +25,7 @@ export function ProjectRow({ project }: { project: Project }) {
           ratio="16 / 9"
           zoom
           sizes="(min-width: 1024px) 22vw, 100vw"
-          className="lg:col-span-3 lg:order-last lg:opacity-0 lg:transition-opacity lg:duration-500 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
+          className="lg:col-span-3 lg:order-last"
         />
 
         {/* One column for where the project sits in time: the year it was

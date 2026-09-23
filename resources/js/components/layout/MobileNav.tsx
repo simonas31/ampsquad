@@ -47,7 +47,7 @@ export function MobileNav() {
             <Dialog.Title className="sr-only">
               {t("common.mobileNavDescription")}
             </Dialog.Title>
-            <Logo onNavigate={close} className="text-bone" />
+            <Logo onNavigate={close} tone="dark" className="h-10" />
             <Dialog.Close asChild>
               <Button
                 variant="ghost"

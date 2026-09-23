@@ -29,7 +29,7 @@ export function PageHeader({
     <div className="border-rule border-b">
       <Container size={size} className="pt-8 pb-12 lg:pt-10 lg:pb-16">
         <Breadcrumbs items={breadcrumbs} />
-        <h1 className="display text-ink mt-8 text-[clamp(2.25rem,5vw,4.5rem)]">
+        <h1 className="display text-ink mt-8 text-[clamp(1.875rem,5vw,4.5rem)]">
           {title}
         </h1>
         {description && (

@@ -93,7 +93,7 @@ export function PriceCalculatorSection({
           />
         </Reveal>
 
-        <div className="mt-14 grid items-start gap-10 lg:mt-20 lg:grid-cols-[1fr_22rem]">
+        <div className="mt-14 grid max-w-6xl items-start gap-10 lg:mt-20 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="divide-rule border-rule divide-y border-y">
             <div className="py-8">
               <PriceChoiceGroup

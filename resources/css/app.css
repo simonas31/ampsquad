@@ -16,14 +16,14 @@
  *   graphite - type, rules, and the single dark passage that closes the
  *              page. Near-black, never pure black.
  *   concrete - the supporting mid-tone: image beds, tints, hairlines.
- *   signal   - the accent. One saturated yellow, borrowed from cable
- *              identification and hazard marking.
+ *   signal   - the accent, taken straight off the company mark: the
+ *              orange the logo is drawn in, #FF7F00.
  *
- * Contrast notes (WCAG AA): --signal is far too light to carry white text
- * and far too light to sit as text on plaster, so it is only ever used as
- * a FILL behind graphite type, or as a rule/marker. Never as text on a
- * light surface. --ink-soft on --paper is ~6.5:1; --bone-soft on --ink is
- * ~7:1. Both clear AA for body copy.
+ * Contrast notes (WCAG AA): --signal carries graphite text at 6.1:1, but
+ * only 2.5:1 against white and 2.3:1 against plaster. So it is only ever a
+ * FILL behind graphite type, or a rule/marker. Never white-on-orange, and
+ * never orange text on a light surface. --ink-soft on --paper is ~6.5:1;
+ * --bone-soft on --ink is ~7:1. Both clear AA for body copy.
  *
  * Shape: radius is zero everywhere. Square corners are the whole point of
  * the language, so the radius tokens exist only to neutralise component
@@ -81,8 +81,9 @@
     --bone: oklch(0.955 0.004 95);
     --bone-soft: oklch(0.735 0.008 90);
 
-    --signal: oklch(0.845 0.168 92);
-    --signal-hover: oklch(0.805 0.165 90);
+    /* #FF7F00 and a darkened hover, converted from the logo artwork. */
+    --signal: oklch(0.73 0.186 52.6);
+    --signal-hover: oklch(0.676 0.172 52.6);
 
     --destructive: oklch(0.48 0.19 27);
     --success: oklch(0.45 0.11 150);
@@ -157,6 +158,7 @@
         font-weight: 700;
         letter-spacing: -0.025em;
         text-wrap: balance;
+        overflow-wrap: break-word;
 
         /* Tailwind's `text-*` utilities resolve their line-height through
            `--tw-leading`, and they sit in a later cascade layer than this
