@@ -2,7 +2,10 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const widths = {
+  /** Editorial full measure: project imagery and display type. */
+  wide: "max-w-[105rem]",
   default: "max-w-7xl",
+  /** Reading measure for admin-authored prose. */
   narrow: "max-w-3xl",
 } as const;
 
@@ -18,7 +21,7 @@ export function Container({
   return (
     <div
       className={cn(
-        "mx-auto w-full px-4 sm:px-6 lg:px-8",
+        "mx-auto w-full px-5 sm:px-8 lg:px-12",
         widths[size],
         className,
       )}

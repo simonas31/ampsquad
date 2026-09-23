@@ -41,7 +41,7 @@ function InstagramEmbed({ embedUrl }: { embedUrl: string }) {
 
   return (
     <>
-      {isLoading && <Skeleton className="absolute inset-0 rounded-none" />}
+      {isLoading && <Skeleton className="absolute inset-0" />}
       <div ref={containerRef} className="h-full w-full" />
     </>
   );
@@ -50,7 +50,7 @@ function InstagramEmbed({ embedUrl }: { embedUrl: string }) {
 export function VideoCarouselItem({ video }: { video: Video }) {
   return (
     <div>
-      <div className="bg-secondary relative aspect-9/16 overflow-hidden rounded-lg">
+      <div className="bg-concrete relative aspect-9/16 overflow-hidden">
         {video.type === "instagram_embed" && video.embedUrl ? (
           <InstagramEmbed embedUrl={video.embedUrl} />
         ) : (
@@ -66,7 +66,7 @@ export function VideoCarouselItem({ video }: { video: Video }) {
         )}
       </div>
       {video.title && (
-        <p className="text-muted-foreground mt-3 text-sm">{video.title}</p>
+        <p className="meta text-ink-soft mt-4">{video.title}</p>
       )}
     </div>
   );

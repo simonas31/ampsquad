@@ -9,21 +9,21 @@ export function Breadcrumbs({ items }: { items: Breadcrumb[] }) {
 
   return (
     <nav aria-label={t("common.breadcrumb")}>
-      <ol className="text-muted-foreground flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
+      <ol className="meta text-ink-soft flex flex-wrap items-center gap-x-2 gap-y-1">
         {items.map((item, index) => (
           <Fragment key={index}>
             <li>
               {item.url ? (
                 <Link
                   href={item.url}
-                  className="hover:text-primary underline-offset-4 hover:underline"
+                  className="hover:text-ink underline-offset-4 transition-colors hover:underline"
                 >
                   {item.label}
                 </Link>
               ) : (
                 <span
                   aria-current="page"
-                  className="text-foreground font-semibold"
+                  className="text-ink"
                 >
                   {item.label}
                 </span>
@@ -31,7 +31,7 @@ export function Breadcrumbs({ items }: { items: Breadcrumb[] }) {
             </li>
             {index < items.length - 1 && (
               <li aria-hidden="true" className="flex">
-                <ChevronRight className="size-3.5" />
+                <ChevronRight className="size-3" />
               </li>
             )}
           </Fragment>

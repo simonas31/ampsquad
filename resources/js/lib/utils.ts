@@ -1,5 +1,6 @@
 import type { ClassValue } from "clsx";
 import { clsx } from "clsx";
+import type { CSSProperties } from "react";
 import { twMerge } from "tailwind-merge";
 import type { Locale } from "@/types";
 
@@ -7,6 +8,16 @@ const INTL_LOCALES: Record<Locale, string> = { lt: "lt-LT", en: "en-IE" };
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+/**
+ * Stagger for the page-load entrance, as the `--rise-delay` custom property
+ * that `.animate-rise` and `.animate-unmask` read. Custom properties are not
+ * part of React's CSSProperties, so the cast lives here once rather than at
+ * every call site.
+ */
+export function riseDelay(ms: number): CSSProperties {
+  return { "--rise-delay": `${ms}ms` } as CSSProperties;
 }
 
 /** Builds a `tel:` link from a display phone number ("+370 600 00000"). */

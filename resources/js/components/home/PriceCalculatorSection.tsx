@@ -10,7 +10,6 @@ import {
 } from "@/components/home/PriceSummary";
 import { PriceToggleField } from "@/components/home/PriceToggleField";
 import { Container } from "@/components/layout/Container";
-import { Card } from "@/components/ui/card";
 import { TranslationKey, useT } from "@/hooks/use-t";
 import {
   BATHROOM_LIMITS,
@@ -85,8 +84,8 @@ export function PriceCalculatorSection({
     `${count} × ${money(unitPrice)} = ${money(count * unitPrice)}`;
 
   return (
-    <section className="pb-16 sm:pb-24">
-      <Container>
+    <section className="bg-plaster py-20 lg:py-28">
+      <Container size="wide">
         <Reveal>
           <SectionHeading
             title={t("home.priceCalculator.title" as TranslationKey)}
@@ -94,24 +93,26 @@ export function PriceCalculatorSection({
           />
         </Reveal>
 
-        <div className="mt-10 grid items-start gap-6 lg:grid-cols-[1fr_22rem]">
-          <Card className="space-y-8 p-5 sm:p-8">
-            <PriceChoiceGroup
-              label={t(
-                "home.priceCalculator.propertyType.label" as TranslationKey,
-              )}
-              value={selection.propertyType}
-              onValueChange={(value) => update("propertyType", value)}
-              options={PROPERTY_TYPES.map((type) => ({
-                value: type,
-                label: t(
-                  `home.priceCalculator.propertyType.${type}` as TranslationKey,
-                ),
-                price: money(PROPERTY_TYPE_PRICES[type]),
-              }))}
-            />
+        <div className="mt-14 grid items-start gap-10 lg:mt-20 lg:grid-cols-[1fr_22rem]">
+          <div className="divide-rule border-rule divide-y border-y">
+            <div className="py-8">
+              <PriceChoiceGroup
+                label={t(
+                  "home.priceCalculator.propertyType.label" as TranslationKey,
+                )}
+                value={selection.propertyType}
+                onValueChange={(value) => update("propertyType", value)}
+                options={PROPERTY_TYPES.map((type) => ({
+                  value: type,
+                  label: t(
+                    `home.priceCalculator.propertyType.${type}` as TranslationKey,
+                  ),
+                  price: money(PROPERTY_TYPE_PRICES[type]),
+                }))}
+              />
+            </div>
 
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-8 py-8 md:grid-cols-2">
               <PriceCountField
                 label={t("home.priceCalculator.rooms.label" as TranslationKey)}
                 value={selection.rooms}
@@ -130,21 +131,23 @@ export function PriceCalculatorSection({
               />
             </div>
 
-            <PriceChoiceGroup
-              label={t("home.priceCalculator.panel.label" as TranslationKey)}
-              value={selection.panel}
-              onValueChange={(value) => update("panel", value)}
-              options={PANEL_TYPES.map((type) => ({
-                value: type,
-                label: t(
-                  `home.priceCalculator.panel.${type}` as TranslationKey,
-                ),
-                price: money(PANEL_PRICES[type]),
-              }))}
-            />
+            <div className="py-8">
+              <PriceChoiceGroup
+                label={t("home.priceCalculator.panel.label" as TranslationKey)}
+                value={selection.panel}
+                onValueChange={(value) => update("panel", value)}
+                options={PANEL_TYPES.map((type) => ({
+                  value: type,
+                  label: t(
+                    `home.priceCalculator.panel.${type}` as TranslationKey,
+                  ),
+                  price: money(PANEL_PRICES[type]),
+                }))}
+              />
+            </div>
 
-            <div className="space-y-3">
-              <p className="text-sm font-semibold">
+            <div className="space-y-4 py-8">
+              <p className="meta text-ink-soft">
                 {t("home.priceCalculator.extras" as TranslationKey)}
               </p>
               <PriceToggleField
@@ -156,7 +159,7 @@ export function PriceCalculatorSection({
                 onCheckedChange={(checked) => update("facadeLighting", checked)}
               />
             </div>
-          </Card>
+          </div>
 
           <PriceSummary
             total={formatPrice(calculateTotal(selection), locale.current, 2)}

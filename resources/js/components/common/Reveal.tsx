@@ -46,8 +46,8 @@ export function Reveal({ delay = 0, className, style, ...props }: RevealProps) {
     <div
       ref={ref}
       className={cn(
-        "transition-all duration-700 ease-out",
-        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+        "transition-[opacity,transform] duration-[850ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
+        visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
         className,
       )}
       style={{ ...style, transitionDelay: visible ? `${delay}ms` : "0ms" }}

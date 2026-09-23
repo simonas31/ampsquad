@@ -1,4 +1,3 @@
-import { CircleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface FieldControlProps {
@@ -20,18 +19,19 @@ interface FieldProps {
 /**
  * Label + control + error message, wired together for assistive tech:
  * the label targets the control by id, and the error is exposed through
- * aria-describedby alongside aria-invalid. The error also carries an icon,
- * so it never relies on color alone.
+ * aria-describedby alongside aria-invalid. The error is prefixed with a
+ * literal word rather than an icon, so it never relies on colour alone and
+ * stays in the same mono register as the label above it.
  */
 export function Field({ id, label, error, required, children }: FieldProps) {
   const errorId = `${id}-error`;
 
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-sm font-semibold">
+      <label htmlFor={id} className="meta text-ink-soft block">
         {label}
         {required && (
-          <span className="text-destructive ml-0.5" aria-hidden="true">
+          <span className="text-ink ml-1" aria-hidden="true">
             *
           </span>
         )}
@@ -43,11 +43,7 @@ export function Field({ id, label, error, required, children }: FieldProps) {
         "aria-describedby": error ? errorId : undefined,
       })}
       {error && (
-        <p
-          id={errorId}
-          className="text-destructive flex items-start gap-1.5 text-sm"
-        >
-          <CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+        <p id={errorId} className="text-destructive text-sm">
           {error}
         </p>
       )}

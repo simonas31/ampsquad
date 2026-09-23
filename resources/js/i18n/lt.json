@@ -37,6 +37,7 @@
     "client": "Klientas",
     "location": "Vieta",
     "completed": "Baigta",
+    "status": "Būsena",
     "allCategories": "Visos kategorijos",
     "backToProjects": "Grįžti į projektus",
     "imagePreview": "Nuotraukos peržiūra",
@@ -52,17 +53,13 @@
     "message": "Žinutė",
     "submit": "Siųsti žinutę",
     "success": "Ačiū! Jūsų žinutė išsiųsta, netrukus su jumis susisieksime.",
-    "intro": "Papasakokite apie savo projektą – netrukus jums atsakysime.",
+    "intro": "Papasakokite apie savo projektą. Netrukus jums atsakysime.",
     "details": "Kontaktinė informacija",
     "address": "Adresas",
     "requiredHint": "Laukai, pažymėti *, yra privalomi.",
     "sending": "Siunčiama…"
   },
   "home": {
-    "hero": {
-      "cta": "Susisiekite",
-      "secondaryCta": "Peržiūrėti projektus"
-    },
     "featuredProjects": {
       "title": "Išskirtiniai projektai",
       "viewAll": "Visi projektai"
@@ -70,10 +67,9 @@
     "videos": {
       "title": "Pamatykite mus darbe"
     },
-    "calculator": {
-      "title": "Įvertinkite savo projektą",
-      "subtitle": "Susipažinkite, ką siūlome — susisiekite dėl asmeninio pasiūlymo.",
-      "cta": "Gauti pasiūlymą"
+    "capabilities": {
+      "title": "Ką dirbame",
+      "scope": "Vertinama pagal"
     },
     "priceCalculator": {
       "title": "Kainos skaičiuoklė",

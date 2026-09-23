@@ -18,12 +18,12 @@ export function PriceToggleField({
   const priceId = `${id}-price`;
 
   return (
-    <div className="has-data-[state=checked]:border-primary has-data-[state=checked]:bg-secondary has-data-[state=checked]:ring-primary hover:border-primary flex items-center justify-between gap-4 rounded-lg border transition-colors has-data-[state=checked]:ring-1">
+    <div className="border-rule has-data-[state=checked]:border-ink has-data-[state=checked]:bg-plaster hover:border-ink flex items-center justify-between gap-4 border transition-colors">
       <label htmlFor={id} className="flex-1 cursor-pointer p-4 pr-0">
-        <span className="block font-semibold">{label}</span>
+        <span className="text-ink block font-medium">{label}</span>
         <span
           id={priceId}
-          className="text-muted-foreground block text-sm tabular-nums"
+          className="text-ink-soft mt-1 block font-mono text-xs tabular-nums"
         >
           {price}
         </span>

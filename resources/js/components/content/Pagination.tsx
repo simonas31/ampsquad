@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import type { Paginated } from "@/types";
 
 const itemClasses =
-  "flex size-10 items-center justify-center rounded-md text-sm font-semibold transition-colors";
+  "meta flex size-11 items-center justify-center border transition-colors";
 
 export function Pagination({
   pagination,
@@ -24,25 +24,30 @@ export function Pagination({
   // instead, rendered as icon buttons, so only the pages in between are used.
   const pages = meta.links.slice(1, -1);
 
+  const stepClasses = (enabled: boolean) =>
+    cn(
+      itemClasses,
+      enabled
+        ? "border-rule text-ink hover:border-ink"
+        : "border-rule text-ink-soft/40",
+    );
+
   return (
     <nav
       aria-label={t("pagination.label")}
-      className="flex flex-wrap items-center justify-center gap-1.5"
+      className="flex flex-wrap items-center gap-2"
     >
       {links.prev ? (
         <Link
           href={links.prev}
           aria-label={t("pagination.previous")}
-          className={cn(itemClasses, "hover:bg-secondary")}
+          className={stepClasses(true)}
         >
-          <ChevronLeft className="size-5" aria-hidden="true" />
+          <ChevronLeft className="size-4" aria-hidden="true" />
         </Link>
       ) : (
-        <span
-          aria-hidden="true"
-          className={cn(itemClasses, "text-muted-foreground/50")}
-        >
-          <ChevronLeft className="size-5" />
+        <span aria-hidden="true" className={stepClasses(false)}>
+          <ChevronLeft className="size-4" />
         </span>
       )}
 
@@ -56,8 +61,8 @@ export function Pagination({
             className={cn(
               itemClasses,
               page.active
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-secondary",
+                ? "border-ink bg-ink text-bone"
+                : "border-rule text-ink hover:border-ink",
             )}
           >
             {page.label}
@@ -65,7 +70,7 @@ export function Pagination({
         ) : (
           <span
             key={index}
-            className={cn(itemClasses, "text-muted-foreground")}
+            className={cn(itemClasses, "border-transparent text-ink-soft")}
           >
             {page.label}
           </span>
@@ -76,16 +81,13 @@ export function Pagination({
         <Link
           href={links.next}
           aria-label={t("pagination.next")}
-          className={cn(itemClasses, "hover:bg-secondary")}
+          className={stepClasses(true)}
         >
-          <ChevronRight className="size-5" aria-hidden="true" />
+          <ChevronRight className="size-4" aria-hidden="true" />
         </Link>
       ) : (
-        <span
-          aria-hidden="true"
-          className={cn(itemClasses, "text-muted-foreground/50")}
-        >
-          <ChevronRight className="size-5" />
+        <span aria-hidden="true" className={stepClasses(false)}>
+          <ChevronRight className="size-4" />
         </span>
       )}
     </nav>

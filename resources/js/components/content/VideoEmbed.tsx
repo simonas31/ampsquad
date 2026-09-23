@@ -20,7 +20,7 @@ export function VideoEmbed({ url }: { url: string }) {
   const t = useT();
 
   return (
-    <div className="shadow-card aspect-video overflow-hidden rounded-lg bg-black">
+    <div className="aspect-video overflow-hidden bg-ink">
       <iframe
         src={toEmbedUrl(url)}
         title={t("content.embeddedVideo")}

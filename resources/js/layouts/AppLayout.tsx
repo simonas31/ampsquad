@@ -36,7 +36,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       <a
         href="#main-content"
-        className="bg-accent text-accent-foreground sr-only rounded-md px-4 py-2 text-sm font-semibold focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50"
+        className="bg-signal text-ink meta sr-only px-4 py-3 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50"
       >
         {t("common.skipToContent")}
       </a>

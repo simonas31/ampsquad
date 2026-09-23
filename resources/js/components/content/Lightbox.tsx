@@ -52,7 +52,7 @@ export function Lightbox({ images, index, onIndexChange }: LightboxProps) {
                 number: (index ?? 0) + 1,
                 total: images.length,
               })}
-              className="max-h-full max-w-full rounded-md object-contain"
+              className="max-h-full max-w-full object-contain"
             />
           )}
 
@@ -60,7 +60,7 @@ export function Lightbox({ images, index, onIndexChange }: LightboxProps) {
             <Button
               variant="inverse"
               size="icon"
-              className="absolute top-3 right-3 rounded-full bg-black/40"
+              className="absolute top-3 right-3 bg-black/50"
               aria-label={t("common.closeMenu")}
             >
               <X aria-hidden="true" />
@@ -72,7 +72,7 @@ export function Lightbox({ images, index, onIndexChange }: LightboxProps) {
               <Button
                 variant="inverse"
                 size="icon"
-                className="absolute top-1/2 left-3 -translate-y-1/2 rounded-full bg-black/40"
+                className="absolute top-1/2 left-3 -translate-y-1/2 bg-black/50"
                 aria-label={t("content.previousImage")}
                 onClick={() => step(-1)}
               >
@@ -81,7 +81,7 @@ export function Lightbox({ images, index, onIndexChange }: LightboxProps) {
               <Button
                 variant="inverse"
                 size="icon"
-                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full bg-black/40"
+                className="absolute top-1/2 right-3 -translate-y-1/2 bg-black/50"
                 aria-label={t("content.nextImage")}
                 onClick={() => step(1)}
               >

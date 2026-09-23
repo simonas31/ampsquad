@@ -16,12 +16,14 @@ export function Slider({ className, thumbLabel, ...props }: SliderProps) {
       )}
       {...props}
     >
-      <SliderPrimitive.Track className="bg-secondary relative h-2 grow overflow-hidden rounded-full">
-        <SliderPrimitive.Range className="bg-primary absolute h-full" />
+      <SliderPrimitive.Track className="bg-concrete relative h-1.5 grow overflow-hidden">
+        <SliderPrimitive.Range className="bg-ink absolute h-full" />
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
         aria-label={thumbLabel}
-        className="border-primary bg-background shadow-card block size-6 rounded-full border-2 transition-shadow hover:shadow-md"
+        /* The thumb keeps its round form: it models a physical travel along
+           the track, which is the documented exception to square corners. */
+        className="border-ink bg-paper block size-6 rounded-full border-2 transition-colors hover:bg-signal"
       />
     </SliderPrimitive.Root>
   );

@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/react";
-import { Mail, Menu, Phone, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,12 @@ import { cn, telHref } from "@/lib/utils";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { Logo } from "./Logo";
 
+/**
+ * The small-screen menu is a full graphite sheet rather than a narrow
+ * drawer: with four destinations there is no reason to crowd them, and at
+ * display size the links become the same typographic material as the rest
+ * of the site.
+ */
 export function MobileNav() {
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -32,21 +38,21 @@ export function MobileNav() {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50 bg-black/50" />
+        <Dialog.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50 bg-black/60" />
         <Dialog.Content
           aria-describedby={undefined}
-          className="surface-navy bg-navy text-navy-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right fixed inset-y-0 right-0 z-50 flex w-[min(22rem,100%)] flex-col gap-8 overflow-y-auto p-6 shadow-xl duration-300"
+          className="on-ink bg-ink text-bone data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-top-4 data-[state=open]:fade-in data-[state=closed]:fade-out fixed inset-0 z-50 flex flex-col overflow-y-auto px-5 py-4 duration-300 sm:px-8"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex h-12 items-center justify-between">
             <Dialog.Title className="sr-only">
               {t("common.mobileNavDescription")}
             </Dialog.Title>
-            <Logo onNavigate={close} />
+            <Logo onNavigate={close} className="text-bone" />
             <Dialog.Close asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-navy-foreground hover:bg-white/10"
+                className="text-bone hover:bg-ink-raised"
                 aria-label={t("common.closeMenu")}
               >
                 <X className="size-6" aria-hidden="true" />
@@ -56,7 +62,7 @@ export function MobileNav() {
 
           <nav
             aria-label={t("common.mainNavigation")}
-            className="flex flex-col gap-1"
+            className="mt-12 flex flex-col"
           >
             {navigation.map((link) => {
               const current = getCurrent(link);
@@ -68,10 +74,8 @@ export function MobileNav() {
                   aria-current={current}
                   onClick={close}
                   className={cn(
-                    "rounded-md px-3 py-3 text-lg font-semibold transition-colors",
-                    current
-                      ? "bg-white/10 text-white"
-                      : "text-navy-muted hover:bg-white/5 hover:text-white",
+                    "display border-bone-soft/25 border-b py-5 text-4xl transition-colors",
+                    current ? "text-signal" : "text-bone hover:text-signal",
                   )}
                 >
                   {t(link.labelKey)}
@@ -80,28 +84,26 @@ export function MobileNav() {
             })}
           </nav>
 
-          <Button asChild variant="accent" size="lg">
+          <Button asChild variant="accent" size="lg" className="mt-10">
             <Link href={contactUrl} onClick={close}>
               {t("common.requestQuote")}
             </Link>
           </Button>
 
-          <div className="mt-auto space-y-4 border-t border-white/15 pt-6">
+          <div className="border-bone-soft/25 mt-auto space-y-4 border-t pt-8">
             <a
               href={telHref(site.contact.phone)}
-              className="flex items-center gap-3 text-sm font-medium hover:underline"
+              className="text-bone block text-xl hover:underline"
             >
-              <Phone className="text-accent size-4" aria-hidden="true" />
               {site.contact.phone}
             </a>
             <a
               href={`mailto:${site.contact.email}`}
-              className="flex items-center gap-3 text-sm font-medium hover:underline"
+              className="text-bone-soft block break-all hover:underline"
             >
-              <Mail className="text-accent size-4" aria-hidden="true" />
               {site.contact.email}
             </a>
-            <LanguageSwitch className="-ml-2" onNavigate={close} />
+            <LanguageSwitch tone="dark" labels="name" onNavigate={close} />
           </div>
         </Dialog.Content>
       </Dialog.Portal>

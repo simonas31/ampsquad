@@ -1,7 +1,12 @@
 import { Reveal } from "@/components/common/Reveal";
-import { SectionHeading } from "@/components/common/SectionHeading";
 import { Container } from "@/components/layout/Container";
 
+/**
+ * The positioning statement. It gets no photograph and no columns: after a
+ * photograph-led hero, a single block of type at reading size is the
+ * strongest possible change of pace, and it lets the admin-authored copy
+ * run at whatever length it needs.
+ */
 export function IntroSection({
   title,
   content,
@@ -10,11 +15,11 @@ export function IntroSection({
   content: string;
 }) {
   return (
-    <section className="py-16 sm:py-24">
-      <Container>
-        <Reveal className="grid gap-8 lg:grid-cols-2 lg:gap-16">
-          <SectionHeading title={title} />
-          <p className="text-muted-foreground text-lg text-pretty lg:pt-6">
+    <section className="bg-plaster py-20 lg:py-28">
+      <Container size="wide">
+        <Reveal className="max-w-[46rem]">
+          <h2 className="display text-ink text-3xl sm:text-4xl">{title}</h2>
+          <p className="text-ink mt-8 text-2xl leading-[1.35] text-pretty sm:text-3xl sm:leading-[1.3]">
             {content}
           </p>
         </Reveal>

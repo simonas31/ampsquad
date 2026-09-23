@@ -61,8 +61,15 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {{--
+        Archivo carries both the display and the body register: its variable
+        `wdth` axis is what lets headlines stretch to fill their measure
+        (see `.display` in app.css) while the same family sets body copy at
+        normal width. IBM Plex Mono handles metadata, figures and labels.
+        Both ship the latin-ext subset, so Lithuanian diacritics are covered.
+    --}}
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" />
+        href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" />
 
     @viteReactRefresh
     @vite('resources/js/app.tsx')

@@ -16,7 +16,7 @@ function Block({ block }: { block: ContentBlock }) {
       };
 
       return (
-        <Heading className={`text-primary ${sizes[Heading]}`}>
+        <Heading className={`display text-ink ${sizes[Heading]}`}>
           {block.data.text}
         </Heading>
       );
@@ -38,10 +38,10 @@ function Block({ block }: { block: ContentBlock }) {
             src={`/storage/${block.data.image}`}
             alt={block.data.caption ?? ""}
             loading="lazy"
-            className="shadow-card w-full rounded-lg"
+            className="w-full"
           />
           {block.data.caption && (
-            <figcaption className="text-muted-foreground mt-2 text-sm">
+            <figcaption className="meta text-ink-soft mt-3">
               {block.data.caption}
             </figcaption>
           )}
@@ -64,21 +64,19 @@ function Block({ block }: { block: ContentBlock }) {
 
     case "quote":
       return (
-        <blockquote className="border-accent space-y-3 border-l-4 py-1 pl-6">
-          <p className="text-primary text-xl font-medium sm:text-2xl">
+        <blockquote className="border-signal space-y-3 border-l-2 py-1 pl-6">
+          <p className="text-ink text-xl sm:text-2xl">
             &ldquo;{block.data.text}&rdquo;
           </p>
           {block.data.author && (
-            <footer className="text-muted-foreground text-sm">
-              — {block.data.author}
-            </footer>
+            <footer className="meta text-ink-soft">{block.data.author}</footer>
           )}
         </blockquote>
       );
 
     case "cta":
       return (
-        <div className="surface-navy bg-navy rounded-lg px-6 py-10 text-center sm:px-10">
+        <div className="on-ink bg-ink px-6 py-12 sm:px-10">
           <Button asChild variant="accent" size="lg">
             {isExternalUrl(block.data.url) ? (
               <a href={block.data.url} rel="noopener noreferrer">

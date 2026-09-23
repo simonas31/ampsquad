@@ -1,3 +1,4 @@
+import { Figure } from "@/components/common/Figure";
 import { BlockRenderer } from "@/components/content/BlockRenderer";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -13,15 +14,24 @@ export default function Show({ page, breadcrumbs }: ShowProps) {
     <>
       <PageHeader breadcrumbs={breadcrumbs} title={page.title} size="narrow" />
 
-      <Container size="narrow" className="py-12 lg:py-16">
-        {page.featuredImageUrl && (
-          <img
-            src={page.featuredImageUrl}
+      {page.featuredImageUrl && (
+        <Container size="wide" className="pt-10 lg:pt-14">
+          <Figure
+            frame={{
+              src: page.featuredImageUrl,
+              width: 1800,
+              height: 900,
+              isPlaceholder: false,
+            }}
             alt=""
-            className="shadow-card mb-10 w-full rounded-lg"
+            priority
+            sizes="100vw"
+            className="aspect-[3/2] lg:aspect-[2/1]"
           />
-        )}
+        </Container>
+      )}
 
+      <Container size="narrow" className="py-14 lg:py-20">
         <BlockRenderer blocks={page.blocks} />
       </Container>
     </>

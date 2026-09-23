@@ -27,14 +27,12 @@ export function PriceCountField({
   const limits = { min, max };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-4">
-        <p id={labelId} className="text-sm font-semibold">
+        <p id={labelId} className="meta text-ink-soft">
           {label}
         </p>
-        <p className="text-primary text-2xl font-semibold tabular-nums">
-          {value}
-        </p>
+        <p className="display text-ink text-3xl tabular-nums">{value}</p>
       </div>
       <div className="flex items-center gap-3">
         <Button
@@ -70,7 +68,9 @@ export function PriceCountField({
           <Plus aria-hidden="true" />
         </Button>
       </div>
-      <p className="text-muted-foreground text-sm tabular-nums">{priceHint}</p>
+      <p className="text-ink-soft font-mono text-xs tabular-nums">
+        {priceHint}
+      </p>
     </div>
   );
 }

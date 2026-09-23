@@ -75,11 +75,11 @@ export function VideoCarouselSection({ videos }: { videos: Video[] }) {
 
   return (
     <section
-      className="py-16 sm:py-24"
+      className="bg-plaster border-rule border-t py-20 lg:py-28"
       aria-roledescription="carousel"
       aria-label={t("home.videos.title")}
     >
-      <Container>
+      <Container size="wide">
         <Reveal>
           <SectionHeading
             title={t("home.videos.title")}
@@ -124,9 +124,9 @@ export function VideoCarouselSection({ videos }: { videos: Video[] }) {
           />
         </Reveal>
 
-        <Reveal delay={100} className="mt-10">
+        <Reveal delay={100} className="mt-14 lg:mt-20">
           <div ref={viewportRef} className="overflow-hidden">
-            <div className="-ml-4 flex">
+            <div className="-ml-5 flex">
               {videos.map((video, index) => (
                 <div
                   key={video.id}
@@ -136,7 +136,7 @@ export function VideoCarouselSection({ videos }: { videos: Video[] }) {
                     number: index + 1,
                     total: videos.length,
                   })}
-                  className="min-w-0 shrink-0 grow-0 basis-full pl-4 md:basis-1/2 lg:basis-1/3"
+                  className="min-w-0 shrink-0 grow-0 basis-full pl-5 md:basis-1/2 lg:basis-1/3"
                 >
                   <VideoCarouselItem video={video} />
                 </div>
@@ -145,7 +145,7 @@ export function VideoCarouselSection({ videos }: { videos: Video[] }) {
           </div>
 
           {slideCount > 1 && (
-            <div className="mt-6 flex items-center justify-center">
+            <div className="mt-8 flex items-center justify-start">
               {Array.from({ length: slideCount }, (_, index) => (
                 <button
                   key={index}
@@ -153,14 +153,14 @@ export function VideoCarouselSection({ videos }: { videos: Video[] }) {
                   onClick={() => api?.scrollTo(index)}
                   aria-label={t("common.goToSlide", { number: index + 1 })}
                   aria-current={index === selectedIndex}
-                  className="group flex size-6 items-center justify-center"
+                  className="group flex h-6 w-7 items-center justify-center"
                 >
                   <span
                     className={cn(
-                      "block h-2 rounded-full transition-all",
+                      "block h-0.5 transition-all",
                       index === selectedIndex
-                        ? "bg-accent w-6"
-                        : "bg-input group-hover:bg-muted-foreground w-2",
+                        ? "bg-ink w-6"
+                        : "bg-input group-hover:bg-ink w-3",
                     )}
                   />
                 </button>

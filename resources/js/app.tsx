@@ -42,6 +42,6 @@ createInertiaApp({
   layout: () => AppLayout,
   strictMode: true,
   progress: {
-    color: "#f47c20",
+    color: "#1a1a17",
   },
 });

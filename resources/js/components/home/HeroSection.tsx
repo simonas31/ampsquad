@@ -1,8 +1,10 @@
 import { Link } from "@inertiajs/react";
-import { Zap } from "lucide-react";
+import { Figure } from "@/components/common/Figure";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/use-t";
+import { subjectFrame } from "@/lib/project-image";
+import { riseDelay } from "@/lib/utils";
 
 interface HeroSectionProps {
   title: string;
@@ -11,6 +13,13 @@ interface HeroSectionProps {
   projectsUrl: string;
 }
 
+/**
+ * The opening spread: the company statement set across the full measure,
+ * then the supporting line and the two ways into the site held in the first
+ * four columns, with the photograph taking the rest. The page-load sequence
+ * runs once here (headline, supporting line, actions, then the photograph
+ * wiping open) and nowhere else above the fold.
+ */
 export function HeroSection({
   title,
   subtitle,
@@ -18,41 +27,49 @@ export function HeroSection({
   projectsUrl,
 }: HeroSectionProps) {
   const t = useT();
+  const frame = subjectFrame("hero-installation", "hero");
 
   return (
-    <section className="surface-navy bg-navy text-navy-foreground relative overflow-hidden">
-      <div
-        className="bg-blueprint absolute inset-0 mask-[radial-gradient(ellipse_at_top_right,black,transparent_70%)]"
-        aria-hidden="true"
-      />
-      <div
-        className="bg-accent/20 pointer-events-none absolute -top-32 -right-32 size-112 rounded-full blur-3xl"
-        aria-hidden="true"
-      />
-      <Zap
-        className="text-accent/10 pointer-events-none absolute top-1/2 right-[6%] hidden size-104 -translate-y-1/2 lg:block"
-        strokeWidth={0.6}
-        aria-hidden="true"
-      />
-
-      <Container className="animate-in fade-in slide-in-from-bottom-4 relative py-20 duration-700 sm:py-28 lg:py-36">
-        <span
-          className="bg-accent mb-6 block h-1 w-14 rounded-full"
-          aria-hidden="true"
-        />
-        <h1 className="max-w-3xl text-4xl text-white sm:text-5xl lg:text-6xl">
+    <section className="border-rule border-b">
+      <Container size="wide" className="pt-10 pb-14 lg:pt-14 lg:pb-20">
+        <h1
+          className="display animate-rise text-ink text-[clamp(2.25rem,5.2vw,4.75rem)]"
+          style={riseDelay(60)}
+        >
           {title}
         </h1>
-        <p className="text-navy-muted mt-6 max-w-xl text-lg text-pretty sm:text-xl">
-          {subtitle}
-        </p>
-        <div className="mt-10 flex flex-wrap gap-3">
-          <Button asChild variant="accent" size="lg">
-            <Link href={contactUrl}>{t("home.hero.cta")}</Link>
-          </Button>
-          <Button asChild variant="inverse" size="lg">
-            <Link href={projectsUrl}>{t("home.hero.secondaryCta")}</Link>
-          </Button>
+
+        <div className="mt-10 grid grid-cols-1 items-end gap-x-10 gap-y-8 lg:mt-12 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <p
+              className="animate-rise text-ink-soft max-w-[42ch] text-lg text-pretty"
+              style={riseDelay(180)}
+            >
+              {subtitle}
+            </p>
+            <div
+              className="animate-rise mt-8 flex flex-wrap gap-3"
+              style={riseDelay(280)}
+            >
+              <Button asChild variant="accent" size="lg">
+                <Link href={contactUrl}>{t("common.requestQuote")}</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href={projectsUrl}>
+                  {t("home.featuredProjects.viewAll")}
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <Figure
+            frame={frame}
+            alt=""
+            priority
+            delay={360}
+            sizes="(min-width: 1024px) 62vw, 100vw"
+            className="aspect-[3/2] lg:col-span-8 lg:aspect-[2/1]"
+          />
         </div>
       </Container>
     </section>

@@ -16,9 +16,9 @@ interface PriceChoiceGroupProps<T extends string> {
 }
 
 /**
- * Single-choice option cards. Radix supplies the radio semantics and arrow
- * key navigation; the selected card is marked by border, fill and a check
- * icon, so the state never relies on color alone.
+ * Single-choice options as ruled boxes. Radix supplies the radio semantics
+ * and arrow key navigation; the chosen option is marked by a heavier border,
+ * a filled marker and a check, so the state never rests on colour alone.
  */
 export function PriceChoiceGroup<T extends string>({
   label,
@@ -29,33 +29,33 @@ export function PriceChoiceGroup<T extends string>({
   const labelId = useId();
 
   return (
-    <div className="space-y-3">
-      <p id={labelId} className="text-sm font-semibold">
+    <div className="space-y-4">
+      <p id={labelId} className="meta text-ink-soft">
         {label}
       </p>
       <RadioGroup.Root
         aria-labelledby={labelId}
         value={value}
         onValueChange={(next) => onValueChange(next as T)}
-        className="grid gap-3 sm:grid-cols-3"
+        className="grid gap-px sm:grid-cols-3"
       >
         {options.map((option) => (
           <RadioGroup.Item
             key={option.value}
             value={option.value}
-            className="group data-[state=checked]:border-primary data-[state=checked]:bg-secondary data-[state=checked]:ring-primary hover:border-primary flex items-center justify-between gap-3 rounded-lg border p-4 text-left transition-colors data-[state=checked]:ring-1"
+            className="group border-rule data-[state=checked]:border-ink data-[state=checked]:bg-plaster hover:border-ink flex items-center justify-between gap-3 border p-4 text-left transition-colors"
           >
             <span>
-              <span className="block font-semibold">{option.label}</span>
-              <span className="text-muted-foreground block text-sm tabular-nums">
+              <span className="text-ink block font-medium">{option.label}</span>
+              <span className="text-ink-soft mt-1 block font-mono text-xs tabular-nums">
                 {option.price}
               </span>
             </span>
             <span
-              className="border-input group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors"
+              className="border-input group-data-[state=checked]:border-ink group-data-[state=checked]:bg-signal flex size-5 shrink-0 items-center justify-center border transition-colors"
               aria-hidden="true"
             >
-              <Check className="text-primary-foreground size-3 opacity-0 transition-opacity group-data-[state=checked]:opacity-100" />
+              <Check className="text-ink size-3 opacity-0 transition-opacity group-data-[state=checked]:opacity-100" />
             </span>
           </RadioGroup.Item>
         ))}

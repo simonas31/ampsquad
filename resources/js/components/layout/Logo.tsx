@@ -1,24 +1,27 @@
 import { Link } from "@inertiajs/react";
-import { Zap } from "lucide-react";
 import { useNavUrl } from "@/hooks/use-nav-url";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   onNavigate?: () => void;
+  className?: string;
 }
 
-/** Wordmark; inherits its text color so it works on light and navy surfaces. */
-export function Logo({ onNavigate }: LogoProps) {
+/**
+ * Wordmark only. The name is set in Archivo at its widest optical width,
+ * which is the same typographic device the display headlines use, so the
+ * brand reads as part of the page rather than as a badge stuck on it. It
+ * inherits its colour, so it works on plaster and on graphite alike.
+ */
+export function Logo({ onNavigate, className }: LogoProps) {
   const homeUrl = useNavUrl("nav.home", "/");
 
   return (
     <Link
       href={homeUrl}
       onClick={onNavigate}
-      className="inline-flex items-center gap-2.5 text-xl font-bold tracking-tight"
+      className={cn("display inline-block text-2xl leading-none", className)}
     >
-      <span className="bg-accent text-accent-foreground flex size-8 items-center justify-center rounded-md">
-        <Zap className="size-5" aria-hidden="true" />
-      </span>
       AmpSquad
     </Link>
   );

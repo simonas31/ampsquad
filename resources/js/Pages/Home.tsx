@@ -1,8 +1,8 @@
 import { usePage } from "@inertiajs/react";
-import { CalculatorTeaserSection } from "@/components/home/CalculatorTeaserSection";
-import { ContactCtaSection } from "@/components/home/ContactCtaSection";
+import { CapabilitiesSection } from "@/components/home/CapabilitiesSection";
 import { FeaturedProjectsSection } from "@/components/home/FeaturedProjectsSection";
 import { HeroSection } from "@/components/home/HeroSection";
+import { InquirySection } from "@/components/home/InquirySection";
 import { IntroSection } from "@/components/home/IntroSection";
 import { PriceCalculatorSection } from "@/components/home/PriceCalculatorSection";
 import { VideoCarouselSection } from "@/components/home/VideoCarouselSection";
@@ -24,6 +24,12 @@ interface HomeProps {
   calculatorCategories: CalculatorCategoryTeaser[];
 }
 
+/**
+ * The page runs statement, portfolio, capability, estimate, evidence,
+ * enquiry. Each section uses a different layout family, and the tonal
+ * rhythm groups them: plaster for the two reading sections, paper for the
+ * two looking sections, then graphite from the enquiry through the footer.
+ */
 export default function Home({
   hero,
   intro,
@@ -45,19 +51,15 @@ export default function Home({
         projectsUrl={projectsUrl}
       />
       <IntroSection title={intro.title} content={intro.content} />
-      <PriceCalculatorSection contactUrl={contactUrl} />
       <FeaturedProjectsSection
         projects={featuredProjects}
         projectsUrl={projectsUrl}
       />
+      <CapabilitiesSection categories={calculatorCategories} />
+      <PriceCalculatorSection contactUrl={contactUrl} />
       <VideoCarouselSection videos={videos} />
-      <CalculatorTeaserSection
-        categories={calculatorCategories}
-        contactUrl={contactUrl}
-      />
-      <ContactCtaSection
+      <InquirySection
         title={cta.title}
-        buttonLabel={cta.buttonLabel}
         contactUrl={contactUrl}
         contact={site.contact}
       />
