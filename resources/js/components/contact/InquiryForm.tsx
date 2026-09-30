@@ -1,10 +1,11 @@
 import { useForm, usePage } from "@inertiajs/react";
+import { FileAttachments } from "@/components/contact/FileAttachments";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
 import { useT } from "@/hooks/use-t";
 
-const fieldOrder = ["name", "email", "phone", "message"] as const;
+const fieldOrder = ["name", "email", "phone", "message", "attachments"] as const;
 
 /**
  * The enquiry form, shared by the home page's closing band and the contact
@@ -21,6 +22,7 @@ export function InquiryForm({ action }: { action: string }) {
     email: "",
     phone: "",
     message: "",
+    attachments: [] as File[],
     company: "", // honeypot — real visitors never see or fill this in
   });
 
@@ -33,7 +35,13 @@ export function InquiryForm({ action }: { action: string }) {
       // Send keyboard/screen reader focus to the first field that
       // failed, so the error is announced instead of sitting unseen.
       onError: (errors) => {
-        const firstInvalid = fieldOrder.find((name) => name in errors);
+        // Attachment errors arrive per file ("attachments.0"), so match on
+        // the field's prefix as well as its exact name.
+        const firstInvalid = fieldOrder.find((name) =>
+          Object.keys(errors).some(
+            (key) => key === name || key.startsWith(`${name}.`),
+          ),
+        );
 
         if (firstInvalid) {
           document.getElementById(firstInvalid)?.focus();
@@ -115,6 +123,17 @@ export function InquiryForm({ action }: { action: string }) {
             />
           )}
         </Field>
+
+        <FileAttachments
+          id="attachments"
+          files={form.data.attachments}
+          onChange={(files) => form.setData("attachments", files)}
+          errors={Object.entries(form.errors)
+            .filter(
+              ([key]) => key === "attachments" || key.startsWith("attachments."),
+            )
+            .map(([, message]) => message)}
+        />
 
         {/* Honeypot: hidden from real visitors, bots fill it in blindly. */}
         <div className="sr-only" aria-hidden="true">

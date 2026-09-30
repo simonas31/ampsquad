@@ -38,6 +38,10 @@ class ContactController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
+        foreach ($request->file('attachments', []) as $attachment) {
+            $contactRequest->addMedia($attachment)->toMediaCollection('attachments');
+        }
+
         ContactRequestSubmitted::dispatch($contactRequest);
 
         Inertia::flash('contactSubmitted', true);

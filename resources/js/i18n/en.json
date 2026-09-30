@@ -3,6 +3,7 @@
     "home": "Home",
     "projects": "Projects",
     "about": "About",
+    "priceCalculator": "Price calculator",
     "contact": "Contact"
   },
   "common": {
@@ -57,7 +58,18 @@
     "details": "Contact details",
     "address": "Address",
     "requiredHint": "Fields marked * are required.",
-    "sending": "Sending…"
+    "sending": "Sending…",
+    "attachments": {
+      "label": "Files",
+      "optional": "optional",
+      "add": "Attach a file, project or photos",
+      "hint": "Drop them here or browse. Up to {count} files, {size} MB each. Allowed: photos, PDF, Word, Excel, DWG, DXF, ZIP.",
+      "remove": "Remove file: {name}",
+      "tooMany": "You can attach at most {count} files.",
+      "tooLarge": "“{name}” is larger than {size} MB.",
+      "badType": "The type of “{name}” is not allowed.",
+      "list": "Attached files"
+    }
   },
   "home": {
     "featuredProjects": {
@@ -70,41 +82,42 @@
     "capabilities": {
       "title": "What we do",
       "scope": "Estimated by"
+    }
+  },
+  "priceCalculator": {
+    "subtitle": "Choose your parameters and see a preliminary price instantly.",
+    "notice": "This is a preliminary price for labour only. Materials are not included.",
+    "propertyType": {
+      "label": "Property type",
+      "apartment": "Apartment",
+      "cottage": "Cottage",
+      "house": "House"
     },
-    "priceCalculator": {
-      "title": "Price calculator",
-      "subtitle": "Choose your options and see a preliminary price straight away.",
-      "propertyType": {
-        "label": "Property type",
-        "apartment": "Apartment",
-        "cottage": "Cottage",
-        "house": "House"
-      },
-      "rooms": {
-        "label": "Number of rooms",
-        "line": "Rooms × {count}"
-      },
-      "bathrooms": {
-        "label": "Number of bathrooms",
-        "line": "Bathrooms × {count}"
-      },
-      "panel": {
-        "label": "Electrical panel",
-        "line": "Panel: {name}",
-        "standard": "Standard",
-        "secure": "Secure",
-        "maximum": "Maximum security"
-      },
-      "extras": "Extras",
-      "facadeLighting": {
-        "label": "Facade lighting"
-      },
-      "decrease": "Decrease {label}",
-      "increase": "Increase {label}",
-      "summary": {
-        "title": "Preliminary price",
-        "vat": "+ VAT"
-      }
+    "rooms": {
+      "label": "Number of rooms",
+      "line": "Rooms × {count}"
+    },
+    "bathrooms": {
+      "label": "Number of bathrooms",
+      "line": "Bathrooms × {count}"
+    },
+    "panel": {
+      "label": "Electrical panel",
+      "line": "Panel: {name}",
+      "standard": "Standard",
+      "secure": "Secure",
+      "maximum": "Maximum security"
+    },
+    "extras": "Extras",
+    "facadeLighting": {
+      "label": "Facade lighting"
+    },
+    "decrease": "Decrease {label}",
+    "increase": "Increase {label}",
+    "summary": {
+      "title": "Preliminary price",
+      "vat": "+ VAT",
+      "scope": "Labour only. Materials not included."
     }
   },
   "errors": {

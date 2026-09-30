@@ -4,7 +4,14 @@ import { AppFooter } from "@/components/layout/AppFooter";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Seo } from "@/components/seo/Seo";
 import { useT } from "@/hooks/use-t";
+import { cn } from "@/lib/utils";
 import type { SeoData } from "@/types";
+
+/**
+ * Pages whose opening photograph runs underneath the floating header.
+ * Every other page starts below it.
+ */
+const PAGES_UNDER_HEADER = ["Home"];
 
 /**
  * Applied to every page as Inertia's default layout (see app.tsx), so the
@@ -13,7 +20,7 @@ import type { SeoData } from "@/types";
  */
 export default function AppLayout({ children }: { children: ReactNode }) {
   const t = useT();
-  const { url, props } = usePage<{ seo: SeoData }>();
+  const { url, component, props } = usePage<{ seo: SeoData }>();
   const mainRef = useRef<HTMLElement>(null);
   const previousPath = useRef(url.split("?")[0]);
 
@@ -36,7 +43,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       <a
         href="#main-content"
-        className="bg-signal text-ink meta sr-only px-4 py-3 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50"
+        className="bg-signal text-ink meta sr-only rounded-full px-5 py-3 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50"
       >
         {t("common.skipToContent")}
       </a>
@@ -48,7 +55,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           id="main-content"
           ref={mainRef}
           tabIndex={-1}
-          className="flex-1 outline-none"
+          className={cn(
+            "flex-1 outline-none",
+            !PAGES_UNDER_HEADER.includes(component) && "pt-20 lg:pt-24",
+          )}
         >
           {children}
         </main>

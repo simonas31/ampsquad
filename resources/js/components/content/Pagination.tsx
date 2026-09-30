@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import type { Paginated } from "@/types";
 
 const itemClasses =
-  "meta flex size-11 items-center justify-center border transition-colors";
+  "meta flex size-11 items-center justify-center rounded-full border transition-colors";
 
 export function Pagination({
   pagination,

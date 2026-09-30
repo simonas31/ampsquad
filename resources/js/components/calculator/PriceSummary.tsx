@@ -27,14 +27,14 @@ export function PriceSummary({ total, lines, contactUrl }: PriceSummaryProps) {
 
   return (
     <Card
-      aria-label={t("home.priceCalculator.summary.title" as TranslationKey)}
+      aria-label={t("priceCalculator.summary.title" as TranslationKey)}
       role="region"
-      className="border-ink sticky bottom-3 z-10 border-2 p-4 lg:top-28 lg:bottom-auto lg:p-6"
+      className="sticky bottom-3 z-10 p-4 lg:top-28 lg:bottom-auto lg:p-7"
     >
       <div className="flex flex-wrap items-center justify-between gap-4 lg:flex-col lg:items-stretch lg:gap-6">
         <div className="min-w-0">
           <p className="meta text-ink-soft">
-            {t("home.priceCalculator.summary.title" as TranslationKey)}
+            {t("priceCalculator.summary.title" as TranslationKey)}
           </p>
           <p
             aria-live="polite"
@@ -43,8 +43,11 @@ export function PriceSummary({ total, lines, contactUrl }: PriceSummaryProps) {
           >
             {total}
           </p>
-          <p className="meta text-ink-soft mt-2">
-            {t("home.priceCalculator.summary.vat" as TranslationKey)}
+          <p className="text-ink-soft mt-2 text-sm">
+            {t("priceCalculator.summary.vat" as TranslationKey)}
+            <span className="block">
+              {t("priceCalculator.summary.scope" as TranslationKey)}
+            </span>
           </p>
         </div>
 
@@ -57,7 +60,7 @@ export function PriceSummary({ total, lines, contactUrl }: PriceSummaryProps) {
         {lines.map((line) => (
           <div key={line.key} className="flex justify-between gap-4 text-sm">
             <dt className="text-ink-soft">{line.label}</dt>
-            <dd className="text-ink font-mono tabular-nums">{line.amount}</dd>
+            <dd className="text-ink font-medium tabular-nums">{line.amount}</dd>
           </div>
         ))}
       </dl>

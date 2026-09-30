@@ -33,6 +33,7 @@ return [
     'digits' => ':attribute turi būti :digits skaitmenų.',
     'email' => ':attribute turi būti galiojantis el. pašto adresas.',
     'exists' => 'Pasirinktas :attribute yra neteisingas.',
+    'extensions' => ':attribute turi būti failas su viena iš šių galūnių: :values.',
     'file' => ':attribute turi būti failas.',
     'image' => ':attribute turi būti nuotrauka.',
     'in' => 'Pasirinktas :attribute yra neteisingas.',
@@ -58,6 +59,7 @@ return [
     'required_if' => ':attribute laukas yra privalomas, kai :other yra :value.',
     'string' => ':attribute turi būti tekstas.',
     'unique' => 'Toks :attribute jau egzistuoja.',
+    'uploaded' => ':attribute nepavyko įkelti.',
     'url' => ':attribute formatas yra neteisingas.',
 
     'attributes' => [
@@ -65,6 +67,8 @@ return [
         'email' => 'el. paštas',
         'phone' => 'telefonas',
         'message' => 'žinutė',
+        'attachments' => 'failai',
+        'attachments.*' => 'failas',
         'title' => 'pavadinimas',
         'slug' => 'nuoroda',
         'category_id' => 'kategorija',

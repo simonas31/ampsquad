@@ -40,6 +40,11 @@ export function formatDate(date: string, locale: string): string {
   }).format(new Date(date));
 }
 
+/** Formats a whole number with the locale's digit grouping ("24 500" in lt, "24,500" in en). */
+export function formatNumber(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(INTL_LOCALES[locale]).format(value);
+}
+
 /** Formats a euro amount for the site locale ("1 967,00 €" in lt, "€1,967.00" in en). */
 export function formatPrice(
   amount: number,

@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Settings\GeneralSettings;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class HomeTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_default_locale_home_renders_without_prefix(): void
     {
         $response = $this->get('/');
@@ -91,6 +94,30 @@ class HomeTest extends TestCase
             ->where('site.social.facebook', $general->facebookUrl)
             ->where('site.social.instagram', $general->instagramUrl)
             ->where('site.social.linkedin', $general->linkedinUrl)
+        );
+    }
+
+    public function test_hero_carries_the_admin_managed_stats_for_the_current_locale(): void
+    {
+        $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Home')
+            ->has('hero.stats', 3)
+            ->where('hero.stats.0', [
+                'value' => 24500,
+                'unit' => 'm',
+                'label' => 'Nutiesta kabelio',
+            ])
+            ->where('hero.stats.1.unit', 'vnt.')
+        );
+    }
+
+    public function test_hero_stats_follow_the_locale(): void
+    {
+        app()->setLocale('en');
+
+        $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('hero.stats.0.label', 'Cable installed')
+            ->where('hero.stats.1.unit', 'pcs')
         );
     }
 }

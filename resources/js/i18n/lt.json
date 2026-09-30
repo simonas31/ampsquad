@@ -3,6 +3,7 @@
     "home": "Pradžia",
     "projects": "Projektai",
     "about": "Apie mus",
+    "priceCalculator": "Kainos skaičiuoklė",
     "contact": "Kontaktai"
   },
   "common": {
@@ -57,7 +58,18 @@
     "details": "Kontaktinė informacija",
     "address": "Adresas",
     "requiredHint": "Laukai, pažymėti *, yra privalomi.",
-    "sending": "Siunčiama…"
+    "sending": "Siunčiama…",
+    "attachments": {
+      "label": "Failai",
+      "optional": "neprivaloma",
+      "add": "Pridėkite failą, projektą ar nuotraukų",
+      "hint": "Nuvilkite čia arba pasirinkite. Iki {count} failų, kiekvienas iki {size} MB. Leidžiami: nuotraukos, PDF, Word, Excel, DWG, DXF, ZIP.",
+      "remove": "Pašalinti failą: {name}",
+      "tooMany": "Galima pridėti ne daugiau kaip {count} failus.",
+      "tooLarge": "Failas „{name}“ didesnis nei {size} MB.",
+      "badType": "Failo „{name}“ tipas neleidžiamas.",
+      "list": "Pridėti failai"
+    }
   },
   "home": {
     "featuredProjects": {
@@ -70,41 +82,42 @@
     "capabilities": {
       "title": "Ką dirbame",
       "scope": "Vertinama pagal"
+    }
+  },
+  "priceCalculator": {
+    "subtitle": "Pasirinkite parametrus ir iškart pamatysite preliminarią kainą.",
+    "notice": "Tai preliminari darbų kaina. Medžiagos neįskaičiuotos.",
+    "propertyType": {
+      "label": "Būsto tipas",
+      "apartment": "Butas",
+      "cottage": "Kotedžas",
+      "house": "Namas"
     },
-    "priceCalculator": {
-      "title": "Kainos skaičiuoklė",
-      "subtitle": "Pasirinkite parametrus ir iškart pamatysite preliminarią kainą.",
-      "propertyType": {
-        "label": "Būsto tipas",
-        "apartment": "Butas",
-        "cottage": "Kotedžas",
-        "house": "Namas"
-      },
-      "rooms": {
-        "label": "Kambarių skaičius",
-        "line": "Kambariai × {count}"
-      },
-      "bathrooms": {
-        "label": "Vonios kambarių skaičius",
-        "line": "Vonios kambariai × {count}"
-      },
-      "panel": {
-        "label": "Skydas",
-        "line": "Skydas: {name}",
-        "standard": "Paprastas",
-        "secure": "Saugus",
-        "maximum": "Maksimalus saugumas"
-      },
-      "extras": "Papildomai",
-      "facadeLighting": {
-        "label": "Fasado apšvietimas"
-      },
-      "decrease": "Sumažinti: {label}",
-      "increase": "Padidinti: {label}",
-      "summary": {
-        "title": "Preliminari kaina",
-        "vat": "+ PVM"
-      }
+    "rooms": {
+      "label": "Kambarių skaičius",
+      "line": "Kambariai × {count}"
+    },
+    "bathrooms": {
+      "label": "Vonios kambarių skaičius",
+      "line": "Vonios kambariai × {count}"
+    },
+    "panel": {
+      "label": "Skydas",
+      "line": "Skydas: {name}",
+      "standard": "Paprastas",
+      "secure": "Saugus",
+      "maximum": "Maksimalus saugumas"
+    },
+    "extras": "Papildomai",
+    "facadeLighting": {
+      "label": "Fasado apšvietimas"
+    },
+    "decrease": "Sumažinti: {label}",
+    "increase": "Padidinti: {label}",
+    "summary": {
+      "title": "Preliminari kaina",
+      "vat": "+ PVM",
+      "scope": "Tik darbai. Medžiagos neįskaičiuotos."
     }
   },
   "errors": {

@@ -1,7 +1,9 @@
 /**
- * Pricing rules for the homepage price calculator. Every option is a plain
- * addition — none of them changes the price of another — so the total is a
- * sum of independent line items. All amounts are whole euros, excluding VAT.
+ * Pricing rules for the price calculator. The total is a sum of independent
+ * line items, but two of them depend on the property type: the panel (skydas)
+ * has its own price per type, and facade lighting is only offered for
+ * cottages and houses. All amounts are whole euros, excluding VAT, and cover
+ * labour only (materials are not priced).
  *
  * Kept free of React and i18n so the rules can be read, and exercised, on
  * their own.
@@ -27,20 +29,25 @@ export interface CountLimits {
 }
 
 export const PROPERTY_TYPE_PRICES: Record<PropertyType, number> = {
-  apartment: 610,
-  cottage: 715,
-  house: 960,
+  apartment: 600,
+  cottage: 750,
+  house: 1000,
 };
 
-export const PANEL_PRICES: Record<PanelType, number> = {
-  standard: 216,
-  secure: 360,
-  maximum: 504,
+export const PANEL_PRICES: Record<PropertyType, Record<PanelType, number>> = {
+  apartment: { standard: 200, secure: 250, maximum: 300 },
+  cottage: { standard: 250, secure: 300, maximum: 350 },
+  house: { standard: 300, secure: 370, maximum: 500 },
 };
 
-export const ROOM_PRICE = 297;
+/** Property types missing here (apartments) cannot have facade lighting. */
+export const FACADE_LIGHTING_PRICES: Partial<Record<PropertyType, number>> = {
+  cottage: 155,
+  house: 275,
+};
+
+export const ROOM_PRICE = 300;
 export const BATHROOM_PRICE = 250;
-export const FACADE_LIGHTING_PRICE = 144;
 
 export const ROOM_LIMITS: CountLimits = { min: 1, max: 10 };
 export const BATHROOM_LIMITS: CountLimits = { min: 0, max: 5 };
@@ -77,13 +84,36 @@ export function clampCount(value: number, { min, max }: CountLimits): number {
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
+/** The facade lighting price for a property type, or null when it is not offered. */
+export function facadeLightingPrice(propertyType: PropertyType): number | null {
+  return FACADE_LIGHTING_PRICES[propertyType] ?? null;
+}
+
+/**
+ * Switches the property type and drops any extra the new type cannot have,
+ * so a facade lighting choice never outlives a switch back to an apartment.
+ */
+export function selectPropertyType(
+  selection: PriceSelection,
+  propertyType: PropertyType,
+): PriceSelection {
+  return {
+    ...selection,
+    propertyType,
+    facadeLighting:
+      selection.facadeLighting && facadeLightingPrice(propertyType) !== null,
+  };
+}
+
 /**
  * The priced parts of a selection, in display order. Optional extras that
- * are switched off contribute no line.
+ * are switched off, or not available for the property type, contribute no
+ * line.
  */
 export function calculatePriceLines(selection: PriceSelection): PriceLine[] {
   const rooms = clampCount(selection.rooms, ROOM_LIMITS);
   const bathrooms = clampCount(selection.bathrooms, BATHROOM_LIMITS);
+  const facadePrice = facadeLightingPrice(selection.propertyType);
 
   const lines: PriceLine[] = [
     {
@@ -104,11 +134,14 @@ export function calculatePriceLines(selection: PriceSelection): PriceLine[] {
     },
   ];
 
-  if (selection.facadeLighting) {
-    lines.push({ key: "facadeLighting", amount: FACADE_LIGHTING_PRICE });
+  if (selection.facadeLighting && facadePrice !== null) {
+    lines.push({ key: "facadeLighting", amount: facadePrice });
   }
 
-  lines.push({ key: "panel", amount: PANEL_PRICES[selection.panel] });
+  lines.push({
+    key: "panel",
+    amount: PANEL_PRICES[selection.propertyType][selection.panel],
+  });
 
   return lines;
 }

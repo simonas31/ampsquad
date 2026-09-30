@@ -4,32 +4,33 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Square, mono-set, uppercase. Buttons read as site signage rather than as
- * app chrome, which is why there is no radius and no shadow anywhere in
- * the scale. `:active` drops the label a pixel so the press is felt.
+ * Pill-shaped and set in the body face at sentence case, so buttons read as
+ * friendly rather than as signage. `:active` drops the label a pixel so the
+ * press is felt.
  */
 export const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2.5 font-mono text-xs font-medium tracking-[0.12em] whitespace-nowrap uppercase transition-colors select-none active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors select-none active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-4",
   {
     variants: {
       variant: {
-        /** Graphite fill. The workhorse on plaster surfaces. */
+        /** Navy fill. The workhorse on light surfaces. */
         default: "bg-ink text-bone hover:bg-ink-raised",
-        /** Signal fill. Reserved for the single strongest action in view. */
+        /** Orange fill. Reserved for the single strongest action in view. */
         accent: "bg-signal text-ink hover:bg-signal-hover",
-        /** Hairline box on plaster. */
-        outline: "border border-ink bg-transparent text-ink hover:bg-ink hover:text-bone",
-        /** Hairline box inside the dark passage. */
+        /** Outlined pill on light surfaces. */
+        outline:
+          "border border-ink bg-transparent text-ink hover:bg-ink hover:text-bone",
+        /** Outlined pill on navy or on photography. */
         inverse:
-          "border border-bone-soft/50 bg-transparent text-bone hover:border-bone hover:bg-bone hover:text-ink",
+          "border border-bone/60 bg-transparent text-bone hover:border-bone hover:bg-bone hover:text-ink",
         secondary: "bg-concrete text-ink hover:bg-rule",
         ghost: "text-ink hover:bg-concrete",
-        link: "text-ink underline decoration-signal decoration-2 underline-offset-[6px] hover:decoration-ink",
+        link: "rounded-none text-ink underline decoration-signal decoration-2 underline-offset-[6px] hover:decoration-ink",
       },
       size: {
         default: "h-11 px-5",
-        sm: "h-9 px-3.5 text-[0.6875rem]",
-        lg: "h-14 px-8 text-sm",
+        sm: "h-9 px-4 text-[0.8125rem]",
+        lg: "h-14 px-8 text-base",
         icon: "size-11",
       },
     },

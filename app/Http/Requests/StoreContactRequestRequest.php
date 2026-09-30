@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\ContactRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,6 +25,12 @@ class StoreContactRequestRequest extends FormRequest
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:40'],
             'message' => ['required', 'string', 'max:5000'],
+            'attachments' => ['nullable', 'array', 'max:'.ContactRequest::MAX_ATTACHMENTS],
+            'attachments.*' => [
+                'file',
+                'max:'.ContactRequest::MAX_ATTACHMENT_KILOBYTES,
+                'extensions:'.implode(',', ContactRequest::ATTACHMENT_EXTENSIONS),
+            ],
             // Hidden field real visitors never fill in — CSS-hidden on the
             // form, so a non-empty value means whatever submitted it is a
             // bot filling in every field blindly.

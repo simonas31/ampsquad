@@ -11,10 +11,10 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { Logo } from "./Logo";
 
 /**
- * The small-screen menu is a full graphite sheet rather than a narrow
- * drawer: with four destinations there is no reason to crowd them, and at
- * display size the links become the same typographic material as the rest
- * of the site.
+ * The small-screen menu is a full navy sheet rather than a narrow drawer:
+ * with five destinations there is no reason to crowd them, and at display
+ * size the links become the same typographic material as the rest of the
+ * site.
  */
 export function MobileNav() {
   const t = useT();
@@ -74,7 +74,7 @@ export function MobileNav() {
                   aria-current={current}
                   onClick={close}
                   className={cn(
-                    "display border-bone-soft/25 border-b py-5 text-4xl transition-colors",
+                    "display border-bone-soft/25 border-b py-4 text-3xl transition-colors",
                     current ? "text-signal" : "text-bone hover:text-signal",
                   )}
                 >

@@ -84,28 +84,37 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * Main nav links, resolved from named routes as they come online phase
-     * by phase — an entry is silently omitted until its route exists, so
-     * the header grows automatically instead of needing a manual update.
+     * Main nav links in display order. A named-route entry is silently
+     * omitted until its route exists, and the About entry until its page
+     * does, so the header grows automatically instead of needing a manual
+     * update.
      *
      * @return array<int, array{labelKey: string, url: string}>
      */
     private function navigationLinks(): array
     {
         return collect([
-            ['name' => 'home', 'params' => [], 'labelKey' => 'nav.home'],
-            ['name' => 'projects.index', 'params' => [], 'labelKey' => 'nav.projects'],
-            ['name' => 'contact', 'params' => [], 'labelKey' => 'nav.contact'],
+            $this->routeLink('home', 'nav.home'),
+            $this->aboutPageLink(),
+            $this->routeLink('projects.index', 'nav.projects'),
+            $this->routeLink('price-calculator', 'nav.priceCalculator'),
+            $this->routeLink('contact', 'nav.contact'),
         ])
-            ->filter(fn (array $link) => Route::has($link['name']))
-            ->map(fn (array $link) => [
-                'labelKey' => $link['labelKey'],
-                'url' => route($link['name'], $link['params']),
-            ])
-            ->push($this->aboutPageLink())
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * @return array{labelKey: string, url: string}|null
+     */
+    private function routeLink(string $routeName, string $labelKey): ?array
+    {
+        if (! Route::has($routeName)) {
+            return null;
+        }
+
+        return ['labelKey' => $labelKey, 'url' => route($routeName)];
     }
 
     /**

@@ -26,9 +26,9 @@ const TONES = {
 
 /**
  * Inline locale list - with only a couple of locales, showing every option
- * beats hiding them in a dropdown. Set in the metadata register and split by
- * a hairline rather than boxed, so it reads as an annotation on the header
- * instead of a second button competing with the quote request. Each link is
+ * beats hiding them in a dropdown. Split by a hairline rather than boxed, so
+ * it reads as an annotation on the header instead of a second button
+ * competing with the quote request. Each link is
  * marked with its own `lang` so screen readers pronounce the native name
  * correctly.
  */
@@ -65,7 +65,8 @@ export function LanguageSwitch({
               onClick={onNavigate}
               aria-current={isCurrent ? "true" : undefined}
               className={cn(
-                "meta transition-colors",
+                "text-[0.95rem] font-medium transition-colors",
+                labels === "code" && "uppercase",
                 isCurrent ? styles.active : styles.inactive,
               )}
             >

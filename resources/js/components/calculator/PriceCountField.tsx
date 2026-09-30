@@ -39,7 +39,7 @@ export function PriceCountField({
           type="button"
           variant="outline"
           size="icon"
-          aria-label={t("home.priceCalculator.decrease" as TranslationKey, {
+          aria-label={t("priceCalculator.decrease" as TranslationKey, {
             label,
           })}
           disabled={value <= min}
@@ -59,7 +59,7 @@ export function PriceCountField({
           type="button"
           variant="outline"
           size="icon"
-          aria-label={t("home.priceCalculator.increase" as TranslationKey, {
+          aria-label={t("priceCalculator.increase" as TranslationKey, {
             label,
           })}
           disabled={value >= max}
@@ -68,7 +68,7 @@ export function PriceCountField({
           <Plus aria-hidden="true" />
         </Button>
       </div>
-      <p className="text-ink-soft font-mono text-xs tabular-nums">
+      <p className="text-ink-soft text-sm tabular-nums">
         {priceHint}
       </p>
     </div>

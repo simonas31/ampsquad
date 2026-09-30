@@ -6,6 +6,7 @@ namespace App\Filament\Pages;
 
 use App\Settings\HomepageSettings;
 use BackedEnum;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\SettingsPage;
@@ -46,6 +47,28 @@ class ManageHomepageSettings extends SettingsPage
                             Textarea::make('heroSubtitle.lt')->label(__('admin.homepage_settings.subtitle_lt'))->rows(2)->required(),
                             Textarea::make('heroSubtitle.en')->label(__('admin.homepage_settings.subtitle_en'))->rows(2)->required(),
                         ]),
+                    ]),
+                Section::make(__('admin.homepage_settings.stats_section'))
+                    ->description(__('admin.homepage_settings.stats_description'))
+                    ->schema([
+                        Repeater::make('heroStats')
+                            ->label(__('admin.homepage_settings.stats_section'))
+                            ->hiddenLabel()
+                            ->minItems(1)
+                            ->maxItems(4)
+                            ->addActionLabel(__('admin.homepage_settings.stats_add'))
+                            ->itemLabel(fn (array $state): ?string => $state['label']['lt'] ?? null)
+                            ->schema([
+                                Grid::make(3)->schema([
+                                    TextInput::make('value')->label(__('admin.homepage_settings.stat_value'))->numeric()->minValue(0)->required(),
+                                    TextInput::make('unit.lt')->label(__('admin.homepage_settings.stat_unit_lt'))->required()->maxLength(10),
+                                    TextInput::make('unit.en')->label(__('admin.homepage_settings.stat_unit_en'))->required()->maxLength(10),
+                                ]),
+                                Grid::make(2)->schema([
+                                    TextInput::make('label.lt')->label(__('admin.homepage_settings.stat_label_lt'))->required()->maxLength(80),
+                                    TextInput::make('label.en')->label(__('admin.homepage_settings.stat_label_en'))->required()->maxLength(80),
+                                ]),
+                            ]),
                     ]),
                 Section::make(__('admin.homepage_settings.intro_section'))
                     ->schema([

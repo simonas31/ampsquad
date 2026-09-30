@@ -50,7 +50,7 @@ function InstagramEmbed({ embedUrl }: { embedUrl: string }) {
 export function VideoCarouselItem({ video }: { video: Video }) {
   return (
     <div>
-      <div className="bg-concrete relative aspect-9/16 overflow-hidden">
+      <div className="bg-concrete relative aspect-9/16 overflow-hidden rounded-2xl">
         {video.type === "instagram_embed" && video.embedUrl ? (
           <InstagramEmbed embedUrl={video.embedUrl} />
         ) : (

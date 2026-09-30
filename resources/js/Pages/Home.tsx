@@ -4,11 +4,11 @@ import { FeaturedProjectsSection } from "@/components/home/FeaturedProjectsSecti
 import { HeroSection } from "@/components/home/HeroSection";
 import { InquirySection } from "@/components/home/InquirySection";
 import { IntroSection } from "@/components/home/IntroSection";
-import { PriceCalculatorSection } from "@/components/home/PriceCalculatorSection";
 import { VideoCarouselSection } from "@/components/home/VideoCarouselSection";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import type {
   CalculatorCategoryTeaser,
+  HeroStat,
   Project,
   SeoData,
   Video,
@@ -16,7 +16,7 @@ import type {
 
 interface HomeProps {
   seo: SeoData;
-  hero: { title: string; subtitle: string };
+  hero: { title: string; subtitle: string; stats: HeroStat[] };
   intro: { title: string; content: string };
   cta: { title: string; buttonLabel: string };
   featuredProjects: Project[];
@@ -25,10 +25,11 @@ interface HomeProps {
 }
 
 /**
- * The page runs statement, portfolio, capability, estimate, evidence,
- * enquiry. Each section uses a different layout family, and the tonal
- * rhythm groups them: plaster for the two reading sections, paper for the
- * two looking sections, then graphite from the enquiry through the footer.
+ * The page runs a full-screen statement, then positioning, portfolio,
+ * capability, evidence and enquiry. The hero is one photograph under the
+ * floating header; the tonal rhythm after it groups the reading sections on
+ * plaster and the looking sections on paper, then turns navy from the
+ * enquiry through the footer.
  */
 export default function Home({
   hero,
@@ -47,7 +48,7 @@ export default function Home({
       <HeroSection
         title={hero.title}
         subtitle={hero.subtitle}
-        contactUrl={contactUrl}
+        stats={hero.stats}
         projectsUrl={projectsUrl}
       />
       <IntroSection title={intro.title} content={intro.content} />
@@ -56,7 +57,6 @@ export default function Home({
         projectsUrl={projectsUrl}
       />
       <CapabilitiesSection categories={calculatorCategories} />
-      <PriceCalculatorSection contactUrl={contactUrl} />
       <VideoCarouselSection videos={videos} />
       <InquirySection
         title={cta.title}

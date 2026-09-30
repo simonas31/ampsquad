@@ -17,13 +17,24 @@ export interface SeoData {
   jsonLd: Record<string, unknown>[];
 }
 
+export interface HeroStat {
+  value: number;
+  unit: string;
+  label: string;
+}
+
 export interface Breadcrumb {
   label: string;
   url: string | null;
 }
 
 export interface NavigationLink {
-  labelKey: "nav.home" | "nav.projects" | "nav.about" | "nav.contact";
+  labelKey:
+    | "nav.home"
+    | "nav.about"
+    | "nav.projects"
+    | "nav.priceCalculator"
+    | "nav.contact";
   url: string;
 }
 

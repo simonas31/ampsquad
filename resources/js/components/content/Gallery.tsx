@@ -19,7 +19,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
             <button
               type="button"
               onClick={() => setLightboxIndex(index)}
-              className="group block w-full overflow-hidden"
+              className="group block w-full overflow-hidden rounded-xl"
             >
               <img
                 src={item.thumbnail}

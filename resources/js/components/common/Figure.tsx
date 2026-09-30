@@ -29,8 +29,8 @@ interface FigureProps {
 
 /**
  * The only image frame on the site. Photography sits directly on a concrete
- * bed with square corners and no border, because a project photograph is
- * content, not an illustration that needs a container.
+ * bed with soft rounded corners and no border, because a project photograph
+ * is content, not an illustration that needs a container.
  */
 export function Figure({
   frame,
@@ -49,7 +49,7 @@ export function Figure({
 
   return (
     <div
-      className={cn("bg-concrete relative overflow-hidden", className)}
+      className={cn("bg-concrete relative overflow-hidden rounded-2xl", className)}
       style={ratio ? { aspectRatio: ratio } : undefined}
     >
       {frame ? (

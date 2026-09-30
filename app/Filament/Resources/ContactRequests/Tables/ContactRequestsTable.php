@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -31,6 +32,11 @@ class ContactRequestsTable
                     ->label(__('admin.fields.message'))
                     ->limit(60)
                     ->wrap(),
+                TextColumn::make('media_count')
+                    ->label(__('admin.fields.attachments'))
+                    ->counts('media')
+                    ->icon(Heroicon::OutlinedPaperClip)
+                    ->placeholder('0'),
                 TextColumn::make('status')
                     ->label(__('admin.fields.status'))
                     ->badge(),

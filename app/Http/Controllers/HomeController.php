@@ -38,11 +38,21 @@ class HomeController extends Controller
             ->orderBy('order')
             ->get();
 
+        $locale = app()->getLocale();
+
         return Inertia::render('Home', [
             'seo' => SeoData::make(),
             'hero' => [
-                'title' => $homepage->heroTitle[app()->getLocale()],
-                'subtitle' => $homepage->heroSubtitle[app()->getLocale()],
+                'title' => $homepage->heroTitle[$locale],
+                'subtitle' => $homepage->heroSubtitle[$locale],
+                'stats' => collect($homepage->heroStats)
+                    ->map(fn (array $stat): array => [
+                        'value' => (int) $stat['value'],
+                        'unit' => $stat['unit'][$locale],
+                        'label' => $stat['label'][$locale],
+                    ])
+                    ->values()
+                    ->all(),
             ],
             'intro' => [
                 'title' => $homepage->introTitle[app()->getLocale()],

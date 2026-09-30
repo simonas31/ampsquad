@@ -30,6 +30,10 @@ class GenerateSitemap extends Command
 
         $sitemap->add($this->urlForAllLocales(fn (string $locale) => $this->localizedUrl($locale, '/'), priority: 1.0));
         $sitemap->add($this->urlForAllLocales(fn (string $locale) => $this->localizedUrl($locale, '/projects'), priority: 0.8));
+        $sitemap->add($this->urlForAllLocales(
+            fn (string $locale) => $this->localizedUrl($locale, '/'.trans('routes.price_calculator', [], $locale)),
+            priority: 0.7,
+        ));
 
         Project::query()
             ->published()

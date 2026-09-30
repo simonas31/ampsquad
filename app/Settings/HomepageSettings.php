@@ -18,6 +18,12 @@ class HomepageSettings extends Settings
 
     public array $heroSubtitle;
 
+    /**
+     * Headline figures under the hero, as a list of
+     * ['value' => int, 'unit' => ['lt' => ..., 'en' => ...], 'label' => ['lt' => ..., 'en' => ...]].
+     */
+    public array $heroStats;
+
     public array $introTitle;
 
     public array $introContent;

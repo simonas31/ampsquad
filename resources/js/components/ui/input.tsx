@@ -2,13 +2,12 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Ruled inputs: a single baseline under the value, no box. The control
- * inherits the surface behind it, so a form reads as lines drawn on the
- * page rather than as widgets dropped onto it. Forms are always placed on
- * a plaster or paper surface, so one tone covers every use.
+ * Soft boxed inputs: a white field with a rounded, visible border. White
+ * keeps the field legible on every surface the form is placed on (paper,
+ * plaster), and the focus state thickens the border with a faint halo.
  */
 const controlClasses =
-  "border-input focus:border-ink aria-invalid:border-destructive text-ink placeholder:text-ink-soft w-full border-0 border-b bg-transparent px-0 text-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  "border-input focus:border-ink aria-invalid:border-destructive text-ink placeholder:text-ink-soft focus:ring-ink/10 w-full rounded-xl border bg-white px-4 text-base transition-colors outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Input({
   className,

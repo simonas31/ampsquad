@@ -6,6 +6,7 @@ namespace App\Filament\Resources\ContactRequests\Schemas;
 
 use App\Enums\ContactRequestStatus;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -29,6 +30,16 @@ class ContactRequestForm
                     ->label(__('admin.fields.message'))
                     ->disabled()
                     ->rows(5)
+                    ->columnSpanFull(),
+                SpatieMediaLibraryFileUpload::make('attachments')
+                    ->label(__('admin.fields.attachments'))
+                    ->collection('attachments')
+                    ->multiple()
+                    ->visibility('private')
+                    ->downloadable()
+                    ->openable()
+                    ->disabled()
+                    ->dehydrated(false)
                     ->columnSpanFull(),
                 TextInput::make('ip_address')
                     ->label(__('admin.fields.ip_address'))

@@ -16,9 +16,10 @@ interface PriceChoiceGroupProps<T extends string> {
 }
 
 /**
- * Single-choice options as ruled boxes. Radix supplies the radio semantics
- * and arrow key navigation; the chosen option is marked by a heavier border,
- * a filled marker and a check, so the state never rests on colour alone.
+ * Single-choice options as soft rounded tiles. Radix supplies the radio
+ * semantics and arrow key navigation; the chosen option is marked by a
+ * heavier border, a tinted fill and a check, so the state never rests on
+ * colour alone.
  */
 export function PriceChoiceGroup<T extends string>({
   label,
@@ -43,19 +44,19 @@ export function PriceChoiceGroup<T extends string>({
           <RadioGroup.Item
             key={option.value}
             value={option.value}
-            className="group border-rule data-[state=checked]:border-ink data-[state=checked]:bg-plaster hover:border-ink flex items-center justify-between gap-3 border p-4 text-left transition-colors"
+            className="group border-rule data-[state=checked]:border-ink data-[state=checked]:ring-ink data-[state=checked]:bg-plaster hover:border-ink flex items-center justify-between gap-3 rounded-2xl border bg-white p-4 text-left transition-colors data-[state=checked]:ring-1"
           >
             <span className="min-w-0">
               <span className="text-ink block font-medium">{option.label}</span>
-              <span className="text-ink-soft mt-1 block font-mono text-xs tabular-nums">
+              <span className="text-ink-soft mt-1 block text-sm tabular-nums">
                 {option.price}
               </span>
             </span>
             <span
-              className="border-input group-data-[state=checked]:border-ink group-data-[state=checked]:bg-signal flex size-5 shrink-0 items-center justify-center border transition-colors"
+              className="border-input group-data-[state=checked]:border-signal group-data-[state=checked]:bg-signal flex size-6 shrink-0 items-center justify-center rounded-full border transition-colors"
               aria-hidden="true"
             >
-              <Check className="text-ink size-3 opacity-0 transition-opacity group-data-[state=checked]:opacity-100" />
+              <Check className="text-ink size-3.5 opacity-0 transition-opacity group-data-[state=checked]:opacity-100" />
             </span>
           </RadioGroup.Item>
         ))}

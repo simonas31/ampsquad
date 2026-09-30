@@ -12,5 +12,6 @@ return [
     'home' => 'Pradžia',
     'projects' => 'Projektai',
     'about' => 'Apie mus',
+    'price_calculator' => 'Kainos skaičiuoklė',
     'contact' => 'Kontaktai',
 ];

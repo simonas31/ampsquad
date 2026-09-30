@@ -15,7 +15,7 @@ interface IndexProps {
 }
 
 const filterClasses =
-  "meta inline-flex min-h-10 items-center border px-4 whitespace-nowrap transition-colors";
+  "meta inline-flex min-h-10 items-center rounded-full border px-4 whitespace-nowrap transition-colors";
 
 export default function Index({
   projects,

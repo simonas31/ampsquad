@@ -42,6 +42,11 @@ class PublicCopyTest extends TestCase
             'ctaButtonLabel' => $homepage->ctaButtonLabel,
         ];
 
+        foreach ($homepage->heroStats as $index => $stat) {
+            $copy["heroStats.{$index}.unit"] = $stat['unit'];
+            $copy["heroStats.{$index}.label"] = $stat['label'];
+        }
+
         foreach ($copy as $setting => $translations) {
             foreach ($translations as $locale => $value) {
                 $this->assertStringNotContainsString(
