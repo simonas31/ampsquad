@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Settings\GeneralSettings;
+use App\Settings\HomepageSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
@@ -118,6 +120,45 @@ class HomeTest extends TestCase
         $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
             ->where('hero.stats.0.label', 'Cable installed')
             ->where('hero.stats.1.unit', 'pcs')
+        );
+    }
+
+    public function test_hero_image_url_is_null_until_one_is_uploaded(): void
+    {
+        $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('hero.imageUrl', null)
+        );
+    }
+
+    public function test_hero_carries_the_uploaded_image_url(): void
+    {
+        $homepage = app(HomepageSettings::class);
+        $homepage->heroImage = 'site/hero.jpg';
+        $homepage->save();
+
+        $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('hero.imageUrl', Storage::disk('public')->url('site/hero.jpg'))
+        );
+    }
+
+    public function test_site_logo_urls_are_null_until_logos_are_uploaded(): void
+    {
+        $this->get('/contact')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('site.logo.light', null)
+            ->where('site.logo.dark', null)
+        );
+    }
+
+    public function test_site_logo_urls_are_shared_with_every_page(): void
+    {
+        $general = app(GeneralSettings::class);
+        $general->logo = 'site/logo.png';
+        $general->logoDark = 'site/logo-dark.png';
+        $general->save();
+
+        $this->get('/contact')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('site.logo.light', Storage::disk('public')->url('site/logo.png'))
+            ->where('site.logo.dark', Storage::disk('public')->url('site/logo-dark.png'))
         );
     }
 }

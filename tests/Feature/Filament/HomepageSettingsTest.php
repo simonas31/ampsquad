@@ -8,6 +8,8 @@ use App\Filament\Pages\ManageHomepageSettings;
 use App\Models\User;
 use App\Settings\HomepageSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -53,5 +55,47 @@ class HomepageSettingsTest extends TestCase
             ->fillForm(['heroStats' => []])
             ->call('save')
             ->assertHasFormErrors(['heroStats']);
+    }
+
+    public function test_hero_image_can_be_uploaded_and_is_persisted(): void
+    {
+        Storage::fake('public');
+        $this->actingAs(User::factory()->create());
+
+        $this->assertNull(app(HomepageSettings::class)->heroImage);
+
+        Livewire::test(ManageHomepageSettings::class)
+            ->fillForm(['heroImage' => UploadedFile::fake()->image('hero.jpg', 1800, 900)])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $path = app(HomepageSettings::class)->heroImage;
+
+        $this->assertNotNull($path);
+        $this->assertStringStartsWith('site/', $path);
+        Storage::disk('public')->assertExists($path);
+    }
+
+    public function test_hero_image_rejects_non_image_files(): void
+    {
+        Storage::fake('public');
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test(ManageHomepageSettings::class)
+            ->fillForm(['heroImage' => UploadedFile::fake()->create('hero.pdf', 100, 'application/pdf')])
+            ->call('save')
+            ->assertHasFormErrors(['heroImage']);
+
+        $this->assertNull(app(HomepageSettings::class)->heroImage);
+    }
+
+    public function test_hero_image_is_optional(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test(ManageHomepageSettings::class)
+            ->fillForm(['heroImage' => null])
+            ->call('save')
+            ->assertHasNoFormErrors();
     }
 }

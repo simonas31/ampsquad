@@ -5,30 +5,29 @@ import { useT } from "@/hooks/use-t";
 import { formatNumber, riseDelay, telHref } from "@/lib/utils";
 import type { HeroStat } from "@/types";
 
-/**
- * The client supplies the photograph as a static file. Until it is in place
- * the navy background colour shows through, so the hero is never blank.
- */
-const HERO_IMAGE = "/images/hero.jpg";
-
 interface HeroSectionProps {
   title: string;
   subtitle: string;
   stats: HeroStat[];
+  imageUrl: string | null;
   projectsUrl: string;
 }
 
 /**
- * One full-screen photograph with the company statement centred over it: the
+ * One full-screen photograph, uploaded in the admin panel (Homepage
+ * Settings), with the company statement centred over it: the
  * headline, the supporting line, the two ways into the site and a short row
  * of headline figures. The floating header sits on top of it, which is why
  * the home page is the only one that starts at the very top of the viewport.
  * The page-load sequence runs once here and nowhere else above the fold.
+ * Until a photograph is uploaded the navy background colour shows through,
+ * so the hero is never blank.
  */
 export function HeroSection({
   title,
   subtitle,
   stats,
+  imageUrl,
   projectsUrl,
 }: HeroSectionProps) {
   const t = useT();
@@ -37,7 +36,7 @@ export function HeroSection({
   return (
     <section
       className="on-ink bg-ink text-bone relative isolate flex min-h-svh items-center justify-center overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: `url(${HERO_IMAGE})` }}
+      style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
     >
       {/* A dark veil keeps white type legible on any photograph. */}
       <div

@@ -12,6 +12,7 @@ use App\Models\Project;
 use App\Models\Video;
 use App\Settings\HomepageSettings;
 use App\Support\Seo\SeoData;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -45,6 +46,9 @@ class HomeController extends Controller
             'hero' => [
                 'title' => $homepage->heroTitle[$locale],
                 'subtitle' => $homepage->heroSubtitle[$locale],
+                'imageUrl' => $homepage->heroImage
+                    ? Storage::disk('public')->url($homepage->heroImage)
+                    : null,
                 'stats' => collect($homepage->heroStats)
                     ->map(fn (array $stat): array => [
                         'value' => (int) $stat['value'],

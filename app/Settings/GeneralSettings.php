@@ -20,6 +20,14 @@ class GeneralSettings extends Settings
 
     public ?string $linkedinUrl;
 
+    /**
+     * Paths on the public disk of the logo for light backgrounds and the
+     * white-wordmark logo for dark ones; null falls back to the bundled files.
+     */
+    public ?string $logo;
+
+    public ?string $logoDark;
+
     public static function group(): string
     {
         return 'general';

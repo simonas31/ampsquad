@@ -6,6 +6,7 @@ namespace App\Filament\Pages;
 
 use App\Settings\GeneralSettings;
 use BackedEnum;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Grid;
@@ -38,6 +39,22 @@ class ManageGeneralSettings extends SettingsPage
             ->components([
                 Grid::make(2)
                     ->schema([
+                        FileUpload::make('logo')
+                            ->label(__('admin.general_settings.logo'))
+                            ->helperText(__('admin.general_settings.logo_helper'))
+                            ->acceptedFileTypes(['image/png', 'image/webp', 'image/svg+xml'])
+                            ->maxSize(2048)
+                            ->disk('public')
+                            ->directory('site')
+                            ->visibility('public'),
+                        FileUpload::make('logoDark')
+                            ->label(__('admin.general_settings.logo_dark'))
+                            ->helperText(__('admin.general_settings.logo_dark_helper'))
+                            ->acceptedFileTypes(['image/png', 'image/webp', 'image/svg+xml'])
+                            ->maxSize(2048)
+                            ->disk('public')
+                            ->directory('site')
+                            ->visibility('public'),
                         TextInput::make('email')
                             ->label(__('admin.fields.email'))
                             ->email()

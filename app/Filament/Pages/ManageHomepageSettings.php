@@ -6,6 +6,7 @@ namespace App\Filament\Pages;
 
 use App\Settings\HomepageSettings;
 use BackedEnum;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -41,6 +42,17 @@ class ManageHomepageSettings extends SettingsPage
             ->components([
                 Section::make(__('admin.homepage_settings.hero_section'))
                     ->schema([
+                        FileUpload::make('heroImage')
+                            ->label(__('admin.homepage_settings.hero_image'))
+                            ->helperText(__('admin.homepage_settings.hero_image_helper'))
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(8192)
+                            ->imageResizeMode('contain')
+                            ->imageResizeTargetWidth('2400')
+                            ->imageResizeUpscale(false)
+                            ->disk('public')
+                            ->directory('site')
+                            ->visibility('public'),
                         Grid::make(2)->schema([
                             TextInput::make('heroTitle.lt')->label(__('admin.homepage_settings.title_lt'))->required(),
                             TextInput::make('heroTitle.en')->label(__('admin.homepage_settings.title_en'))->required(),

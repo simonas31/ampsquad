@@ -57,4 +57,67 @@ class NavigationTest extends TestCase
             $this->assertStringEndsWith('/kainu-skaiciuokle', $urls['nav.priceCalculator']);
         });
     }
+
+    /**
+     * @return array{header: list<array{title: string, url: string}>, footer: list<array{title: string, url: string}>}
+     */
+    private function pageLinks(): array
+    {
+        $links = [];
+
+        $this->get('/')->assertInertia(function (AssertableInertia $page) use (&$links) {
+            $links = $page->toArray()['props']['pageLinks'];
+        });
+
+        return $links;
+    }
+
+    public function test_pages_flagged_for_the_header_or_footer_are_shared_as_menu_links(): void
+    {
+        $header = Page::factory()->inHeader()->create(['key' => 'faq', 'title' => ['lt' => 'DUK', 'en' => 'FAQ'], 'slug' => ['lt' => 'duk', 'en' => 'faq']]);
+        $footer = Page::factory()->inFooter()->create(['key' => 'privacy', 'title' => ['lt' => 'Privatumas', 'en' => 'Privacy'], 'slug' => ['lt' => 'privatumas', 'en' => 'privacy']]);
+        $both = Page::factory()->inHeader()->inFooter()->create(['key' => 'careers', 'title' => ['lt' => 'Karjera', 'en' => 'Careers'], 'slug' => ['lt' => 'karjera', 'en' => 'careers']]);
+        Page::factory()->create(['key' => 'hidden']);
+
+        $links = $this->pageLinks();
+
+        $this->assertSame(
+            [
+                ['title' => 'DUK', 'url' => route('pages.show', ['slug' => $header->slug])],
+                ['title' => 'Karjera', 'url' => route('pages.show', ['slug' => $both->slug])],
+            ],
+            $links['header'],
+        );
+        $this->assertSame(
+            [
+                ['title' => 'Privatumas', 'url' => route('pages.show', ['slug' => $footer->slug])],
+                ['title' => 'Karjera', 'url' => route('pages.show', ['slug' => $both->slug])],
+            ],
+            $links['footer'],
+        );
+    }
+
+    public function test_menu_link_titles_follow_the_locale(): void
+    {
+        Page::factory()->inHeader()->create(['key' => 'faq', 'title' => ['lt' => 'DUK', 'en' => 'FAQ'], 'slug' => ['lt' => 'duk', 'en' => 'faq']]);
+
+        app()->setLocale('en');
+
+        $this->assertSame('FAQ', $this->pageLinks()['header'][0]['title']);
+    }
+
+    public function test_no_menu_links_are_shared_when_no_page_is_flagged(): void
+    {
+        Page::factory()->create();
+
+        $this->assertSame(['header' => [], 'footer' => []], $this->pageLinks());
+    }
+
+    public function test_the_about_page_is_not_listed_twice(): void
+    {
+        Page::factory()->about()->create();
+
+        $this->assertSame(['header' => [], 'footer' => []], $this->pageLinks());
+        $this->assertContains('nav.about', $this->navigationLabelKeys());
+    }
 }

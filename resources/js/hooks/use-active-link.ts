@@ -1,6 +1,6 @@
 import { usePage } from "@inertiajs/react";
 import type { AriaAttributes } from "react";
-import type { NavigationLink } from "@/types";
+import type { MenuLink } from "@/hooks/use-menu-links";
 
 /**
  * Nav links come back as full absolute URLs (`http://localhost/projects`)
@@ -12,7 +12,7 @@ import type { NavigationLink } from "@/types";
  * reported as `aria-current="true"` rather than `"page"`.
  */
 export function useActiveLink(): (
-  link: NavigationLink,
+  link: Pick<MenuLink, "url" | "labelKey">,
 ) => AriaAttributes["aria-current"] {
   const { url } = usePage();
   const currentPath = url.split("?")[0].replace(/\/$/, "");

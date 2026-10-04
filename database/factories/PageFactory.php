@@ -38,12 +38,24 @@ class PageFactory extends Factory
         ];
     }
 
+    public function inHeader(): static
+    {
+        return $this->state(fn () => ['show_in_header' => true]);
+    }
+
+    public function inFooter(): static
+    {
+        return $this->state(fn () => ['show_in_footer' => true]);
+    }
+
     public function about(): static
     {
         return $this->state(fn () => [
             'key' => 'about',
             'title' => ['lt' => 'Apie mus', 'en' => 'About Us'],
             'slug' => ['lt' => 'apie-mus', 'en' => 'about'],
+            'show_in_header' => true,
+            'show_in_footer' => true,
             'blocks' => [
                 [
                     'type' => 'heading',

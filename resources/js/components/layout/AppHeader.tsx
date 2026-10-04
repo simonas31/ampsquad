@@ -2,6 +2,7 @@ import { Link, usePage } from "@inertiajs/react";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveLink } from "@/hooks/use-active-link";
+import { useMenuLinks } from "@/hooks/use-menu-links";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import { useT } from "@/hooks/use-t";
 import { cn, telHref } from "@/lib/utils";
@@ -19,7 +20,8 @@ import { MobileNav } from "./MobileNav";
  */
 export function AppHeader() {
   const t = useT();
-  const { navigation, site } = usePage().props;
+  const { site } = usePage().props;
+  const links = useMenuLinks("header");
   const getCurrent = useActiveLink();
   const contactUrl = useNavUrl("nav.contact", "/contact");
 
@@ -33,7 +35,7 @@ export function AppHeader() {
             aria-label={t("common.mainNavigation")}
             className="hidden items-center gap-6 lg:flex xl:gap-8"
           >
-            {navigation.map((link) => {
+            {links.map((link) => {
               const current = getCurrent(link);
 
               return (
@@ -46,7 +48,7 @@ export function AppHeader() {
                     current ? "text-ink" : "text-ink-soft hover:text-ink",
                   )}
                 >
-                  {t(link.labelKey)}
+                  {link.label}
                   {current && (
                     <span
                       className="bg-signal absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full"

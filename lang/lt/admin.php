@@ -70,6 +70,10 @@ return [
         'plural_label' => 'Puslapiai',
         'key' => 'Raktas',
         'key_helper' => 'Pastovus identifikatorius, į kurį remiasi fiksuotos naršymo/poraštės nuorodos — jo keitimas gali sugadinti tas nuorodas.',
+        'main_section' => 'Pagrindinė informacija',
+        'show_in_header' => 'Rodyti nuorodą antraštėje',
+        'show_in_footer' => 'Rodyti nuorodą poraštėje',
+        'always_in_menus_helper' => 'Visada rodoma antraštėje ir poraštėje.',
     ],
 
     'videos' => [
@@ -101,6 +105,10 @@ return [
 
     'general_settings' => [
         'nav_label' => 'Bendri nustatymai',
+        'logo' => 'Logotipas',
+        'logo_helper' => 'Logotipas šviesiems fonams (antraštė, šviesios sekcijos). PNG, WebP arba SVG. Palikite tuščią, jei norite numatytojo logotipo.',
+        'logo_dark' => 'Logotipas tamsiems fonams',
+        'logo_dark_helper' => 'Logotipas su baltu užrašu tamsioms sekcijoms. PNG, WebP arba SVG. Palikite tuščią, jei norite numatytojo logotipo.',
         'facebook_url' => 'Facebook nuoroda',
         'instagram_url' => 'Instagram nuoroda',
         'linkedin_url' => 'LinkedIn nuoroda',
@@ -109,6 +117,8 @@ return [
     'homepage_settings' => [
         'nav_label' => 'Pagrindinio puslapio nustatymai',
         'hero_section' => 'Pagrindinis skydelis',
+        'hero_image' => 'Pagrindinė nuotrauka',
+        'hero_image_helper' => 'Per visą ekraną rodoma nuotrauka už pagrindinio teksto. JPG, PNG arba WebP, iki 8 MB. Palikite tuščią, jei norite vientiso tamsiai mėlyno fono.',
         'intro_section' => 'Įžanga',
         'stats_section' => 'Skaičiai po pagrindiniu skydeliu',
         'stats_description' => 'Iki 4 skaičių po pagrindiniu tekstu, pvz. nutiesto kabelio metrai, surinktų skydų skaičius.',

@@ -1,4 +1,5 @@
 import { Link, usePage } from "@inertiajs/react";
+import { useMenuLinks } from "@/hooks/use-menu-links";
 import { useT } from "@/hooks/use-t";
 import { telHref } from "@/lib/utils";
 import { Container } from "./Container";
@@ -11,7 +12,8 @@ import { Container } from "./Container";
  */
 export function AppFooter() {
   const t = useT();
-  const { navigation, site } = usePage().props;
+  const { site } = usePage().props;
+  const links = useMenuLinks("footer");
   const socialLinks = [
     { label: "Facebook", url: site.social.facebook },
     { label: "Instagram", url: site.social.instagram },
@@ -39,10 +41,10 @@ export function AppFooter() {
               {t("footer.quickLinks")}
             </h2>
             <ul className="flex flex-col gap-3">
-              {navigation.map((link) => (
+              {links.map((link) => (
                 <li key={link.url}>
                   <Link href={link.url} className={linkClass}>
-                    {t(link.labelKey)}
+                    {link.label}
                   </Link>
                 </li>
               ))}

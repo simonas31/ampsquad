@@ -24,6 +24,11 @@ class HomepageSettings extends Settings
      */
     public array $heroStats;
 
+    /**
+     * Path of the hero photograph on the public disk, or null for none.
+     */
+    public ?string $heroImage;
+
     public array $introTitle;
 
     public array $introContent;

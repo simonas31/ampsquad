@@ -4,6 +4,7 @@ import { Dialog } from "radix-ui";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useActiveLink } from "@/hooks/use-active-link";
+import { useMenuLinks } from "@/hooks/use-menu-links";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import { useT } from "@/hooks/use-t";
 import { cn, telHref } from "@/lib/utils";
@@ -19,7 +20,8 @@ import { Logo } from "./Logo";
 export function MobileNav() {
   const t = useT();
   const [open, setOpen] = useState(false);
-  const { navigation, site } = usePage().props;
+  const { site } = usePage().props;
+  const links = useMenuLinks("header");
   const getCurrent = useActiveLink();
   const contactUrl = useNavUrl("nav.contact", "/contact");
   const close = () => setOpen(false);
@@ -64,7 +66,7 @@ export function MobileNav() {
             aria-label={t("common.mainNavigation")}
             className="mt-12 flex flex-col"
           >
-            {navigation.map((link) => {
+            {links.map((link) => {
               const current = getCurrent(link);
 
               return (
@@ -78,7 +80,7 @@ export function MobileNav() {
                     current ? "text-signal" : "text-bone hover:text-signal",
                   )}
                 >
-                  {t(link.labelKey)}
+                  {link.label}
                 </Link>
               );
             })}

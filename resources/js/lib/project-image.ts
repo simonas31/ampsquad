@@ -17,9 +17,10 @@ import type { Project } from "@/types";
  *
  * Note the asymmetry: project frames have a real source behind them (the
  * `featured_image` media collection), but `subjectFrame` does not. The
- * hero photograph and the capability photographs have no admin field at
- * all, so they stay placeholders until either a media collection is added
- * for them or those slots are removed from the design.
+ * capability photographs have no admin field at all, so they stay
+ * placeholders until either a media collection is added for them or those
+ * slots are removed from the design. (The home hero photograph is uploaded
+ * in Homepage Settings and does not go through this module.)
  */
 export const USE_PLACEHOLDER_PHOTOGRAPHY = true;
 

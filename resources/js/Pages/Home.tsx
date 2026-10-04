@@ -16,7 +16,12 @@ import type {
 
 interface HomeProps {
   seo: SeoData;
-  hero: { title: string; subtitle: string; stats: HeroStat[] };
+  hero: {
+    title: string;
+    subtitle: string;
+    stats: HeroStat[];
+    imageUrl: string | null;
+  };
   intro: { title: string; content: string };
   cta: { title: string; buttonLabel: string };
   featuredProjects: Project[];
@@ -49,6 +54,7 @@ export default function Home({
         title={hero.title}
         subtitle={hero.subtitle}
         stats={hero.stats}
+        imageUrl={hero.imageUrl}
         projectsUrl={projectsUrl}
       />
       <IntroSection title={intro.title} content={intro.content} />

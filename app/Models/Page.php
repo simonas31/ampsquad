@@ -35,6 +35,12 @@ class Page extends Model implements HasMedia
     public const PROTECTED_KEYS = ['about', 'privacy-policy', 'terms-and-conditions'];
 
     /**
+     * Pages the fixed navigation always links from the header and footer,
+     * so their menu checkboxes are locked in the admin.
+     */
+    public const ALWAYS_IN_MENUS_KEYS = ['about'];
+
+    /**
      * @var list<string>
      */
     protected $fillable = [
@@ -42,6 +48,8 @@ class Page extends Model implements HasMedia
         'title',
         'slug',
         'blocks',
+        'show_in_header',
+        'show_in_footer',
     ];
 
     /**
@@ -59,6 +67,8 @@ class Page extends Model implements HasMedia
     {
         return [
             'blocks' => 'array',
+            'show_in_header' => 'boolean',
+            'show_in_footer' => 'boolean',
         ];
     }
 
@@ -70,6 +80,11 @@ class Page extends Model implements HasMedia
 
         $this->addMediaCollection('content_blocks')
             ->acceptsMimeTypes(self::$imageMimeTypes);
+    }
+
+    public function isAlwaysInMenus(): bool
+    {
+        return in_array($this->key, self::ALWAYS_IN_MENUS_KEYS, true);
     }
 
     public function isProtected(): bool

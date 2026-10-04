@@ -8,6 +8,7 @@ use App\Models\Page;
 use App\Settings\GeneralSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -41,6 +42,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $navigation = $this->navigationLinks();
+
         return [
             ...parent::share($request),
             'locale' => [
@@ -53,7 +56,8 @@ class HandleInertiaRequests extends Middleware
                     ])
                     ->values(),
             ],
-            'navigation' => $this->navigationLinks(),
+            'navigation' => $navigation,
+            'pageLinks' => fn () => $this->pageLinks($navigation),
             'site' => fn () => $this->siteContact(),
         ];
     }
@@ -63,7 +67,10 @@ class HandleInertiaRequests extends Middleware
      * footer and contact page on every request, so they're shared once here
      * instead of each controller passing them separately.
      *
-     * @return array{contact: array{email: string, phone: string, address: string}, social: array{facebook: ?string, instagram: ?string, linkedin: ?string}}
+     * The logo URLs are null until a logo is uploaded in the admin panel; the
+     * front end then falls back to the bundled artwork.
+     *
+     * @return array{contact: array{email: string, phone: string, address: string}, social: array{facebook: ?string, instagram: ?string, linkedin: ?string}, logo: array{light: ?string, dark: ?string}}
      */
     private function siteContact(): array
     {
@@ -80,7 +87,59 @@ class HandleInertiaRequests extends Middleware
                 'instagram' => $general->instagramUrl,
                 'linkedin' => $general->linkedinUrl,
             ],
+            'logo' => [
+                'light' => $this->publicUrl($general->logo),
+                'dark' => $this->publicUrl($general->logoDark),
+            ],
         ];
+    }
+
+    private function publicUrl(?string $path): ?string
+    {
+        return $path ? Storage::disk('public')->url($path) : null;
+    }
+
+    /**
+     * Admin-managed pages flagged for the header and/or footer, in creation
+     * order. They are listed after the fixed navigation, which already links
+     * some pages (About), so a page whose URL is already there is skipped
+     * rather than shown twice.
+     *
+     * @param  array<int, array{labelKey: string, url: string}>  $navigation
+     * @return array{header: list<array{title: string, url: string}>, footer: list<array{title: string, url: string}>}
+     */
+    private function pageLinks(array $navigation): array
+    {
+        $links = ['header' => [], 'footer' => []];
+
+        if (! Route::has('pages.show')) {
+            return $links;
+        }
+
+        $fixedUrls = array_column($navigation, 'url');
+
+        $pages = Page::query()
+            ->where(fn ($query) => $query->where('show_in_header', true)->orWhere('show_in_footer', true))
+            ->orderBy('id')
+            ->get();
+
+        foreach ($pages as $page) {
+            $link = ['title' => $page->title, 'url' => route('pages.show', ['slug' => $page->slug])];
+
+            if (in_array($link['url'], $fixedUrls, true)) {
+                continue;
+            }
+
+            if ($page->show_in_header) {
+                $links['header'][] = $link;
+            }
+
+            if ($page->show_in_footer) {
+                $links['footer'][] = $link;
+            }
+        }
+
+        return $links;
     }
 
     /**

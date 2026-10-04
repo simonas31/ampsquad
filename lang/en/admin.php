@@ -70,6 +70,10 @@ return [
         'plural_label' => 'Pages',
         'key' => 'Key',
         'key_helper' => 'Stable identifier hardcoded nav/footer links may reference — changing it can break those links.',
+        'main_section' => 'Main information',
+        'show_in_header' => 'Show link in header',
+        'show_in_footer' => 'Show link in footer',
+        'always_in_menus_helper' => 'Always linked from the header and footer.',
     ],
 
     'videos' => [
@@ -101,6 +105,10 @@ return [
 
     'general_settings' => [
         'nav_label' => 'General Settings',
+        'logo' => 'Logo',
+        'logo_helper' => 'Logo for light backgrounds (header, light sections). PNG, WebP or SVG. Leave empty to use the default logo.',
+        'logo_dark' => 'Logo for dark backgrounds',
+        'logo_dark_helper' => 'White-wordmark logo for dark sections. PNG, WebP or SVG. Leave empty to use the default logo.',
         'facebook_url' => 'Facebook URL',
         'instagram_url' => 'Instagram URL',
         'linkedin_url' => 'LinkedIn URL',
@@ -109,6 +117,8 @@ return [
     'homepage_settings' => [
         'nav_label' => 'Homepage Settings',
         'hero_section' => 'Hero',
+        'hero_image' => 'Hero image',
+        'hero_image_helper' => 'Full-screen photograph behind the hero text. JPG, PNG or WebP, up to 8 MB. Leave empty for a plain navy background.',
         'intro_section' => 'Intro',
         'stats_section' => 'Hero figures',
         'stats_description' => 'Up to 4 figures shown under the hero text, e.g. metres of cable installed or panels assembled.',

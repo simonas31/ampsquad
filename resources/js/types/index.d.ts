@@ -38,6 +38,12 @@ export interface NavigationLink {
   url: string;
 }
 
+/** A page the admin flagged to appear in the header or footer menu. */
+export interface PageLink {
+  title: string;
+  url: string;
+}
+
 export interface SiteData {
   contact: {
     email: string;
@@ -49,6 +55,11 @@ export interface SiteData {
     instagram: string | null;
     linkedin: string | null;
   };
+  /** Uploaded logo URLs; null means use the bundled artwork. */
+  logo: {
+    light: string | null;
+    dark: string | null;
+  };
 }
 
 export interface SharedData {
@@ -57,6 +68,10 @@ export interface SharedData {
     available: LocaleOption[];
   };
   navigation: NavigationLink[];
+  pageLinks: {
+    header: PageLink[];
+    footer: PageLink[];
+  };
   site: SiteData;
 }
 
