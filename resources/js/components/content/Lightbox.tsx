@@ -48,6 +48,7 @@ export function Lightbox({ images, index, onIndexChange }: LightboxProps) {
           {current && (
             <img
               src={current}
+              decoding="async"
               alt={t("common.slideOf", {
                 number: (index ?? 0) + 1,
                 total: images.length,

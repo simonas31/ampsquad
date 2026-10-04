@@ -149,6 +149,16 @@ class HomeTest extends TestCase
         );
     }
 
+    public function test_google_fonts_stylesheet_does_not_block_first_paint(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('media="print" onload="this.media=\'all\'"', false);
+        $response->assertSee('<noscript>', false);
+        $this->assertSame(2, substr_count($response->getContent(), 'fonts.googleapis.com/css2'));
+    }
+
     public function test_site_logo_urls_are_shared_with_every_page(): void
     {
         $general = app(GeneralSettings::class);

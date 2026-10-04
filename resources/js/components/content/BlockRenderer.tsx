@@ -38,6 +38,7 @@ function Block({ block }: { block: ContentBlock }) {
             src={`/storage/${block.data.image}`}
             alt={block.data.caption ?? ""}
             loading="lazy"
+            decoding="async"
             className="w-full"
           />
           {block.data.caption && (

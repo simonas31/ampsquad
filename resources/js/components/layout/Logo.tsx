@@ -35,6 +35,7 @@ export function Logo({ onNavigate, tone = "light", className }: LogoProps) {
         alt="AmpSquad"
         width={337}
         height={240}
+        decoding="async"
         className="h-full w-auto"
       />
     </Link>

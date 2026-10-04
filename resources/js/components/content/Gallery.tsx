@@ -25,6 +25,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
                 src={item.thumbnail}
                 alt={item.alt}
                 loading="lazy"
+                decoding="async"
                 className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </button>

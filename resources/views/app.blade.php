@@ -67,9 +67,18 @@
         (see `.display` in app.css) while the same family sets body copy at
         normal width. IBM Plex Mono handles metadata, figures and labels.
         Both ship the latin-ext subset, so Lithuanian diacritics are covered.
+
+        Loaded with the media="print" swap so the stylesheet never blocks
+        first paint: if fonts.googleapis.com is slow or unreachable the page
+        renders in the fallback stack and the fonts swap in whenever (if
+        ever) the CSS arrives. The <noscript> copy covers JS-disabled clients.
     --}}
-    <link rel="stylesheet"
+    <link rel="stylesheet" media="print" onload="this.media='all'"
         href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    </noscript>
 
     @viteReactRefresh
     @vite('resources/js/app.tsx')
