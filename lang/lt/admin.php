@@ -96,9 +96,9 @@ return [
         'notifications_helper' => 'Kokius sistemos el. laiškus turėtų gauti šis gavėjas.',
     ],
 
-    'calculator_categories' => [
-        'label' => 'Skaičiuoklės kategorija',
-        'plural_label' => 'Skaičiuoklės kategorijos',
+    'capabilities' => [
+        'label' => 'Veiklos sritis',
+        'plural_label' => 'Veiklos sritys',
         'icon_helper' => 'Heroicon piktogramos pavadinimas, pvz. heroicon-o-bolt.',
         'options_count' => 'Pasirinkimai',
     ],

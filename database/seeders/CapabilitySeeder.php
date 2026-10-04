@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\CalculatorCategory;
+use App\Models\Capability;
 use Illuminate\Database\Seeder;
 
-class CalculatorCategorySeeder extends Seeder
+class CapabilitySeeder extends Seeder
 {
     public function run(): void
     {
@@ -18,7 +18,7 @@ class CalculatorCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $order => $category) {
-            CalculatorCategory::query()->create([
+            Capability::query()->create([
                 'name' => ['lt' => $category['lt'], 'en' => $category['en']],
                 'icon' => $category['icon'],
                 'order' => $order,

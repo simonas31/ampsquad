@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\CalculatorCategory;
+use App\Models\Capability;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin CalculatorCategory
+ * @mixin Capability
  */
-class CalculatorCategoryResource extends JsonResource
+class CapabilityResource extends JsonResource
 {
     /**
      * @return array<string, mixed>

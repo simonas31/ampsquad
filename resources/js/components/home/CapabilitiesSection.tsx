@@ -6,7 +6,7 @@ import { useT } from "@/hooks/use-t";
 import { HeroIcon } from "@/lib/heroicon";
 import { subjectFrame } from "@/lib/project-image";
 import { cn } from "@/lib/utils";
-import type { CalculatorCategoryTeaser } from "@/types";
+import type { CapabilityTeaser } from "@/types";
 
 /**
  * Each capability gets a different column span, a different photograph
@@ -36,13 +36,13 @@ const COMPOSITION = [
 ] as const;
 
 export function CapabilitiesSection({
-  categories,
+  capabilities,
 }: {
-  categories: CalculatorCategoryTeaser[];
+  capabilities: CapabilityTeaser[];
 }) {
   const t = useT();
 
-  if (categories.length === 0) {
+  if (capabilities.length === 0) {
     return null;
   }
 
@@ -54,18 +54,18 @@ export function CapabilitiesSection({
         </Reveal>
 
         <ul className="mt-14 grid grid-cols-1 gap-x-10 gap-y-16 lg:mt-20 lg:grid-cols-12">
-          {categories.map((category, index) => {
+          {capabilities.map((capability, index) => {
             const composition = COMPOSITION[index % COMPOSITION.length];
 
             return (
               <li
-                key={category.id}
+                key={capability.id}
                 className={cn(composition.column, composition.offset)}
               >
                 <Reveal delay={(index % 3) * 90}>
                   <Figure
                     frame={subjectFrame(
-                      `capability-${category.id}`,
+                      `capability-${capability.id}`,
                       composition.frame,
                     )}
                     alt=""
@@ -75,21 +75,21 @@ export function CapabilitiesSection({
 
                   <div className="mt-7 flex items-start gap-3.5">
                     <HeroIcon
-                      name={category.icon}
+                      name={capability.icon}
                       className="text-ink mt-1.5 size-5 shrink-0"
                     />
                     <h3 className="display text-ink text-3xl lg:text-4xl">
-                      {category.name}
+                      {capability.name}
                     </h3>
                   </div>
 
-                  {category.options.length > 0 && (
+                  {capability.options.length > 0 && (
                     <div className="border-rule mt-6 border-t pt-4">
                       <p className="meta text-ink-soft">
                         {t("home.capabilities.scope")}
                       </p>
                       <ul className="meta text-ink mt-2.5 flex flex-wrap gap-x-6 gap-y-1">
-                        {category.options.map((option) => (
+                        {capability.options.map((option) => (
                           <li key={option}>{option}</li>
                         ))}
                       </ul>

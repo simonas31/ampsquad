@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\CalculatorCategories\RelationManagers;
+namespace App\Filament\Resources\Capabilities\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -15,14 +15,18 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use LaraZeus\SpatieTranslatable\Resources\RelationManagers\Concerns\Translatable;
 
 class OptionsRelationManager extends RelationManager
 {
+    use Translatable;
+
     protected static string $relationship = 'options';
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('admin.calculator_categories.options_count');
+        return __('admin.capabilities.options_count');
     }
 
     public function form(Schema $schema): Schema
@@ -58,6 +62,7 @@ class OptionsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
+                LocaleSwitcher::make(),
                 CreateAction::make(),
             ])
             ->recordActions([

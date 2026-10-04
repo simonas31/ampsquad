@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\CalculatorOption;
+use App\Models\CapabilityOption;
 use App\Settings\HomepageSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
@@ -84,18 +84,18 @@ class PublicCopyTest extends TestCase
 
     public function test_home_exposes_the_capability_options_the_page_renders(): void
     {
-        // The capabilities section presents each calculator category by name
+        // The capabilities section presents each capability by name
         // and lists the inputs its estimate is based on, so the options must
         // stay eager-loaded on the homepage payload.
-        CalculatorOption::factory()->create();
+        CapabilityOption::factory()->create();
 
         $response = $this->get('/');
 
         $response->assertOk();
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Home')
-            ->has('calculatorCategories.0.name')
-            ->has('calculatorCategories.0.options')
+            ->has('capabilities.0.name')
+            ->has('capabilities.0.options')
             ->has('cta.title')
         );
     }

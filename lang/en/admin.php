@@ -96,9 +96,9 @@ return [
         'notifications_helper' => 'Which system emails this recipient should receive.',
     ],
 
-    'calculator_categories' => [
-        'label' => 'Calculator category',
-        'plural_label' => 'Calculator categories',
+    'capabilities' => [
+        'label' => 'Capability',
+        'plural_label' => 'Capabilities',
         'icon_helper' => 'Heroicon name, e.g. heroicon-o-bolt.',
         'options_count' => 'Options',
     ],

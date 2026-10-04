@@ -165,7 +165,7 @@ export interface Video {
   posterUrl: string | null;
 }
 
-export interface CalculatorCategoryTeaser {
+export interface CapabilityTeaser {
   id: number;
   name: string;
   icon: string | null;

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\CalculatorCategories\Pages;
+namespace App\Filament\Resources\Capabilities\Pages;
 
-use App\Filament\Resources\CalculatorCategories\CalculatorCategoryResource;
+use App\Filament\Resources\Capabilities\CapabilityResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
 
-class ListCalculatorCategories extends ListRecords
+class ListCapabilities extends ListRecords
 {
     use Translatable;
 
-    protected static string $resource = CalculatorCategoryResource::class;
+    protected static string $resource = CapabilityResource::class;
 
     protected function getHeaderActions(): array
     {

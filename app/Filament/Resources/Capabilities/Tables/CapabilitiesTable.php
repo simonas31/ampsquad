@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\CalculatorCategories\Tables;
+namespace App\Filament\Resources\Capabilities\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -11,7 +11,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class CalculatorCategoriesTable
+class CapabilitiesTable
 {
     public static function configure(Table $table): Table
     {
@@ -25,7 +25,7 @@ class CalculatorCategoriesTable
                     ->placeholder('—'),
                 TextColumn::make('options_count')
                     ->counts('options')
-                    ->label(__('admin.calculator_categories.options_count')),
+                    ->label(__('admin.capabilities.options_count')),
                 TextColumn::make('order')
                     ->label(__('admin.fields.order'))
                     ->numeric()

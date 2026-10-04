@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\CalculatorCategory;
-use App\Models\CalculatorOption;
+use App\Models\Capability;
+use App\Models\CapabilityOption;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<CalculatorOption>
+ * @extends Factory<CapabilityOption>
  */
-class CalculatorOptionFactory extends Factory
+class CapabilityOptionFactory extends Factory
 {
     /**
      * @return array<string, mixed>
@@ -21,7 +21,7 @@ class CalculatorOptionFactory extends Factory
         $name = ucfirst(fake()->unique()->words(2, true));
 
         return [
-            'calculator_category_id' => CalculatorCategory::factory(),
+            'capability_id' => Capability::factory(),
             'name' => ['lt' => $name, 'en' => $name],
             'order' => fake()->numberBetween(0, 20),
         ];

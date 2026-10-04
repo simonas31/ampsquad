@@ -7,7 +7,7 @@ import { IntroSection } from "@/components/home/IntroSection";
 import { VideoCarouselSection } from "@/components/home/VideoCarouselSection";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import type {
-  CalculatorCategoryTeaser,
+  CapabilityTeaser,
   HeroStat,
   Project,
   SeoData,
@@ -26,7 +26,7 @@ interface HomeProps {
   cta: { title: string; buttonLabel: string };
   featuredProjects: Project[];
   videos: Video[];
-  calculatorCategories: CalculatorCategoryTeaser[];
+  capabilities: CapabilityTeaser[];
 }
 
 /**
@@ -42,7 +42,7 @@ export default function Home({
   cta,
   featuredProjects,
   videos,
-  calculatorCategories,
+  capabilities,
 }: HomeProps) {
   const { site } = usePage().props;
   const contactUrl = useNavUrl("nav.contact", "/contact");
@@ -62,7 +62,7 @@ export default function Home({
         projects={featuredProjects}
         projectsUrl={projectsUrl}
       />
-      <CapabilitiesSection categories={calculatorCategories} />
+      <CapabilitiesSection capabilities={capabilities} />
       <VideoCarouselSection videos={videos} />
       <InquirySection
         title={cta.title}

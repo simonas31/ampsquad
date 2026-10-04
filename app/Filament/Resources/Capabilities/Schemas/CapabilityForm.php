@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\CalculatorCategories\Schemas;
+namespace App\Filament\Resources\Capabilities\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
-class CalculatorCategoryForm
+class CapabilityForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -19,7 +19,7 @@ class CalculatorCategoryForm
                     ->required(),
                 TextInput::make('icon')
                     ->label(__('admin.fields.icon'))
-                    ->helperText(__('admin.calculator_categories.icon_helper')),
+                    ->helperText(__('admin.capabilities.icon_helper')),
                 TextInput::make('order')
                     ->label(__('admin.fields.order'))
                     ->required()

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\CalculatorCategory;
+use App\Models\Capability;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<CalculatorCategory>
+ * @extends Factory<Capability>
  */
-class CalculatorCategoryFactory extends Factory
+class CapabilityFactory extends Factory
 {
     /**
      * @return array<string, mixed>

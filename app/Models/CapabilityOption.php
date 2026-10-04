@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\CalculatorCategoryFactory;
-use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\CapabilityOptionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
-class CalculatorCategory extends Model
+class CapabilityOption extends Model
 {
-    /** @use HasFactory<CalculatorCategoryFactory> */
+    /** @use HasFactory<CapabilityOptionFactory> */
     use HasFactory;
 
     use HasTranslations;
@@ -22,10 +21,9 @@ class CalculatorCategory extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'capability_id',
         'name',
-        'icon',
         'order',
-        'is_active',
     ];
 
     /**
@@ -42,17 +40,11 @@ class CalculatorCategory extends Model
     {
         return [
             'order' => 'integer',
-            'is_active' => 'boolean',
         ];
     }
 
-    public function options(): HasMany
+    public function capability(): BelongsTo
     {
-        return $this->hasMany(CalculatorOption::class);
-    }
-
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('is_active', true);
+        return $this->belongsTo(Capability::class, 'capability_id');
     }
 }

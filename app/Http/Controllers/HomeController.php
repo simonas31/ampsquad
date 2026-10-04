@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CalculatorCategoryResource;
+use App\Http\Resources\CapabilityResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\VideoResource;
-use App\Models\CalculatorCategory;
+use App\Models\Capability;
 use App\Models\Project;
 use App\Models\Video;
 use App\Settings\HomepageSettings;
@@ -33,7 +33,7 @@ class HomeController extends Controller
             ->orderBy('order')
             ->get();
 
-        $calculatorCategories = CalculatorCategory::query()
+        $capabilities = Capability::query()
             ->active()
             ->with('options')
             ->orderBy('order')
@@ -68,7 +68,7 @@ class HomeController extends Controller
             ],
             'featuredProjects' => ProjectResource::collection($featuredProjects),
             'videos' => VideoResource::collection($videos),
-            'calculatorCategories' => CalculatorCategoryResource::collection($calculatorCategories),
+            'capabilities' => CapabilityResource::collection($capabilities),
         ]);
     }
 }
