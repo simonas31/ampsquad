@@ -1,0 +1,33 @@
+# What rsync must NOT touch on the server (paths anchored to the app root).
+# IMPORTANT: rsync exclude files do NOT support trailing comments on a pattern
+# line - a "#" mid-line becomes part of the pattern. Keep every comment on its
+# own line, or --delete will wipe the path you meant to protect.
+#
+# (vendor/ and public/build/ ARE uploaded - they're built in CI.)
+/.git
+/.github
+# production secrets live only on the server
+/.env
+# uploads, logs and framework cache live here - keep them
+/storage
+# the storage symlink - don't let --delete remove it
+/public/storage
+# generated on the server by the scheduler and every deploy
+/public/sitemap.xml
+/public/robots.txt
+/bootstrap/cache
+# not needed at runtime
+/node_modules
+/tests
+/deploy
+/.claude
+/.agents
+/data
+/.mcp.json
+/boost.json
+/skills-lock.json
+/CLAUDE.md
+/compose.yaml
+/Procfile
+/phpunit.xml
+/vitest.config.ts

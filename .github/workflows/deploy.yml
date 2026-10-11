@@ -1,0 +1,126 @@
+name: Deploy
+
+# Test, build in CI, rsync to the CloudPanel server over SSH, run a few artisan commands.
+# Secrets needed: HOSTINGER_HOST, HOSTINGER_USER, HOSTINGER_SSH_KEY, HOSTINGER_KNOWN_HOSTS
+# One-time server setup: deploy/README.md
+
+on:
+  push:
+    branches: [master] # production branch
+  workflow_dispatch:
+
+# A second push waits for the running deploy instead of racing it.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+# Edit these for your server:
+env:
+  REMOTE_DIR: htdocs/ampsquad.lt # path relative to the SSH user's home (no leading slash)
+  APP_URL: https://ampsquad.lt # used for the post-deploy health check
+  PHP_BIN: php8.5 # match the site's PHP version in CloudPanel
+  VITE_APP_NAME: AmpSquad # baked into the JS bundle at build time
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: testing
+      DB_USERNAME: root
+      DB_PASSWORD: password
+    services:
+      # The migrations use MySQL-only JSON generated columns, so SQLite cannot run the suite.
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ppassword"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: exif, gd, intl, mbstring, pdo_mysql, zip
+          tools: composer:v2
+          coverage: none
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: composer install --no-interaction --no-progress --no-scripts
+      - run: cp .env.example .env && php artisan key:generate && php artisan package:discover --ansi
+
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm test
+      # Feature tests render the Inertia root view, which needs the Vite manifest.
+      - run: npm run build
+
+      - run: php artisan test --compact
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          tools: composer:v2
+
+      # --no-scripts: package:discover and filament:upgrade run on the server instead.
+      - run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci && npm run build
+      - name: Assets were built
+        run: test -f public/build/manifest.json
+
+      - name: Sync to server and run artisan
+        env:
+          SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.HOSTINGER_KNOWN_HOSTS }}
+          DEST: ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/key && chmod 600 ~/.ssh/key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          SSH="ssh -i ~/.ssh/key -p 22 -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+
+          # Fail fast on auth/connectivity, and refuse to deploy before setup.sh and the .env exist.
+          $SSH "$DEST" "test -d $REMOTE_DIR/storage && test -f $REMOTE_DIR/.env"
+
+          # --delay-updates swaps files in at the end, so the live site is never half-synced for long.
+          rsync -az --delete --delay-updates --exclude-from=deploy/.deployignore -e "$SSH" ./ "$DEST:$REMOTE_DIR/"
+
+          # Order matters: filament:upgrade clears the config cache, optimize rebuilds it.
+          # optimize skips routes: route:cache bakes in one locale prefix and breaks /en.
+          # No optimize:clear / cache:clear: the cache table carries the queue:restart signal.
+          $SSH "$DEST" "cd $REMOTE_DIR && \
+            $PHP_BIN artisan package:discover --ansi --no-interaction && \
+            $PHP_BIN artisan filament:upgrade --no-interaction && \
+            $PHP_BIN artisan migrate --force && \
+            $PHP_BIN artisan optimize --except=routes && \
+            $PHP_BIN artisan app:generate-sitemap && \
+            $PHP_BIN artisan queue:restart"
+
+      - name: Health check
+        run: curl -fsS --retry 5 --retry-delay 5 --retry-all-errors "$APP_URL/up"
