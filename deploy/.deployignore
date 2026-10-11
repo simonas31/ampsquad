@@ -13,8 +13,9 @@
 # the storage symlink - don't let --delete remove it
 /public/storage
 # generated on the server by the scheduler and every deploy
+# (robots.txt is served by a route; a stray public/robots.txt on the server
+# is deleted by rsync --delete on purpose, because it would shadow the route)
 /public/sitemap.xml
-/public/robots.txt
 /bootstrap/cache
 # not needed at runtime
 /node_modules

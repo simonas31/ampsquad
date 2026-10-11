@@ -56,25 +56,8 @@ class GenerateSitemap extends Command
             });
 
         $sitemap->writeToFile(public_path('sitemap.xml'));
-        $this->writeRobotsTxt();
 
         $this->components->info('Sitemap written to public/sitemap.xml with '.count($sitemap->getTags()).' URLs.');
-    }
-
-    /**
-     * Regenerated alongside the sitemap (rather than committed as a static
-     * file) so its Sitemap: line always reflects the current environment's
-     * APP_URL instead of going stale across environments.
-     */
-    private function writeRobotsTxt(): void
-    {
-        file_put_contents(public_path('robots.txt'), implode("\n", [
-            'User-agent: *',
-            'Disallow: /admin',
-            '',
-            'Sitemap: '.url('/sitemap.xml'),
-            '',
-        ]));
     }
 
     /**

@@ -280,10 +280,8 @@ class SlugRedirectTest extends TestCase
 
     public function test_sitemap_has_lastmod_and_skips_locales_without_a_slug(): void
     {
-        $backups = [];
-        foreach (['sitemap.xml', 'robots.txt'] as $file) {
-            $backups[$file] = is_file(public_path($file)) ? file_get_contents(public_path($file)) : null;
-        }
+        $path = public_path('sitemap.xml');
+        $backup = is_file($path) ? file_get_contents($path) : null;
 
         try {
             Page::query()->create(['key' => 'faq', 'title' => ['lt' => 'Klausimai']]);
@@ -295,12 +293,10 @@ class SlugRedirectTest extends TestCase
             $this->assertStringContainsString('<lastmod>', $xml);
             $this->assertStringNotContainsString('/en/klausimai', $xml);
         } finally {
-            foreach ($backups as $file => $contents) {
-                if ($contents === null) {
-                    @unlink(public_path($file));
-                } else {
-                    file_put_contents(public_path($file), $contents);
-                }
+            if ($backup === null) {
+                @unlink($path);
+            } else {
+                file_put_contents($path, $backup);
             }
         }
     }

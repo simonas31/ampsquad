@@ -9,6 +9,8 @@ Push to `master` runs `.github/workflows/deploy.yml`:
 
 The server needs PHP only: no Composer, no Node.
 
+`/robots.txt` is served by `RobotsController` (no file, nothing to generate); `/sitemap.xml` is generated on every deploy and daily by the scheduler.
+
 `optimize` skips routes on purpose: `route:cache` bakes in a single locale prefix and makes `/en/*` return 404.
 Do not run `optimize:clear` or `cache:clear` on the server; the DB cache carries the `queue:restart` signal.
 
@@ -108,6 +110,6 @@ Take a manual dump before any destructive migration.
 | `/en/...` returns 404 | someone ran `route:cache`; run `php8.5 artisan route:clear` |
 | Uploaded images 404 | `ls -l public/storage` must point to `../storage/app/public` (re-run the `ln -sfn` line from `setup.sh`) |
 | Contact emails or thumbnails missing | `supervisorctl status` (worker `RUNNING`?); `ampsquad-worker.log`; `jobs` and `failed_jobs` tables |
-| Sitemap or robots.txt never regenerated | `supervisorctl status` (scheduler `RUNNING`?); `ampsquad-scheduler.log`; no duplicate cron entry |
+| `/sitemap.xml` 404 or stale | `supervisorctl status` (scheduler `RUNNING`?); `ampsquad-scheduler.log`; no duplicate cron entry |
 | Supervisor program stuck in `FATAL` | `SITE_USER` replaced in the conf; first deploy done (`artisan` and `.env` exist); log file for the exact error |
 | `/admin` login fails | `APP_URL`, `SESSION_SECURE_COOKIE`, user created with `make:filament-user` |

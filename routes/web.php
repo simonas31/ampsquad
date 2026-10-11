@@ -7,8 +7,12 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PriceCalculatorController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RobotsController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+
+// Outside the localized group, which ends in a "/{slug}" catch-all that would swallow it.
+Route::get('/robots.txt', RobotsController::class)->name('robots');
 
 Route::localized(function (): void {
     Route::get('/', HomeController::class)->name('home');
