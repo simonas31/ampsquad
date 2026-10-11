@@ -9,6 +9,7 @@ use App\Models\Project;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -28,9 +29,9 @@ class GenerateSitemap extends Command
 
         $sitemap = Sitemap::create();
 
-        $sitemap->add($this->urlForAllLocales(fn (string $locale) => $this->localizedUrl($locale, '/'), priority: 1.0));
-        $sitemap->add($this->urlForAllLocales(fn (string $locale) => $this->localizedUrl($locale, '/projects'), priority: 0.8));
-        $sitemap->add($this->urlForAllLocales(
+        $this->addIfPresent($sitemap, $this->urlForAllLocales(fn (string $locale) => $this->localizedUrl($locale, '/'), priority: 1.0));
+        $this->addIfPresent($sitemap, $this->urlForAllLocales(fn (string $locale) => $this->localizedUrl($locale, '/projects'), priority: 0.8));
+        $this->addIfPresent($sitemap, $this->urlForAllLocales(
             fn (string $locale) => $this->localizedUrl($locale, '/'.trans('routes.price_calculator', [], $locale)),
             priority: 0.7,
         ));
@@ -38,17 +39,19 @@ class GenerateSitemap extends Command
         Project::query()
             ->published()
             ->each(function (Project $project) use ($sitemap): void {
-                $sitemap->add($this->urlForAllLocales(
-                    fn (string $locale) => $this->localizedUrl($locale, '/projects/'.$project->getTranslation('slug', $locale)),
+                $this->addIfPresent($sitemap, $this->urlForAllLocales(
+                    fn (string $locale) => $this->localizedSlugUrl($locale, '/projects/', $project->getTranslation('slug', $locale, false)),
                     priority: 0.6,
+                    lastModified: $project->updated_at,
                 ));
             });
 
         Page::query()
             ->each(function (Page $page) use ($sitemap): void {
-                $sitemap->add($this->urlForAllLocales(
-                    fn (string $locale) => $this->localizedUrl($locale, '/'.$page->getTranslation('slug', $locale)),
+                $this->addIfPresent($sitemap, $this->urlForAllLocales(
+                    fn (string $locale) => $this->localizedSlugUrl($locale, '/', $page->getTranslation('slug', $locale, false)),
                     priority: 0.5,
+                    lastModified: $page->updated_at,
                 ));
             });
 
@@ -74,17 +77,47 @@ class GenerateSitemap extends Command
         ]));
     }
 
-    private function urlForAllLocales(\Closure $urlForLocale, float $priority): Url
+    /**
+     * A null from $urlForLocale means the page has no counterpart in that
+     * locale, so it is left out of the alternates rather than advertised.
+     *
+     * @param  \Closure(string): ?string  $urlForLocale
+     */
+    private function urlForAllLocales(\Closure $urlForLocale, float $priority, ?Carbon $lastModified = null): ?Url
     {
-        $defaultLocale = LaravelLocalization::getDefaultLocale();
+        $urls = collect($this->locales)
+            ->mapWithKeys(fn (string $locale) => [$locale => $urlForLocale($locale)])
+            ->filter();
 
-        $url = Url::create($urlForLocale($defaultLocale))->setPriority($priority);
+        $primary = $urls->get(LaravelLocalization::getDefaultLocale()) ?? $urls->first();
 
-        foreach ($this->locales as $locale) {
-            $url->addAlternate($urlForLocale($locale), $locale);
+        if ($primary === null) {
+            return null;
+        }
+
+        $url = Url::create($primary)->setPriority($priority);
+
+        if ($lastModified !== null) {
+            $url->setLastModificationDate($lastModified);
+        }
+
+        foreach ($urls as $locale => $localeUrl) {
+            $url->addAlternate($localeUrl, $locale);
         }
 
         return $url;
+    }
+
+    private function addIfPresent(Sitemap $sitemap, ?Url $url): void
+    {
+        if ($url !== null) {
+            $sitemap->add($url);
+        }
+    }
+
+    private function localizedSlugUrl(string $locale, string $prefix, ?string $slug): ?string
+    {
+        return $slug === null || $slug === '' ? null : $this->localizedUrl($locale, $prefix.$slug);
     }
 
     /**

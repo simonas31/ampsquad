@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Projects\Pages;
 
+use App\Filament\Actions\RegenerateSlugAction;
 use App\Filament\Resources\Projects\ProjectResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -22,6 +23,7 @@ class EditProject extends EditRecord
     {
         return [
             LocaleSwitcher::make(),
+            RegenerateSlugAction::make(),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),

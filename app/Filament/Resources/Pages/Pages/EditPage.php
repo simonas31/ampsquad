@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Pages\Pages;
 
+use App\Filament\Actions\RegenerateSlugAction;
 use App\Filament\Resources\Pages\PageResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -20,6 +21,7 @@ class EditPage extends EditRecord
     {
         return [
             LocaleSwitcher::make(),
+            RegenerateSlugAction::make(),
             DeleteAction::make(),
         ];
     }

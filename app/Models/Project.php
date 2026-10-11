@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\ProjectStatus;
 use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasSeo;
+use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasTranslatableBlocks;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,6 +36,7 @@ class Project extends Model implements HasMedia
         HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
     }
     use HasSeo;
+    use HasSlug;
     use HasTranslatableBlocks;
     use HasTranslations;
     use SoftDeletes;
@@ -46,7 +48,6 @@ class Project extends Model implements HasMedia
         'category_id',
         'author_id',
         'title',
-        'slug',
         'excerpt',
         'blocks',
         'status',
@@ -81,6 +82,16 @@ class Project extends Model implements HasMedia
             'order' => 'integer',
             'completed_at' => 'date',
         ];
+    }
+
+    /**
+     * A project's slug is free to follow its title until it has been
+     * published; after that the URL is indexed and only changes through
+     * regenerateSlug(), which leaves a redirect.
+     */
+    protected function slugIsLocked(): bool
+    {
+        return $this->getOriginal('status') === ProjectStatus::Published;
     }
 
     public function registerMediaCollections(): void

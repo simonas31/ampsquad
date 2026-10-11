@@ -9,7 +9,9 @@ use App\Http\Resources\ProjectResource;
 use App\Models\Category;
 use App\Models\Project;
 use App\Support\Seo\Breadcrumbs;
+use App\Support\Seo\LocalizedUrls;
 use App\Support\Seo\SeoData;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -51,7 +53,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function show(string $slug): Response
+    public function show(string $slug): Response|RedirectResponse
     {
         $slugColumn = 'slug_'.app()->getLocale();
 
@@ -59,7 +61,15 @@ class ProjectController extends Controller
             ->published()
             ->with(['category', 'tags', 'author'])
             ->where($slugColumn, $slug)
-            ->firstOrFail();
+            ->first();
+
+        if ($project === null) {
+            $moved = Project::query()->published()->movedFromSlug($slug)->firstOrFail();
+
+            return redirect()->route('projects.show', $moved->slug, 301);
+        }
+
+        LocalizedUrls::useSlugs($project->getTranslations('slug'));
 
         $breadcrumbs = Breadcrumbs::make([
             ['label' => __('nav.home'), 'url' => route('home')],

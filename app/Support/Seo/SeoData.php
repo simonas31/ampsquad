@@ -62,7 +62,11 @@ final readonly class SeoData implements Arrayable
         // than <link rel="canonical">, which Google's guidelines flag.
         $alternates = collect(LaravelLocalization::getSupportedLocales())
             ->map(function (array $properties, string $code) use ($defaultLocale, $hideDefaultLocaleInURL) {
-                $url = LaravelLocalization::getLocalizedURL($code, null, [], true);
+                $url = LocalizedUrls::forLocale($code);
+
+                if ($url === null) {
+                    return null;
+                }
 
                 if ($code === $defaultLocale && $hideDefaultLocaleInURL) {
                     // Stripping the prefix from the root "/lt" leaves a
@@ -74,6 +78,7 @@ final readonly class SeoData implements Arrayable
 
                 return ['locale' => $code, 'url' => $url];
             })
+            ->filter()
             ->values();
 
         $defaultUrl = $alternates->firstWhere('locale', $defaultLocale)['url'] ?? url()->current();

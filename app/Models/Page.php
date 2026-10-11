@@ -6,10 +6,12 @@ namespace App\Models;
 
 use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasSeo;
+use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasTranslatableBlocks;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
@@ -23,6 +25,7 @@ class Page extends Model implements HasMedia
         HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
     }
     use HasSeo;
+    use HasSlug;
     use HasTranslatableBlocks;
     use HasTranslations;
 
@@ -46,7 +49,6 @@ class Page extends Model implements HasMedia
     protected $fillable = [
         'key',
         'title',
-        'slug',
         'blocks',
         'show_in_header',
         'show_in_footer',
@@ -80,6 +82,33 @@ class Page extends Model implements HasMedia
 
         $this->addMediaCollection('content_blocks')
             ->acceptsMimeTypes(self::$imageMimeTypes);
+    }
+
+    /**
+     * Pages resolve through the `/{slug}` catch-all, so a slug equal to a
+     * literal route segment (or a locale prefix) would be shadowed by it.
+     *
+     * @return list<string>
+     */
+    protected function reservedSlugs(string $locale): array
+    {
+        $locales = array_keys(LaravelLocalization::getSupportedLocales());
+
+        return [
+            'projects',
+            'contact',
+            'admin',
+            ...array_map(fn (string $code): string => trans('routes.price_calculator', [], $code), $locales),
+            ...$locales,
+        ];
+    }
+
+    /**
+     * Pages have no draft state: every page is a live URL from creation.
+     */
+    protected function slugIsLocked(): bool
+    {
+        return true;
     }
 
     public function isAlwaysInMenus(): bool

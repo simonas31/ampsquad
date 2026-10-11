@@ -25,7 +25,6 @@ class PageResourceTest extends TestCase
             ->fillForm([
                 'key' => 'faq',
                 'title' => 'DUK',
-                'slug' => 'duk',
                 'show_in_header' => true,
                 'show_in_footer' => true,
             ])
@@ -76,7 +75,6 @@ class PageResourceTest extends TestCase
             ->fillForm([
                 'key' => 'faq',
                 'title' => 'DUK',
-                'slug' => 'duk',
                 'blocks' => [
                     [
                         'type' => 'heading',

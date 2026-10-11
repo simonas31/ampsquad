@@ -27,6 +27,7 @@ export function VideoEmbed({ url }: { url: string }) {
         className="h-full w-full"
         loading="lazy"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        style={{ width: "100%", height: "100%" }}
         allowFullScreen
       />
     </div>

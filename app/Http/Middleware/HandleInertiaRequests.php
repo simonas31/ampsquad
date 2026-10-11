@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Page;
 use App\Settings\GeneralSettings;
+use App\Support\Seo\LocalizedUrls;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -46,13 +47,13 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
-            'locale' => [
+            'locale' => fn () => [
                 'current' => app()->getLocale(),
                 'available' => collect(LaravelLocalization::getSupportedLocales())
                     ->map(fn (array $properties, string $code) => [
                         'code' => $code,
                         'name' => $properties['native'],
-                        'url' => LaravelLocalization::getLocalizedURL($code, null, [], true),
+                        'url' => LocalizedUrls::forLocale($code) ?? LocalizedUrls::homeForLocale($code),
                     ])
                     ->values(),
             ],

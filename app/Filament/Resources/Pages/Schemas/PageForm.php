@@ -10,9 +10,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Str;
 
 class PageForm
 {
@@ -26,8 +24,6 @@ class PageForm
                         TextInput::make('title')
                             ->label(__('admin.fields.title'))
                             ->required()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? '')))
                             ->columnSpanFull(),
                         TextInput::make('key')
                             ->label(__('admin.pages.key'))
@@ -37,7 +33,10 @@ class PageForm
                             ->disabled(fn (?Page $record): bool => $record?->isProtected() ?? false),
                         TextInput::make('slug')
                             ->label(__('admin.fields.slug'))
-                            ->required(),
+                            ->helperText(__('admin.slug.helper'))
+                            ->disabled()
+                            ->saved(false)
+                            ->visibleOn('edit'),
                         Checkbox::make('show_in_header')
                             ->label(__('admin.pages.show_in_header'))
                             ->helperText(fn (?Page $record): ?string => $record?->isAlwaysInMenus() ? __('admin.pages.always_in_menus_helper') : null)

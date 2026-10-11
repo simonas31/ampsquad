@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
@@ -21,7 +20,6 @@ class CategorySeeder extends Seeder
             Category::query()->create([
                 'order' => $order,
                 'name' => ['lt' => $category['lt'], 'en' => $category['en']],
-                'slug' => ['lt' => Str::slug($category['lt']), 'en' => Str::slug($category['en'])],
             ]);
         }
     }

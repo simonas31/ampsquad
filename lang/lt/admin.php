@@ -49,6 +49,14 @@ return [
         'tags' => 'Žymos',
     ],
 
+    'slug' => [
+        'helper' => 'Sukuriama automatiškai iš pavadinimo.',
+        'regenerate' => 'Perkurti nuorodą',
+        'regenerate_description' => 'Perkuria šios kalbos nuorodą pagal išsaugotą pavadinimą. Sena nuoroda ir toliau nukreips į naująją, tačiau nuorodos ir paieškos rezultatai gali atsinaujinti ne iš karto. Pirmiausia išsaugokite pakeitimus.',
+        'regenerated' => 'Nuoroda perkurta',
+        'unchanged' => 'Nuoroda jau atitinka pavadinimą',
+    ],
+
     'projects' => [
         'label' => 'Projektas',
         'plural_label' => 'Projektai',

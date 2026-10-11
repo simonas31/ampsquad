@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasSlug;
 use Database\Factories\TagFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +16,7 @@ class Tag extends Model
     /** @use HasFactory<TagFactory> */
     use HasFactory;
 
+    use HasSlug;
     use HasTranslations;
 
     /**
@@ -22,7 +24,6 @@ class Tag extends Model
      */
     protected $fillable = [
         'name',
-        'slug',
     ];
 
     /**
@@ -32,6 +33,11 @@ class Tag extends Model
         'name',
         'slug',
     ];
+
+    protected function slugSourceAttribute(): string
+    {
+        return 'name';
+    }
 
     public function projects(): BelongsToMany
     {

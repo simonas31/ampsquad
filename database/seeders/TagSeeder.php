@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class TagSeeder extends Seeder
 {
@@ -24,7 +23,6 @@ class TagSeeder extends Seeder
         foreach ($tags as $tag) {
             Tag::query()->create([
                 'name' => ['lt' => $tag['lt'], 'en' => $tag['en']],
-                'slug' => ['lt' => Str::slug($tag['lt']), 'en' => Str::slug($tag['en'])],
             ]);
         }
     }

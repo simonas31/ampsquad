@@ -13,9 +13,7 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Str;
 
 class ProjectForm
 {
@@ -38,12 +36,13 @@ class ProjectForm
                 TextInput::make('title')
                     ->label(__('admin.fields.title'))
                     ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? '')))
                     ->columnSpanFull(),
                 TextInput::make('slug')
                     ->label(__('admin.fields.slug'))
-                    ->required(),
+                    ->helperText(__('admin.slug.helper'))
+                    ->disabled()
+                    ->saved(false)
+                    ->visibleOn('edit'),
                 Textarea::make('excerpt')
                     ->label(__('admin.fields.excerpt'))
                     ->rows(2)
