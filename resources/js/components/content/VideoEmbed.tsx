@@ -1,33 +1,35 @@
+import { InstagramEmbed } from "@/components/content/InstagramEmbed";
 import { useT } from "@/hooks/use-t";
-
-function toEmbedUrl(url: string): string {
-  const youtube = url.match(
-    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]+)/,
-  );
-  if (youtube) {
-    return `https://www.youtube-nocookie.com/embed/${youtube[1]}`;
-  }
-
-  const vimeo = url.match(/vimeo\.com\/(\d+)/);
-  if (vimeo) {
-    return `https://player.vimeo.com/video/${vimeo[1]}`;
-  }
-
-  return url;
-}
+import { cn } from "@/lib/utils";
+import { toEmbedSource } from "@/lib/video-embed";
 
 export function VideoEmbed({ url }: { url: string }) {
   const t = useT();
+  const source = toEmbedSource(url);
+
+  if (source.kind === "instagram") {
+    // Instagram sizes its own post, so the slot is a centered column with
+    // a floor height for the loading skeleton instead of a fixed ratio.
+    return (
+      <div className="relative mx-auto min-h-96 w-full max-w-lg">
+        <InstagramEmbed embedUrl={source.permalink} />
+      </div>
+    );
+  }
 
   return (
-    <div className="aspect-video overflow-hidden rounded-2xl bg-ink">
+    <div
+      className={cn(
+        "bg-ink relative w-full overflow-hidden rounded-2xl",
+        source.portrait ? "mx-auto aspect-[9/16] max-w-sm" : "aspect-video",
+      )}
+    >
       <iframe
-        src={toEmbedUrl(url)}
+        src={source.src}
         title={t("content.embeddedVideo")}
-        className="h-full w-full"
+        className="absolute inset-0 h-full w-full border-0"
         loading="lazy"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        style={{ width: "100%", height: "100%" }}
         allowFullScreen
       />
     </div>
