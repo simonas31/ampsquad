@@ -36,6 +36,7 @@ class ManageGeneralSettings extends SettingsPage
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Grid::make(2)
                     ->schema([
