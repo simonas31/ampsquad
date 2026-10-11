@@ -39,6 +39,7 @@ class ManageHomepageSettings extends SettingsPage
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make(__('admin.homepage_settings.hero_section'))
                     ->schema([
@@ -47,9 +48,9 @@ class ManageHomepageSettings extends SettingsPage
                             ->helperText(__('admin.homepage_settings.hero_image_helper'))
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(8192)
-                            ->imageResizeMode('contain')
-                            ->imageResizeTargetWidth('2400')
-                            ->imageResizeUpscale(false)
+                            ->automaticallyResizeImagesMode('contain')
+                            ->automaticallyResizeImagesToWidth('2400')
+                            ->automaticallyUpscaleImagesWhenResizing(false)
                             ->disk('public')
                             ->directory('site')
                             ->visibility('public'),
