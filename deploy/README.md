@@ -14,26 +14,38 @@ The server needs PHP only: no Composer, no Node.
 `optimize` skips routes on purpose: `route:cache` bakes in a single locale prefix and makes `/en/*` return 404.
 Do not run `optimize:clear` or `cache:clear` on the server; the DB cache carries the `queue:restart` signal.
 
+## Placeholders: replace before running anything
+
+Commands and files below contain placeholders in capital letters. Replace them with your real values; do not run them as written.
+`ampsquad.lt` is the real domain and stays as is.
+
+| Placeholder | Replace with | Example |
+| --- | --- | --- |
+| `SITE_USER` | the site user you chose when creating the site in CloudPanel | `ampsquad` |
+| `HOST` | the server IP (same value as the `HOSTINGER_HOST` secret) | `203.0.113.10` |
+
 ## One-time server setup
 
 1. CloudPanel → **Add Site → Create a PHP Site** → *Laravel 13* template, PHP 8.5. Add a database (Databases tab). Enable SSL.
-2. Site → **SSH/FTP**: add the public half of a new deploy key (`ssh-keygen -t ed25519 -f deploy_key -N ""`).
-3. Copy and run the setup script as the site user:
+2. Site → **SSH/FTP**: add the public half of a new deploy key (`ssh-keygen -t ed25519 -f deploy_key -N "" -C "github-actions-deploy"`).
+3. Copy and run the setup script as the site user. Run both commands on your dev machine, from the repo root, after replacing
+   `SITE_USER` and `HOST` (for example `ampsquad@203.0.113.10`). It asks for the site user's password, or add `-i deploy_key` to both commands to log in with the key from step 2:
    ```bash
    scp deploy/setup.sh SITE_USER@HOST:~/
    ssh SITE_USER@HOST 'mkdir -p ~/htdocs/ampsquad.lt && mv ~/setup.sh ~/htdocs/ampsquad.lt/ && cd ~/htdocs/ampsquad.lt && bash setup.sh && rm setup.sh'
    ```
-4. Create `~/htdocs/ampsquad.lt/.env` from `deploy/.env.production.example`, `chmod 600 .env`.
+4. Create `~/htdocs/ampsquad.lt/.env` on the server from `deploy/.env.production.example`, then `chmod 600 .env`.
+   Fill in every blank value: `APP_KEY`, the `DB_*` credentials from the CloudPanel database, and the `MAIL_*` settings.
    Generate `APP_KEY` on your dev machine with `php artisan key:generate --show`.
 5. CloudPanel → site → **Settings → Root Directory**: `ampsquad.lt/public`.
 6. GitHub → Settings → Secrets and variables → Actions:
 
    | Secret | Value |
    | --- | --- |
-   | `HOSTINGER_HOST` | server IP or hostname |
-   | `HOSTINGER_USER` | CloudPanel site user |
+   | `HOSTINGER_HOST` | the server IP (`HOST`) |
+   | `HOSTINGER_USER` | the CloudPanel site user (`SITE_USER`) |
    | `HOSTINGER_SSH_KEY` | private half of the deploy key |
-   | `HOSTINGER_KNOWN_HOSTS` | output of `ssh-keyscan -p 22 HOST` (run from a network you trust) |
+   | `HOSTINGER_KNOWN_HOSTS` | output of `ssh-keyscan -p 22 HOST` with `HOST` replaced by the same IP, run on your dev machine (not the server) from a network you trust |
 
    Production secrets (DB, mail, `APP_KEY`) stay in the server `.env`, never in GitHub or Git.
 7. Push to `master`, or run the workflow manually from the Actions tab. The first deploy must succeed
@@ -51,21 +63,24 @@ also add a `schedule:run` cron entry (the scheduler would run twice).
 - `ampsquad-scheduler`: `schedule:work`, which runs `schedule:run` every minute (daily sitemap).
   No restart needed on deploy; every run is a fresh PHP process.
 
-The `deploy/` folder is not rsynced to the server, so copy the file over yourself. Run once, after the first deploy:
+The `deploy/` folder is not rsynced to the server, so copy the file over yourself. Run once, after the first deploy.
+Replace `HOST` in the commands below, and set `SITE_USER` as marked in step 3 below:
 
 1. Install Supervisor on the server if it is missing (as root):
    ```bash
    apt install -y supervisor
    systemctl enable --now supervisor
    ```
-2. Copy the file from your dev machine:
+2. Copy the file from your dev machine, from the repo root (replace `HOST`):
    ```bash
    scp deploy/supervisor-worker.conf root@HOST:/tmp/ampsquad.conf
    ```
-3. On the server, as root, set the site user, install, and load it:
+3. Log in to the server as root (replace `HOST`) and run the rest there. Change `SITE_USER=` on the first line to your
+   real site user, because the `sed` line writes it into the file:
    ```bash
    ssh root@HOST
-   sed -i 's/SITE_USER/your-site-user/g' /tmp/ampsquad.conf
+   SITE_USER=ampsquad   # <- change to your CloudPanel site user
+   sed -i "s/SITE_USER/$SITE_USER/g" /tmp/ampsquad.conf
    mv /tmp/ampsquad.conf /etc/supervisor/conf.d/ampsquad.conf
    supervisorctl reread
    supervisorctl update
@@ -84,7 +99,7 @@ tail -f /var/log/supervisor/ampsquad-scheduler.log
 ```
 
 After editing `/etc/supervisor/conf.d/ampsquad.conf` run `supervisorctl reread && supervisorctl update`.
-Verify the scheduler from the site user: `php8.5 artisan schedule:list`.
+Verify the scheduler as the site user: `cd ~/htdocs/ampsquad.lt && php8.5 artisan schedule:list`.
 
 ## Rollback
 
