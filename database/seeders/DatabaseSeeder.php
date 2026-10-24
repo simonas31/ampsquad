@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             PageSeeder::class,
             VideoSeeder::class,
             CapabilitySeeder::class,
+            ProductSeeder::class,
         ]);
     }
 }
