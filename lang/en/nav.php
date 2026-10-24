@@ -7,5 +7,7 @@ return [
     'projects' => 'Projects',
     'about' => 'About',
     'price_calculator' => 'Price calculator',
+    'shop' => 'Shop',
+    'cart' => 'Cart',
     'contact' => 'Contact',
 ];

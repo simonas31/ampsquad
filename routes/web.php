@@ -10,6 +10,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PriceCalculatorController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -35,6 +36,10 @@ Route::localized(function (): void {
     // locale (like /projects): mcamara only translates single-segment paths,
     // which would break the language switcher on /shop/{slug}.
     Route::middleware('shop.enabled')->group(function (): void {
+        Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+        Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');
+        Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+
         Route::middleware('throttle:60,1')->prefix('cart')->name('cart.')->group(function (): void {
             Route::post('/items', [CartItemController::class, 'store'])->name('items.store');
             Route::patch('/items/{cartItem}', [CartItemController::class, 'update'])

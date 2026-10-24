@@ -13,5 +13,7 @@ return [
     'projects' => 'Projektai',
     'about' => 'Apie mus',
     'price_calculator' => 'Kainos skaičiuoklė',
+    'shop' => 'Parduotuvė',
+    'cart' => 'Krepšelis',
     'contact' => 'Kontaktai',
 ];

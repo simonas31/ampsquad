@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\Page;
+use App\Models\Product;
 use App\Models\Project;
+use App\Settings\ShopSettings;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -35,6 +37,22 @@ class GenerateSitemap extends Command
             fn (string $locale) => $this->localizedUrl($locale, '/'.trans('routes.price_calculator', [], $locale)),
             priority: 0.7,
         ));
+
+        // Only while the shop is on, since its URLs 404 otherwise. The sitemap
+        // is regenerated daily and on deploy, so a switch shows up by then.
+        if (app(ShopSettings::class)->enabled) {
+            $this->addIfPresent($sitemap, $this->urlForAllLocales(fn (string $locale) => $this->localizedUrl($locale, '/shop'), priority: 0.8));
+
+            Product::query()
+                ->active()
+                ->each(function (Product $product) use ($sitemap): void {
+                    $this->addIfPresent($sitemap, $this->urlForAllLocales(
+                        fn (string $locale) => $this->localizedSlugUrl($locale, '/shop/', $product->getTranslation('slug', $locale, false)),
+                        priority: 0.6,
+                        lastModified: $product->updated_at,
+                    ));
+                });
+        }
 
         Project::query()
             ->published()

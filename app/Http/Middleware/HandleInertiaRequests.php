@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Models\Page;
+use App\Services\CartService;
 use App\Settings\GeneralSettings;
+use App\Settings\ShopSettings;
 use App\Support\Seo\LocalizedUrls;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +62,7 @@ class HandleInertiaRequests extends Middleware
             'navigation' => $navigation,
             'pageLinks' => fn () => $this->pageLinks($navigation),
             'site' => fn () => $this->siteContact(),
+            'cart' => fn () => $this->cartSummary($request),
         ];
     }
 
@@ -98,6 +101,37 @@ class HandleInertiaRequests extends Middleware
     private function publicUrl(?string $path): ?string
     {
         return $path ? Storage::disk('public')->url($path) : null;
+    }
+
+    /**
+     * Whether the public shop is switched on (and exists in this build).
+     * The shop link, cart badge and every shop route depend on it.
+     */
+    private function shopEnabled(): bool
+    {
+        return Route::has('shop.index') && app(ShopSettings::class)->enabled;
+    }
+
+    /**
+     * What the header's cart link needs: where the cart is, where lines are
+     * added, and how many units are in it. Null while the shop is off, so
+     * the link disappears with it. The URLs are relative because the page
+     * sends requests to them: an absolute one built from APP_URL would be
+     * cross-origin (and blocked) whenever the site is opened on another host.
+     *
+     * @return array{url: string, itemsUrl: string, count: int}|null
+     */
+    private function cartSummary(Request $request): ?array
+    {
+        if (! $this->shopEnabled()) {
+            return null;
+        }
+
+        return [
+            'url' => route('cart.show', absolute: false),
+            'itemsUrl' => route('cart.items.store', absolute: false),
+            'count' => app(CartService::class)->totalQuantity($request),
+        ];
     }
 
     /**
@@ -158,6 +192,7 @@ class HandleInertiaRequests extends Middleware
             $this->aboutPageLink(),
             $this->routeLink('projects.index', 'nav.projects'),
             $this->routeLink('price-calculator', 'nav.priceCalculator'),
+            $this->shopEnabled() ? $this->routeLink('shop.index', 'nav.shop') : null,
             $this->routeLink('contact', 'nav.contact'),
         ])
             ->filter()

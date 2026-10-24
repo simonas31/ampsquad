@@ -34,6 +34,7 @@ export interface NavigationLink {
     | "nav.about"
     | "nav.projects"
     | "nav.priceCalculator"
+    | "nav.shop"
     | "nav.contact";
   url: string;
 }
@@ -62,6 +63,16 @@ export interface SiteData {
   };
 }
 
+/** What the header's cart link needs; null while the shop is switched off. */
+export interface CartSummary {
+  /** The cart page. DELETE on it empties the cart. */
+  url: string;
+  /** POST here to add a product. */
+  itemsUrl: string;
+  /** Units that can still be bought. */
+  count: number;
+}
+
 export interface SharedData {
   locale: {
     current: Locale;
@@ -73,6 +84,7 @@ export interface SharedData {
     footer: PageLink[];
   };
   site: SiteData;
+  cart: CartSummary | null;
 }
 
 export interface Category {
@@ -154,6 +166,45 @@ export interface Project {
   featuredImageThumbUrl: string | null;
   gallery: GalleryImage[];
   blocks?: ContentBlock[];
+}
+
+/** Prices are whole cents; format them with formatCents(). */
+export interface Product {
+  id: number;
+  name: string;
+  excerpt: string | null;
+  /** Only sent to the product page. */
+  description?: string | null;
+  priceCents: number;
+  url: string;
+  imageUrl: string | null;
+  imageThumbUrl: string | null;
+}
+
+export interface CartLine {
+  id: number;
+  quantity: number;
+  /** False once the product was deactivated or deleted. */
+  isAvailable: boolean;
+  unitPriceCents: number;
+  lineTotalCents: number;
+  /** PATCH to set the quantity, DELETE to remove the line. */
+  url: string;
+  product: {
+    id: number;
+    name: string;
+    /** Null when the product can no longer be viewed. */
+    url: string | null;
+    imageThumbUrl: string | null;
+  };
+}
+
+export interface CartData {
+  items: CartLine[];
+  /** Leaves out unavailable lines. */
+  subtotalCents: number;
+  totalQuantity: number;
+  hasUnavailableItems: boolean;
 }
 
 export interface Video {

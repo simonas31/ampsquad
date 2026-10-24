@@ -4,6 +4,8 @@
     "projects": "Projects",
     "about": "About",
     "priceCalculator": "Price calculator",
+    "shop": "Shop",
+    "cart": "Cart",
     "contact": "Contact"
   },
   "common": {
@@ -119,6 +121,34 @@
       "vat": "+ VAT",
       "scope": "Labour only. Materials not included."
     }
+  },
+  "shop": {
+    "noProducts": "No products available yet.",
+    "addToCart": "Add to cart",
+    "adding": "Adding…",
+    "added": "Added to cart",
+    "viewCart": "View cart",
+    "quantity": "Quantity",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "backToShop": "Back to shop"
+  },
+  "cart": {
+    "linkLabel": "Cart ({count})",
+    "empty": "Your cart is empty.",
+    "continueShopping": "Browse the shop",
+    "unitPrice": "{price} each",
+    "remove": "Remove {name}",
+    "removeItem": "Remove",
+    "lineQuantity": "Quantity of {name}",
+    "unavailable": "This product is no longer available. Remove it to continue.",
+    "unavailableNotice": "Some products in your cart are no longer available and are not included in the total.",
+    "summary": "Summary",
+    "items": "Items",
+    "total": "Total",
+    "clear": "Empty cart",
+    "checkoutSoon": "Online checkout is not available yet. Contact us and we will arrange your order.",
+    "contactToOrder": "Contact us to order"
   },
   "errors": {
     "backHome": "Back to homepage",

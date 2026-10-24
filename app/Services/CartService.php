@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +45,40 @@ class CartService
         }
 
         return Cart::query()->where('token', $token)->first();
+    }
+
+    /**
+     * The visitor's cart ready to render: lines in the order they were
+     * added, with their products and images loaded. A visitor with no cart
+     * gets an empty, unsaved one, so the page never special-cases it.
+     */
+    public function forDisplay(Request $request): Cart
+    {
+        $cart = $this->current($request);
+
+        if ($cart === null) {
+            return new Cart;
+        }
+
+        return $cart->load(['items' => fn ($items) => $items->orderBy('id'), 'items.product.media']);
+    }
+
+    /**
+     * Units in the visitor's cart that can still be bought (the header
+     * badge), in a single query. Matches Cart::totalQuantity().
+     */
+    public function totalQuantity(Request $request): int
+    {
+        $token = $request->cookie(self::COOKIE);
+
+        if (! is_string($token) || ! Str::isUuid($token)) {
+            return 0;
+        }
+
+        return (int) CartItem::query()
+            ->whereHas('cart', fn (Builder $cart) => $cart->where('token', $token))
+            ->whereHas('product', fn (Builder $product) => $product->where('is_active', true)->whereNull('deleted_at'))
+            ->sum('quantity');
     }
 
     /**

@@ -4,6 +4,8 @@
     "projects": "Projektai",
     "about": "Apie mus",
     "priceCalculator": "Kainos skaičiuoklė",
+    "shop": "Parduotuvė",
+    "cart": "Krepšelis",
     "contact": "Kontaktai"
   },
   "common": {
@@ -119,6 +121,34 @@
       "vat": "+ PVM",
       "scope": "Tik darbai. Medžiagos neįskaičiuotos."
     }
+  },
+  "shop": {
+    "noProducts": "Prekių kol kas nėra.",
+    "addToCart": "Į krepšelį",
+    "adding": "Dedama…",
+    "added": "Įdėta į krepšelį",
+    "viewCart": "Peržiūrėti krepšelį",
+    "quantity": "Kiekis",
+    "decreaseQuantity": "Sumažinti kiekį",
+    "increaseQuantity": "Padidinti kiekį",
+    "backToShop": "Atgal į parduotuvę"
+  },
+  "cart": {
+    "linkLabel": "Krepšelis ({count})",
+    "empty": "Jūsų krepšelis tuščias.",
+    "continueShopping": "Eiti į parduotuvę",
+    "unitPrice": "{price} už vnt.",
+    "remove": "Pašalinti: {name}",
+    "removeItem": "Pašalinti",
+    "lineQuantity": "Kiekis: {name}",
+    "unavailable": "Ši prekė nebepasiekiama. Pašalinkite ją, kad galėtumėte tęsti.",
+    "unavailableNotice": "Kai kurios krepšelio prekės nebepasiekiamos ir neįtrauktos į sumą.",
+    "summary": "Suvestinė",
+    "items": "Prekių",
+    "total": "Iš viso",
+    "clear": "Ištuštinti krepšelį",
+    "checkoutSoon": "Užsakymo internetu kol kas nėra. Susisiekite su mumis ir viską sutvarkysime.",
+    "contactToOrder": "Susisiekti dėl užsakymo"
   },
   "errors": {
     "backHome": "Grįžti į pradžią",
