@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\CartItem;
+use App\Services\CartService;
 use Closure;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerLocalizedRouteMacro();
+        $this->registerCartItemBinding();
 
         // Inertia props are consumed directly by React components, not by an
         // external JSON:API client, so the extra {"data": {...}} envelope
@@ -34,6 +37,22 @@ class AppServiceProvider extends ServiceProvider
         // the component. Paginated collections are unaffected — they keep
         // their data/links/meta shape, which Paginated<T> already expects.
         JsonResource::withoutWrapping();
+    }
+
+    /**
+     * {cartItem} only ever resolves a line of the visitor's own cart, so a
+     * line id belonging to anyone else is a plain 404 (no existence leak),
+     * and controllers need no ownership check of their own.
+     */
+    private function registerCartItemBinding(): void
+    {
+        Route::bind('cartItem', function (string $value): CartItem {
+            $cart = app(CartService::class)->current(request());
+
+            abort_if($cart === null, 404);
+
+            return $cart->items()->whereKey($value)->firstOrFail();
+        });
     }
 
     /**

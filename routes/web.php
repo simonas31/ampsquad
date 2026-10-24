@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -27,6 +29,23 @@ Route::localized(function (): void {
     Route::post('/contact', [ContactController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('contact.store');
+
+    // The shop is switched on and off in the admin panel; while it is off
+    // every route in this group answers 404. The URLs are the same in every
+    // locale (like /projects): mcamara only translates single-segment paths,
+    // which would break the language switcher on /shop/{slug}.
+    Route::middleware('shop.enabled')->group(function (): void {
+        Route::middleware('throttle:60,1')->prefix('cart')->name('cart.')->group(function (): void {
+            Route::post('/items', [CartItemController::class, 'store'])->name('items.store');
+            Route::patch('/items/{cartItem}', [CartItemController::class, 'update'])
+                ->whereNumber('cartItem')
+                ->name('items.update');
+            Route::delete('/items/{cartItem}', [CartItemController::class, 'destroy'])
+                ->whereNumber('cartItem')
+                ->name('items.destroy');
+            Route::delete('/', [CartController::class, 'destroy'])->name('destroy');
+        });
+    });
 
     // Catch-all for admin-managed static pages (about, privacy-policy,
     // terms-and-conditions, and whatever else gets added later) — must

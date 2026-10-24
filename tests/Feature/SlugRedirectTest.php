@@ -186,7 +186,7 @@ class SlugRedirectTest extends TestCase
 
     public function test_page_slug_cannot_collide_with_a_literal_route(): void
     {
-        foreach (['Contact', 'Projects', 'Kainu skaiciuokle', 'Price Calculator', 'Admin', 'EN'] as $index => $title) {
+        foreach (['Contact', 'Projects', 'Shop', 'Cart', 'Kainu skaiciuokle', 'Price Calculator', 'Admin', 'EN'] as $index => $title) {
             $page = Page::query()->create([
                 'key' => 'reserved-'.$index,
                 'title' => ['lt' => $title, 'en' => $title],

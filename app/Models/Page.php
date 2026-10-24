@@ -97,6 +97,8 @@ class Page extends Model implements HasMedia
         return [
             'projects',
             'contact',
+            'shop',
+            'cart',
             'admin',
             ...array_map(fn (string $code): string => trans('routes.price_calculator', [], $code), $locales),
             ...$locales,

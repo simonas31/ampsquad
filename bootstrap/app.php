@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\EnsureShopEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Support\Seo\SeoData;
 use Illuminate\Foundation\Application;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
+            'shop.enabled' => EnsureShopEnabled::class,
             'localize' => LaravelLocalizationRoutes::class,
             'localizationRedirect' => LaravelLocalizationRedirectFilter::class,
             'localeSessionRedirect' => LocaleSessionRedirect::class,
