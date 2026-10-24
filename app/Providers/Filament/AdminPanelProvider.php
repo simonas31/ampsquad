@@ -63,6 +63,7 @@ class AdminPanelProvider extends PanelProvider
                 // resource's group by comparing against getLabel() — which
                 // fails the moment the label isn't in English anymore.
                 'Content' => NavigationGroup::make(fn () => __('admin.nav_groups.content')),
+                'Shop' => NavigationGroup::make(fn () => __('admin.nav_groups.shop')),
                 'Communication' => NavigationGroup::make(fn () => __('admin.nav_groups.communication')),
                 'Settings' => NavigationGroup::make(fn () => __('admin.nav_groups.settings')),
             ])

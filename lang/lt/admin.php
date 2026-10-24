@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'nav_groups' => [
         'content' => 'Turinys',
+        'shop' => 'Parduotuvė',
         'communication' => 'Komunikacija',
         'settings' => 'Nustatymai',
     ],
@@ -47,6 +48,7 @@ return [
         'type' => 'Tipas',
         'embed_url' => 'Įterpimo nuoroda',
         'tags' => 'Žymos',
+        'price' => 'Kaina',
     ],
 
     'slug' => [
@@ -102,6 +104,20 @@ return [
         'label' => 'Gavėjas',
         'plural_label' => 'Gavėjai',
         'notifications_helper' => 'Kokius sistemos el. laiškus turėtų gauti šis gavėjas.',
+    ],
+
+    'products' => [
+        'label' => 'Prekė',
+        'plural_label' => 'Prekės',
+        'excerpt_helper' => 'Trumpas tekstas, rodomas parduotuvės sąraše.',
+        'price_helper' => 'Eurais, iki dviejų skaitmenų po kablelio, pvz. 19.99.',
+        'is_active_helper' => 'Neaktyvios prekės paslėptos parduotuvėje ir jų negalima įdėti į krepšelį.',
+    ],
+
+    'shop_settings' => [
+        'nav_label' => 'Parduotuvės nustatymai',
+        'enabled' => 'Parduotuvė įjungta',
+        'enabled_helper' => 'Išjungus, parduotuvės ir krepšelio puslapiai lankytojams nepasiekiami, o nuoroda į parduotuvę paslėpta. Prekes čia vis tiek galima valdyti.',
     ],
 
     'capabilities' => [

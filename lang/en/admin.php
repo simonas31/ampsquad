@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'nav_groups' => [
         'content' => 'Content',
+        'shop' => 'Shop',
         'communication' => 'Communication',
         'settings' => 'Settings',
     ],
@@ -47,6 +48,7 @@ return [
         'type' => 'Type',
         'embed_url' => 'Embed URL',
         'tags' => 'Tags',
+        'price' => 'Price',
     ],
 
     'slug' => [
@@ -102,6 +104,20 @@ return [
         'label' => 'Recipient',
         'plural_label' => 'Recipients',
         'notifications_helper' => 'Which system emails this recipient should receive.',
+    ],
+
+    'products' => [
+        'label' => 'Product',
+        'plural_label' => 'Products',
+        'excerpt_helper' => 'Short text shown on the shop listing.',
+        'price_helper' => 'In euros, with up to two decimals, e.g. 19.99.',
+        'is_active_helper' => 'Inactive products are hidden from the shop and cannot be added to a cart.',
+    ],
+
+    'shop_settings' => [
+        'nav_label' => 'Shop Settings',
+        'enabled' => 'Shop enabled',
+        'enabled_helper' => 'When off, the shop and cart pages are not available to visitors and the shop link is hidden. Products can still be managed here.',
     ],
 
     'capabilities' => [

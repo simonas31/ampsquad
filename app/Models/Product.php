@@ -35,6 +35,12 @@ class Product extends Model implements HasMedia
     use SoftDeletes;
 
     /**
+     * €100,000.00 — far above any real price, and far below the column's
+     * unsigned 32-bit limit, so an input slip cannot overflow it.
+     */
+    public const int MAX_PRICE_CENTS = 10_000_000;
+
+    /**
      * @var array<string, mixed>
      */
     protected $attributes = [
