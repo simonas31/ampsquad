@@ -97,9 +97,17 @@ class Product extends Model implements HasMedia
         return $this->getOriginal('is_active') === true;
     }
 
+    /**
+     * Product photographs are public content, so they live on the public
+     * disk whatever FILESYSTEM_DISK is. Filament's upload falls back to that
+     * setting (the private `local` disk by default) when the collection names
+     * no disk, and a private file has no public URL: the shop would answer
+     * 403 for every product image.
+     */
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('featured_image')
+            ->useDisk('public')
             ->singleFile()
             ->acceptsMimeTypes(self::$imageMimeTypes);
     }

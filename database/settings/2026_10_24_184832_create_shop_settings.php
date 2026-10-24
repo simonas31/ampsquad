@@ -11,4 +11,9 @@ return new class extends SettingsMigration
         // Off until an admin switches the shop on.
         $this->migrator->add('shop.enabled', false);
     }
+
+    public function down(): void
+    {
+        $this->migrator->delete('shop.enabled');
+    }
 };

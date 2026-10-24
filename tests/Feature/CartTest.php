@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -123,6 +124,30 @@ class CartTest extends TestCase
         $cart->items()->firstOrFail()->update(['quantity' => 3]);
 
         $this->assertTrue($cart->fresh()->updated_at->gt($before));
+    }
+
+    public function test_carts_untouched_for_the_cart_lifetime_are_pruned_with_their_lines(): void
+    {
+        $stale = $this->cartWith(Product::factory()->create());
+        $recent = $this->cartWith(Product::factory()->create());
+        Cart::query()->whereKey($stale->id)->update(['updated_at' => now()->subDays(Cart::LIFETIME_DAYS)->subMinute()]);
+        Cart::query()->whereKey($recent->id)->update(['updated_at' => now()->subDays(Cart::LIFETIME_DAYS)->addMinute()]);
+
+        $this->artisan('model:prune', ['--model' => [Cart::class]])->assertSuccessful();
+
+        $this->assertModelMissing($stale);
+        $this->assertModelExists($recent);
+        $this->assertSame(1, CartItem::query()->count());
+    }
+
+    public function test_the_scheduler_prunes_carts_daily(): void
+    {
+        $event = collect(app(Schedule::class)->events())
+            ->first(fn ($event) => str_contains($event->command, 'model:prune'));
+
+        $this->assertNotNull($event);
+        $this->assertStringContainsString(Cart::class, $event->command);
+        $this->assertSame('0 0 * * *', $event->expression);
     }
 
     public function test_an_empty_cart_has_zero_totals(): void

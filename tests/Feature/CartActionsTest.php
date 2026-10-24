@@ -161,6 +161,14 @@ class CartActionsTest extends TestCase
         $this->assertSame(0, CartItem::query()->count());
     }
 
+    public function test_validation_messages_name_the_fields_in_lithuanian(): void
+    {
+        $product = Product::factory()->create();
+
+        $this->post(route('cart.items.store'), ['product_id' => $product->id, 'quantity' => 'abc'])
+            ->assertSessionHasErrors(['quantity' => 'kiekis turi būti sveikasis skaičius.']);
+    }
+
     public function test_a_missing_quantity_is_rejected(): void
     {
         $product = Product::factory()->create();

@@ -68,6 +68,8 @@ return [
         'phone' => 'telefonas',
         'message' => 'žinutė',
         'attachments' => 'failai',
+        'quantity' => 'kiekis',
+        'product_id' => 'prekė',
         'attachments.*' => 'failas',
         'title' => 'pavadinimas',
         'slug' => 'nuoroda',

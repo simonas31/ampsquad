@@ -30,7 +30,7 @@ class CartService
 {
     public const string COOKIE = 'cart_token';
 
-    private const int COOKIE_LIFETIME_MINUTES = 60 * 24 * 30;
+    private const int COOKIE_LIFETIME_MINUTES = Cart::LIFETIME_DAYS * 24 * 60;
 
     /**
      * The visitor's cart, or null when they have none yet (or the cookie
@@ -38,13 +38,9 @@ class CartService
      */
     public function current(Request $request): ?Cart
     {
-        $token = $request->cookie(self::COOKIE);
+        $token = $this->tokenFrom($request);
 
-        if (! is_string($token) || ! Str::isUuid($token)) {
-            return null;
-        }
-
-        return Cart::query()->where('token', $token)->first();
+        return $token === null ? null : Cart::query()->where('token', $token)->first();
     }
 
     /**
@@ -69,9 +65,9 @@ class CartService
      */
     public function totalQuantity(Request $request): int
     {
-        $token = $request->cookie(self::COOKIE);
+        $token = $this->tokenFrom($request);
 
-        if (! is_string($token) || ! Str::isUuid($token)) {
+        if ($token === null) {
             return 0;
         }
 
@@ -169,6 +165,17 @@ class CartService
             $cart->items()->delete();
             $cart->touch();
         });
+    }
+
+    /**
+     * The cookie's value when it looks like a cart token, otherwise null, so
+     * junk never reaches a query.
+     */
+    private function tokenFrom(Request $request): ?string
+    {
+        $token = $request->cookie(self::COOKIE);
+
+        return is_string($token) && Str::isUuid($token) ? $token : null;
     }
 
     private function lock(int $cartId): void

@@ -13,7 +13,9 @@ use App\Models\User;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\RestoreAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -229,6 +231,27 @@ class ProductResourceTest extends TestCase
             ->assertHasNoFormErrors();
 
         $this->assertSame($expectedCents, Product::query()->firstOrFail()->price_cents);
+    }
+
+    public function test_the_featured_image_is_stored_on_the_public_disk_even_when_the_default_disk_is_private(): void
+    {
+        config(['filament.default_filesystem_disk' => 'local']);
+        Storage::fake('public');
+        Storage::fake('local');
+        $this->signIn();
+
+        Livewire::test(CreateProduct::class)
+            ->assertFormFieldExists('featured_image', fn ($field) => $field->getDiskName() === 'public')
+            ->fillForm($this->validForm(['featured_image' => UploadedFile::fake()->image('product.png', 800, 600)]))
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $media = Product::query()->firstOrFail()->getFirstMedia('featured_image');
+
+        $this->assertNotNull($media);
+        $this->assertSame('public', $media->disk);
+        $this->assertSame('public', $media->conversions_disk);
+        Storage::disk('public')->assertExists($media->getPathRelativeToRoot());
     }
 
     public function test_the_edit_form_shows_the_price_in_euros(): void
