@@ -10,6 +10,7 @@ use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -18,9 +19,11 @@ use Spatie\Translatable\HasTranslations;
 
 /**
  * Something the public shop sells. Deliberately flat: one price in the
- * shop's single currency (EUR), no variants or stock. Soft deleted rather
- * than removed, so a product that is in a cart (or, later, on an order)
- * never leaves a dangling reference.
+ * shop's single currency (EUR), no variants. Stock is optional: products
+ * from the catalog import carry a quantity, hand-made ones leave it unset
+ * and are always available. Soft deleted rather than removed, so a product
+ * that is in a cart (or, later, on an order) never leaves a dangling
+ * reference.
  */
 class Product extends Model implements HasMedia
 {
@@ -58,6 +61,12 @@ class Product extends Model implements HasMedia
         'price_cents',
         'is_active',
         'order',
+        'sku',
+        'ean',
+        'stock_quantity',
+        'image_url',
+        'product_category_id',
+        'manufacturer_id',
     ];
 
     /**
@@ -79,6 +88,7 @@ class Product extends Model implements HasMedia
             'price_cents' => 'integer',
             'is_active' => 'boolean',
             'order' => 'integer',
+            'stock_quantity' => 'integer',
         ];
     }
 
@@ -115,6 +125,31 @@ class Product extends Model implements HasMedia
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+    }
+
+    public function manufacturer(): BelongsTo
+    {
+        return $this->belongsTo(Manufacturer::class);
+    }
+
+    /**
+     * Products whose stock is not tracked count as in stock.
+     */
+    public function scopeInStock(Builder $query): Builder
+    {
+        return $query->where(fn (Builder $stock) => $stock
+            ->whereNull('stock_quantity')
+            ->orWhere('stock_quantity', '>', 0));
+    }
+
+    public function isInStock(): bool
+    {
+        return $this->stock_quantity === null || $this->stock_quantity > 0;
     }
 
     /**

@@ -44,6 +44,20 @@ class ProductFactory extends Factory
         ]);
     }
 
+    public function inStock(int $quantity = 5): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'stock_quantity' => $quantity,
+        ]);
+    }
+
+    public function outOfStock(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'stock_quantity' => 0,
+        ]);
+    }
+
     public function priced(int $cents): static
     {
         return $this->state(fn (array $attributes): array => [

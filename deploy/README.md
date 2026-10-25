@@ -58,8 +58,10 @@ Commands and files below contain placeholders in capital letters. Replace them w
 `deploy/supervisor-worker.conf` defines two programs. Supervisor replaces the CloudPanel cron job, so do **not**
 also add a `schedule:run` cron entry (the scheduler would run twice).
 
-- `ampsquad-worker`: `queue:work`. Contact-form mail and image conversions never happen without it.
+- `ampsquad-worker`: `queue:work`. Contact-form mail, image conversions and catalog imports never happen without it.
   Each deploy runs `queue:restart`; the worker finishes its job, exits, and Supervisor starts it on the new code.
+  Set `DB_QUEUE_RETRY_AFTER=1900` in `.env`: a catalog import can run for minutes, and with the default of 90 seconds
+  the queue would hand the running job to a second worker.
 - `ampsquad-scheduler`: `schedule:work`, which runs `schedule:run` every minute (daily sitemap).
   No restart needed on deploy; every run is a fresh PHP process.
 

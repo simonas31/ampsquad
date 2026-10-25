@@ -114,6 +114,26 @@ return [
         'is_active_helper' => 'Inactive products are hidden from the shop and cannot be added to a cart.',
     ],
 
+    'catalog_import' => [
+        'errors' => [
+            'file_missing' => 'The catalog file could not be found or read.',
+            'file_too_large' => 'The catalog file is larger than :max MB.',
+            'invalid_json' => 'The file is not valid JSON: :error',
+            'not_an_object' => 'The file must contain a JSON object with "schema_version" and "products".',
+            'unsupported_version' => 'Unsupported "schema_version". Expected :version.',
+            'products_not_a_list' => '"products" must be a list of products.',
+            'no_products' => 'The file contains no products.',
+            'already_running' => 'Another catalog import is already running. Try again when it has finished.',
+            'unexpected' => 'The import stopped unexpectedly. Products imported so far were kept; run the file again to continue.',
+            'row_not_an_object' => 'The product must be a JSON object.',
+            'price_format' => 'The price must be a decimal string such as "19.99".',
+            'price_range' => 'The price must be between 0.01 and :max.',
+            'ean_format' => 'The EAN must be 8 to 14 digits.',
+            'duplicate_sku' => 'The same SKU appears again later in the file; the last one is used.',
+            'save_failed' => 'The product could not be saved.',
+        ],
+    ],
+
     'shop_settings' => [
         'nav_label' => 'Shop Settings',
         'enabled' => 'Shop enabled',
@@ -172,6 +192,12 @@ return [
             'new' => 'New',
             'read' => 'Read',
             'archived' => 'Archived',
+        ],
+        'catalog_import_status' => [
+            'pending' => 'Queued',
+            'processing' => 'Importing',
+            'completed' => 'Completed',
+            'failed' => 'Failed',
         ],
         'notification_type' => [
             'contact_form_submitted' => 'Contact form submitted',

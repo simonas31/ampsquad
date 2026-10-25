@@ -114,6 +114,26 @@ return [
         'is_active_helper' => 'Neaktyvios prekės paslėptos parduotuvėje ir jų negalima įdėti į krepšelį.',
     ],
 
+    'catalog_import' => [
+        'errors' => [
+            'file_missing' => 'Katalogo failo nepavyko rasti arba perskaityti.',
+            'file_too_large' => 'Katalogo failas didesnis nei :max MB.',
+            'invalid_json' => 'Failas nėra tinkamas JSON: :error',
+            'not_an_object' => 'Faile turi būti JSON objektas su „schema_version“ ir „products“.',
+            'unsupported_version' => 'Nepalaikoma „schema_version“ reikšmė. Tikimasi :version.',
+            'products_not_a_list' => '„products“ turi būti prekių sąrašas.',
+            'no_products' => 'Faile nėra prekių.',
+            'already_running' => 'Kitas katalogo importas jau vyksta. Pabandykite, kai jis baigsis.',
+            'unexpected' => 'Importas netikėtai sustojo. Iki tol importuotos prekės išsaugotos; paleiskite failą dar kartą, kad tęstumėte.',
+            'row_not_an_object' => 'Prekė turi būti JSON objektas.',
+            'price_format' => 'Kaina turi būti dešimtainė eilutė, pvz., „19.99“.',
+            'price_range' => 'Kaina turi būti tarp 0.01 ir :max.',
+            'ean_format' => 'EAN turi būti 8–14 skaitmenų.',
+            'duplicate_sku' => 'Tas pats SKU faile kartojasi vėliau; naudojamas paskutinis.',
+            'save_failed' => 'Prekės nepavyko išsaugoti.',
+        ],
+    ],
+
     'shop_settings' => [
         'nav_label' => 'Parduotuvės nustatymai',
         'enabled' => 'Parduotuvė įjungta',
@@ -172,6 +192,12 @@ return [
             'new' => 'Nauja',
             'read' => 'Peržiūrėta',
             'archived' => 'Archyvuota',
+        ],
+        'catalog_import_status' => [
+            'pending' => 'Eilėje',
+            'processing' => 'Importuojama',
+            'completed' => 'Baigta',
+            'failed' => 'Nepavyko',
         ],
         'notification_type' => [
             'contact_form_submitted' => 'Gauta užklausa iš kontaktų formos',

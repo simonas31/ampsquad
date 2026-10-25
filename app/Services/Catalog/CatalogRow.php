@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\Catalog;
+
+/**
+ * One product from a catalog file after validation: trimmed, typed, and with
+ * the price already in whole cents.
+ */
+final readonly class CatalogRow
+{
+    /**
+     * @param  list<string>  $categoryPath  Top level first; empty when uncategorised.
+     */
+    public function __construct(
+        public string $sku,
+        public string $name,
+        public array $categoryPath,
+        public ?string $excerpt,
+        public ?string $description,
+        public int $priceCents,
+        public int $stock,
+        public ?string $imageUrl,
+        public ?string $manufacturer,
+        public ?string $ean,
+    ) {}
+}

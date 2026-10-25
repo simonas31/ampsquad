@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Manufacturer;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -132,5 +134,71 @@ class ProductTest extends TestCase
     {
         $this->assertFalse(Product::factory()->inactive()->create()->is_active);
         $this->assertSame(1234, Product::factory()->priced(1234)->create()->price_cents);
+        $this->assertSame(5, Product::factory()->inStock()->create()->stock_quantity);
+        $this->assertSame(0, Product::factory()->outOfStock()->create()->stock_quantity);
+    }
+
+    public function test_sku_is_unique_but_products_without_one_are_allowed(): void
+    {
+        Product::factory()->count(2)->create();
+        Product::factory()->create(['sku' => 'KRDS1663ZJ']);
+
+        $this->assertSame(1, Product::query()->where('sku', 'KRDS1663ZJ')->count());
+
+        $this->expectException(QueryException::class);
+
+        Product::factory()->create(['sku' => 'KRDS1663ZJ']);
+    }
+
+    public function test_catalog_columns_are_mass_assignable_and_cast(): void
+    {
+        $product = Product::query()->create([
+            'name' => ['lt' => 'Kronšteinas', 'en' => 'Kronšteinas'],
+            'price_cents' => 2000,
+            'sku' => 'KRDS1663ZJ',
+            'ean' => '6954273658830',
+            'stock_quantity' => 2,
+            'image_url' => 'http://bkgrupe.lt/media/catalog/product/a.jpg',
+        ])->fresh();
+
+        $this->assertSame('KRDS1663ZJ', $product->sku);
+        $this->assertSame('6954273658830', $product->ean);
+        $this->assertSame(2, $product->stock_quantity);
+        $this->assertSame('http://bkgrupe.lt/media/catalog/product/a.jpg', $product->image_url);
+    }
+
+    public function test_product_without_stock_tracking_counts_as_in_stock(): void
+    {
+        $this->assertNull(Product::factory()->create()->stock_quantity);
+        $this->assertTrue(Product::factory()->create()->isInStock());
+        $this->assertTrue(Product::factory()->inStock(1)->create()->isInStock());
+        $this->assertFalse(Product::factory()->outOfStock()->create()->isInStock());
+    }
+
+    public function test_in_stock_scope_keeps_untracked_and_stocked_products(): void
+    {
+        $untracked = Product::factory()->create();
+        $stocked = Product::factory()->inStock()->create();
+        Product::factory()->outOfStock()->create();
+
+        $this->assertEqualsCanonicalizing(
+            [$untracked->id, $stocked->id],
+            Product::query()->inStock()->pluck('id')->all(),
+        );
+    }
+
+    public function test_product_belongs_to_a_category_and_a_manufacturer(): void
+    {
+        $category = ProductCategory::factory()->create();
+        $manufacturer = Manufacturer::factory()->create();
+
+        $product = Product::factory()->create([
+            'product_category_id' => $category->id,
+            'manufacturer_id' => $manufacturer->id,
+        ]);
+
+        $this->assertTrue($product->category->is($category));
+        $this->assertTrue($product->manufacturer->is($manufacturer));
+        $this->assertSame([$product->id], $category->products->pluck('id')->all());
     }
 }
