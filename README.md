@@ -131,6 +131,14 @@ The listing at `/shop` is filtered by query parameters, so every view has a shar
 
 A sold-out product stays visible with an "Out of stock" marker and cannot be added to a cart. A cart line cannot be set above the stock. If the stock falls below what a line holds, the line is flagged and counts only what is left, and the stored quantity is corrected the next time the visitor changes it (viewing a cart never rewrites it). A line whose product sells out is flagged and left out of the totals. The default order puts what can be bought first, then goes alphabetically.
 
+### In the admin panel
+
+Shop → Products is built for thousands of products: 10 to 100 rows per page (never "all"), newest first, and sortable by name, SKU, price and stock. The search box finds words in the name (in the language the list is showing), the SKU and the exact EAN; filters cover category (with sub-categories), manufacturer, stock, active, catalog or hand-made, and deleted. Search and filters are remembered for the session.
+
+- **Stock is edited in the list.** Click the number, type, press Enter. The product form keeps it in its own "Managed in the shop" section together with the active switch and the uploaded photo, which an import never changes. Everything in "Product data" (name, texts, price, SKU, EAN, category, manufacturer, image link) belongs to the import for products with a SKU.
+- **Bulk actions** work on a selection or on every product that matches the filters ("select all"): activate, deactivate, set stock, delete, restore. They run as one update per 200 products and leave slugs and everything else alone.
+- There is no manual product order and no "show everything" page size, on purpose.
+
 ### Converting other formats
 
 Whatever produces the file (a script, a spreadsheet macro, a person) should follow the template and these rules, which the first conversion, from a supplier's XML feed, used:

@@ -172,12 +172,13 @@ class Product extends Model implements HasMedia
     /**
      * Products whose name, SKU or EAN contain every word of $text. Names are
      * compared the way the database's own text columns are, ignoring case
-     * and accents, so "kronsteinas" finds "Kronšteinas".
+     * and accents, so "kronsteinas" finds "Kronšteinas". Names are read in
+     * $locale, the current language when none is given.
      *
      * @param  Builder<static>  $query
      * @return Builder<static>
      */
-    public function scopeSearch(Builder $query, string $text): Builder
+    public function scopeSearch(Builder $query, string $text, ?string $locale = null): Builder
     {
         $words = array_slice(array_filter(explode(' ', Str::squish($text))), 0, self::MAX_SEARCH_TERMS);
 
@@ -185,7 +186,7 @@ class Product extends Model implements HasMedia
             $like = '%'.addcslashes($word, '%_\\').'%';
 
             $query->where(fn (Builder $match) => $match
-                ->whereRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci like ?', [$this->localePath(), $like])
+                ->whereRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci like ?', [$this->localePath($locale), $like])
                 ->orWhere('sku', 'like', $like)
                 ->orWhere('ean', $word));
         }
@@ -215,10 +216,10 @@ class Product extends Model implements HasMedia
     public function scopeSortedBy(Builder $query, ShopSort $sort): Builder
     {
         match ($sort) {
-            ShopSort::Availability => $this->orderedByName($query->orderByRaw('`stock_quantity` = 0')),
+            ShopSort::Availability => $query->orderByRaw('`stock_quantity` = 0')->orderedByName(),
             ShopSort::PriceAsc => $query->orderBy('price_cents'),
             ShopSort::PriceDesc => $query->orderByDesc('price_cents'),
-            ShopSort::Name => $this->orderedByName($query),
+            ShopSort::Name => $query->orderedByName(),
             ShopSort::Newest => $query->orderByDesc('created_at'),
         };
 
@@ -252,21 +253,26 @@ class Product extends Model implements HasMedia
     }
 
     /**
-     * By the current language's name, ignoring case and accents.
+     * By the name in $locale (the current language when none is given),
+     * ignoring case and accents.
      *
      * @param  Builder<static>  $query
      * @return Builder<static>
      */
-    private function orderedByName(Builder $query): Builder
+    public function scopeOrderedByName(Builder $query, string $direction = 'asc', ?string $locale = null): Builder
     {
-        return $query->orderByRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci', [$this->localePath()]);
+        return $query->orderByRaw(
+            'json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci '.(strtolower($direction) === 'desc' ? 'desc' : 'asc'),
+            [$this->localePath($locale)],
+        );
     }
 
     /**
-     * Path of the current language inside a translatable JSON column.
+     * Path of a language ($locale, or the current one) inside a translatable
+     * JSON column.
      */
-    private function localePath(): string
+    private function localePath(?string $locale = null): string
     {
-        return '$."'.app()->getLocale().'"';
+        return '$."'.($locale ?? app()->getLocale()).'"';
     }
 }
