@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "products": [
+    {
+      "sku": "EXAMPLE-001",
+      "name": "Example product name",
+      "category": ["Top level category", "Sub category", "Leaf category"],
+      "excerpt": "One plain-text sentence shown on product cards. 255 characters at most.",
+      "description": "First line of the plain-text description.\nSecond line.\nType: Example",
+      "price": "19.99",
+      "stock": 5,
+      "image_url": "https://example.com/images/example-001.jpg",
+      "manufacturer": "Example Manufacturer",
+      "ean": "5901234123457"
+    },
+    {
+      "sku": "EXAMPLE-002",
+      "name": "Product with required fields only",
+      "category": null,
+      "excerpt": null,
+      "description": null,
+      "price": "0.99",
+      "stock": 0,
+      "image_url": null,
+      "manufacturer": null,
+      "ean": null
+    }
+  ]
+}
