@@ -86,6 +86,41 @@ class ShopPagesTest extends TestCase
 
     // -- listing -----------------------------------------------------------
 
+    public function test_adding_to_the_cart_can_refresh_the_header_without_rerunning_the_listing(): void
+    {
+        Product::factory()->count(3)->create();
+
+        $this->get('/shop')->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('products.data', 3)
+            ->has('categories')
+            ->reloadOnly('cartSummary', fn (AssertableInertia $reload) => $reload
+                ->has('cartSummary.count')
+                ->missing('products')
+                ->missing('categories')
+                ->missing('manufacturers')
+            )
+        );
+    }
+
+    public function test_a_product_says_how_many_are_left_only_when_few_are(): void
+    {
+        $this->assertSame(1, Product::factory()->inStock(1)->create()->lowStockCount());
+        $this->assertSame(Product::LOW_STOCK_THRESHOLD, Product::factory()->inStock(Product::LOW_STOCK_THRESHOLD)->create()->lowStockCount());
+        $this->assertNull(Product::factory()->inStock(Product::LOW_STOCK_THRESHOLD + 1)->create()->lowStockCount());
+        $this->assertNull(Product::factory()->outOfStock()->create()->lowStockCount());
+
+        $few = Product::factory()->inStock(3)->create();
+        $many = Product::factory()->inStock(50)->create();
+
+        $this->get(route('shop.show', $few->slug))->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('product.lowStockCount', 3)
+            ->where('product.inStock', true)
+        );
+        $this->get(route('shop.show', $many->slug))->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('product.lowStockCount', null)
+        );
+    }
+
     public function test_the_listing_shows_active_products_alphabetically(): void
     {
         $third = $this->named('Charlie');

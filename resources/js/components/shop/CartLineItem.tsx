@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ProductImage } from "@/components/shop/ProductImage";
 import { QuantityStepper } from "@/components/shop/QuantityStepper";
 import { useT } from "@/hooks/use-t";
-import { formatCents } from "@/lib/shop";
+import { CART_PROPS, formatCents } from "@/lib/shop";
 import { cn } from "@/lib/utils";
 import type { CartLine } from "@/types";
 
@@ -31,6 +31,7 @@ export function CartLineItem({ line }: CartLineItemProps) {
 
   const visit = {
     preserveScroll: true,
+    only: CART_PROPS,
     onStart: () => {
       setProcessing(true);
       setError(undefined);
@@ -38,6 +39,13 @@ export function CartLineItem({ line }: CartLineItemProps) {
     onFinish: () => setProcessing(false),
     onError: (errors: Record<string, string>) =>
       setError(errors.quantity ?? errors.product_id),
+    // Stay on the cart and say so, instead of swapping it for an error page.
+    onHttpException: () => {
+      setError(t("cart.updateFailed"));
+
+      return false;
+    },
+    onNetworkError: () => setError(t("cart.updateFailed")),
   };
 
   const isUnavailable = line.status === "unavailable";
@@ -60,7 +68,10 @@ export function CartLineItem({ line }: CartLineItemProps) {
         alt=""
         ratio="1 / 1"
         sizes="112px"
-        className={cn("size-20 shrink-0 sm:size-28", isUnavailable && "opacity-50")}
+        className={cn(
+          "size-20 shrink-0 sm:size-28",
+          isUnavailable && "opacity-50",
+        )}
       />
 
       <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:justify-between sm:gap-8">

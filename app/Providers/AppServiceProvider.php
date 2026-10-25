@@ -7,6 +7,8 @@ namespace App\Providers;
 use App\Models\CartItem;
 use App\Services\CartService;
 use Closure;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Table;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->registerLocalizedRouteMacro();
         $this->registerCartItemBinding();
+        $this->configureAdminTables();
 
         // Inertia props are consumed directly by React components, not by an
         // external JSON:API client, so the extra {"data": {...}} envelope
@@ -37,6 +40,19 @@ class AppServiceProvider extends ServiceProvider
         // the component. Paginated collections are unaffected — they keep
         // their data/links/meta shape, which Paginated<T> already expects.
         JsonResource::withoutWrapping();
+    }
+
+    /**
+     * Every admin table shows its filters in the open above the rows and
+     * applies them as they are chosen, instead of tucking them into a
+     * dropdown behind a button with an "Apply" step. With thousands of
+     * records the filters are the way in, so they should not be hidden.
+     */
+    private function configureAdminTables(): void
+    {
+        Table::configureUsing(fn (Table $table): Table => $table
+            ->filtersLayout(FiltersLayout::AboveContent)
+            ->deferFilters(false));
     }
 
     /**

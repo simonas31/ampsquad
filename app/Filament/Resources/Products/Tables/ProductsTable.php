@@ -51,6 +51,7 @@ class ProductsTable
             ->defaultPaginationPageOption(25)
             ->persistSearchInSession()
             ->persistFiltersInSession()
+            ->filtersFormColumns(3)
             ->columns([
                 // Catalog products have no upload, only the supplier's image URL.
                 SpatieMediaLibraryImageColumn::make('featured_image')

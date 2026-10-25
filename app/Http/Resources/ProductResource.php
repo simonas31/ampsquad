@@ -37,6 +37,7 @@ class ProductResource extends JsonResource
                 'url' => route('shop.index', ['category' => $this->category->slug]),
             ]),
             'inStock' => $this->isInStock(),
+            'lowStockCount' => $this->lowStockCount(),
             'maxQuantity' => $this->maxPurchasableQuantity(),
         ];
     }

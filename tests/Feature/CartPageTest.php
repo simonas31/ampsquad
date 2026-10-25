@@ -46,6 +46,23 @@ class CartPageTest extends TestCase
         $this->assertSame(0, Cart::query()->count());
     }
 
+    public function test_changing_the_cart_can_refresh_just_the_cart_props(): void
+    {
+        $cart = Cart::factory()->create();
+        CartItem::factory()->for($cart)->quantity(2)->create();
+
+        $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('cart.items', 1)
+            ->has('breadcrumbs')
+            ->reloadOnly(['cart', 'cartSummary'], fn (AssertableInertia $reload) => $reload
+                ->has('cart.items')
+                ->has('cartSummary.count')
+                ->missing('breadcrumbs')
+                ->missing('seo')
+            )
+        );
+    }
+
     public function test_the_cart_page_is_not_indexable_and_has_breadcrumbs(): void
     {
         $this->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page

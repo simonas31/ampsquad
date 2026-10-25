@@ -42,14 +42,14 @@ export function ProductCard({ product }: { product: Product }) {
         {product.manufacturer && (
           <p className="meta text-ink-soft mt-5">{product.manufacturer}</p>
         )}
-        <h3
+        <h2
           className={cn(
             "display text-ink group-hover:decoration-signal group-focus-within:decoration-signal text-2xl underline-offset-[8px] group-hover:underline group-hover:decoration-[3px] group-focus-within:underline",
             product.manufacturer ? "mt-1" : "mt-5",
           )}
         >
           {product.name}
-        </h3>
+        </h2>
       </Link>
 
       {product.excerpt && (
@@ -65,6 +65,7 @@ export function ProductCard({ product }: { product: Product }) {
 
         <Button
           size="sm"
+          className="min-h-11"
           onClick={addToCart.submit}
           disabled={addToCart.processing || !product.inStock}
         >

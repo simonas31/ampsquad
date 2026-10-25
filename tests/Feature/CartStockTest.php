@@ -104,9 +104,20 @@ class CartStockTest extends TestCase
         $this->assertSame(3, CartItem::query()->sole()->quantity);
 
         $this->visitorWith($cart)->post(route('cart.items.store'), ['product_id' => $product->id, 'quantity' => 1])
-            ->assertSessionHasErrors(['quantity' => __('shop.not_enough_stock', ['count' => 3])]);
+            ->assertSessionHasErrors(['quantity' => __('shop.all_in_cart', ['count' => 3])]);
 
         $this->assertSame(3, CartItem::query()->sole()->quantity);
+    }
+
+    public function test_adding_past_the_stock_says_how_much_the_cart_already_holds(): void
+    {
+        $product = Product::factory()->inStock(5)->create();
+        [$cart] = $this->cartWithItem($product, 2);
+
+        $this->visitorWith($cart)->post(route('cart.items.store'), ['product_id' => $product->id, 'quantity' => 4])
+            ->assertSessionHasErrors(['quantity' => __('shop.not_enough_stock_with_cart', ['count' => 5, 'held' => 2])]);
+
+        $this->assertSame(2, CartItem::query()->sole()->quantity);
     }
 
     public function test_plenty_of_stock_still_stops_at_the_cart_cap(): void
@@ -123,6 +134,8 @@ class CartStockTest extends TestCase
     public function test_the_stock_messages_are_translated(): void
     {
         $this->assertSame('Sandėlyje liko tik 2 vnt.', trans('shop.not_enough_stock', ['count' => 2], 'lt'));
+        $this->assertSame('Visi sandėlyje esantys 2 vnt. jau yra jūsų krepšelyje.', trans('shop.all_in_cart', ['count' => 2], 'lt'));
+        $this->assertSame('Sandėlyje liko tik 5 vnt., o jūsų krepšelyje jau yra 2 vnt.', trans('shop.not_enough_stock_with_cart', ['count' => 5, 'held' => 2], 'lt'));
         $this->assertSame('Šios prekės nėra sandėlyje.', trans('shop.out_of_stock', [], 'lt'));
     }
 

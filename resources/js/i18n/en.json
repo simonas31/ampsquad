@@ -163,7 +163,9 @@
       "price_desc": "Price: high to low",
       "name": "Name A to Z",
       "newest": "Newest"
-    }
+    },
+    "lowStock": "Only {count} left",
+    "addFailed": "Could not add this product. Check your connection and try again."
   },
   "cart": {
     "linkLabel": "Cart ({count})",
@@ -182,7 +184,11 @@
     "total": "Total",
     "clear": "Empty cart",
     "checkoutSoon": "Online checkout is not available yet. Contact us and we will arrange your order.",
-    "contactToOrder": "Contact us to order"
+    "contactToOrder": "Contact us to order",
+    "updateFailed": "Could not update your cart. Check your connection and try again.",
+    "clearConfirm": "Remove everything from your cart?",
+    "clearCancel": "Keep",
+    "clearYes": "Empty cart"
   },
   "errors": {
     "backHome": "Back to homepage",

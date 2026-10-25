@@ -133,7 +133,7 @@ A sold-out product stays visible with an "Out of stock" marker and cannot be add
 
 ### In the admin panel
 
-Shop → Products is built for thousands of products: 10 to 100 rows per page (never "all"), newest first, and sortable by name, SKU, price and stock. The search box finds words in the name (in the language the list is showing), the SKU and the exact EAN; filters cover category (with sub-categories), manufacturer, stock, active, catalog or hand-made, and deleted. Search and filters are remembered for the session.
+Shop → Products is built for thousands of products: 10 to 100 rows per page (never "all"), newest first, and sortable by name, SKU, price and stock. The search box finds words in the name (in the language the list is showing), the SKU and the exact EAN; filters cover category (with sub-categories), manufacturer, stock, active, catalog or hand-made, and deleted. Every admin table shows its filters above the rows and applies them as they are chosen. Search and filters are remembered for the session.
 
 - **Stock is edited in the list.** Click the number, type, press Enter. The product form keeps it in its own "Managed in the shop" section together with the active switch and the uploaded photo, which an import never changes. Everything in "Product data" (name, texts, price, SKU, EAN, category, manufacturer, image link) belongs to the import for products with a SKU.
 - **Bulk actions** work on a selection or on every product that matches the filters ("select all"): activate, deactivate, set stock, delete, restore. They run as one update per 200 products and leave slugs and everything else alone.

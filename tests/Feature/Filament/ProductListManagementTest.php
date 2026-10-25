@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament;
 
+use App\Filament\Resources\CatalogImports\Pages\ListCatalogImports;
+use App\Filament\Resources\ContactRequests\Pages\ListContactRequests;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
+use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -91,6 +94,26 @@ class ProductListManagementTest extends TestCase
             ->set('activeLocale', 'en')
             ->searchTable('cable')
             ->assertCanSeeTableRecords([$product]);
+    }
+
+    // -- filters -----------------------------------------------------------
+
+    public function test_filters_sit_above_the_table_and_apply_as_they_are_chosen(): void
+    {
+        $table = Livewire::test(ListProducts::class)->instance()->getTable();
+
+        $this->assertSame(FiltersLayout::AboveContent, $table->getFiltersLayout());
+        $this->assertFalse($table->hasDeferredFilters());
+    }
+
+    public function test_every_admin_table_gets_the_same_filter_layout(): void
+    {
+        foreach ([ListCatalogImports::class, ListContactRequests::class] as $page) {
+            $table = Livewire::test($page)->instance()->getTable();
+
+            $this->assertSame(FiltersLayout::AboveContent, $table->getFiltersLayout(), $page);
+            $this->assertFalse($table->hasDeferredFilters(), $page);
+        }
     }
 
     // -- order and paging --------------------------------------------------

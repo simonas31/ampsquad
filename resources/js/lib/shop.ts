@@ -2,6 +2,14 @@ import { formatPrice } from "@/lib/utils";
 import type { Locale, ShopFilters } from "@/types";
 
 /**
+ * The props a cart change can alter: the cart page's own `cart` and the
+ * header's `cartSummary`. A cart visit asks for just these, so the page it
+ * returns to does not re-run its own queries (a listing's products, facets
+ * and category tree) every time something is added or removed.
+ */
+export const CART_PROPS = ["cart", "cartSummary"];
+
+/**
  * Keeps a quantity a whole number inside the range the server accepts.
  * Anything that is not a number falls back to the minimum. The server
  * validates again, so this only stops the controls offering values it

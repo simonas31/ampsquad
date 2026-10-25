@@ -155,7 +155,7 @@ class CartLineStatusTest extends TestCase
 
         $this->visitorWith($line->cart)
             ->post(route('cart.items.store'), ['product_id' => $line->product_id, 'quantity' => 1])
-            ->assertSessionHasErrors(['quantity' => __('shop.not_enough_stock', ['count' => 2])]);
+            ->assertSessionHasErrors(['quantity' => __('shop.all_in_cart', ['count' => 2])]);
 
         $this->assertSame(5, $line->fresh()->quantity);
     }

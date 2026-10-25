@@ -1,15 +1,24 @@
 import { useForm, usePage } from "@inertiajs/react";
 import { useEffect, useState } from "react";
+import { useT } from "@/hooks/use-t";
+import { CART_PROPS } from "@/lib/shop";
 
 /**
  * Adds one product to the cart. Only the product and quantity are sent; the
  * price is always the server's. `added` flips on after a successful add and
  * back off a few seconds later, for the "Added" confirmation.
+ *
+ * The visit asks the server for the cart props only, so adding from a
+ * listing does not re-run the listing's queries. `error` is the server's
+ * reason when it refuses (not enough stock, product gone), or a generic
+ * message when the request itself failed (offline, throttled, server error).
  */
 export function useAddToCart(productId: number) {
+  const t = useT();
   const { cartSummary } = usePage().props;
   const form = useForm({ product_id: productId, quantity: 1 });
   const [added, setAdded] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (!added) {
@@ -27,13 +36,23 @@ export function useAddToCart(productId: number) {
     }
 
     setAdded(false);
+    setFailed(false);
 
     form.post(cartSummary.itemsUrl, {
       preserveScroll: true,
+      only: CART_PROPS,
       onSuccess: () => {
         setAdded(true);
         form.setData("quantity", 1);
       },
+      // Stay on the page and say so, instead of Inertia swapping it for an
+      // error page over a product the visitor was only trying to add.
+      onHttpException: () => {
+        setFailed(true);
+
+        return false;
+      },
+      onNetworkError: () => setFailed(true),
     });
   }
 
@@ -43,6 +62,9 @@ export function useAddToCart(productId: number) {
     submit,
     processing: form.processing,
     added,
-    error: form.errors.quantity ?? form.errors.product_id,
+    error:
+      form.errors.quantity ??
+      form.errors.product_id ??
+      (failed ? t("shop.addFailed") : undefined),
   };
 }

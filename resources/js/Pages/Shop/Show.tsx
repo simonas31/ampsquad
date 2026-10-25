@@ -59,7 +59,11 @@ export default function Show({ product, breadcrumbs }: ShowProps) {
                 product.inStock ? "text-ink-soft" : "text-destructive",
               )}
             >
-              {product.inStock ? t("shop.inStock") : t("shop.outOfStock")}
+              {!product.inStock
+                ? t("shop.outOfStock")
+                : product.lowStockCount !== null
+                  ? t("shop.lowStock", { count: product.lowStockCount })
+                  : t("shop.inStock")}
             </p>
 
             {product.description && (

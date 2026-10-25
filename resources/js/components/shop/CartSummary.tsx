@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import { useT } from "@/hooks/use-t";
-import { formatCents } from "@/lib/shop";
+import { CART_PROPS, formatCents } from "@/lib/shop";
 import type { CartData } from "@/types";
 
 /**
@@ -20,7 +20,27 @@ export function CartSummary({ cart }: { cart: CartData }) {
   const t = useT();
   const { locale } = usePage().props;
   const contactUrl = useNavUrl("nav.contact", "/contact");
+  const [confirming, setConfirming] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  function clear() {
+    router.delete(cart.clearUrl, {
+      preserveScroll: true,
+      only: CART_PROPS,
+      onStart: () => {
+        setClearing(true);
+        setFailed(false);
+      },
+      onFinish: () => setClearing(false),
+      onHttpException: () => {
+        setFailed(true);
+
+        return false;
+      },
+      onNetworkError: () => setFailed(true),
+    });
+  }
 
   return (
     <Card className="p-6 lg:sticky lg:top-28">
@@ -47,20 +67,48 @@ export function CartSummary({ cart }: { cart: CartData }) {
         <Link href={contactUrl}>{t("cart.contactToOrder")}</Link>
       </Button>
 
-      <button
-        type="button"
-        disabled={clearing}
-        onClick={() =>
-          router.delete(cart.clearUrl, {
-            preserveScroll: true,
-            onStart: () => setClearing(true),
-            onFinish: () => setClearing(false),
-          })
-        }
-        className="meta text-ink-soft hover:text-ink mt-4 min-h-11 w-full text-center underline underline-offset-4 transition-colors disabled:opacity-50"
-      >
-        {t("cart.clear")}
-      </button>
+      {/* One click on a link this close to the order button must not empty
+          the cart, so it asks first. Cancel is focused: Enter does no harm. */}
+      {confirming ? (
+        <div
+          role="group"
+          aria-labelledby="clear-cart-question"
+          className="mt-4"
+        >
+          <p id="clear-cart-question" className="text-ink text-center text-sm">
+            {t("cart.clearConfirm")}
+          </p>
+          <div className="mt-3 flex justify-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              autoFocus
+              disabled={clearing}
+              onClick={() => setConfirming(false)}
+            >
+              {t("cart.clearCancel")}
+            </Button>
+            <Button type="button" size="sm" disabled={clearing} onClick={clear}>
+              {t("cart.clearYes")}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setConfirming(true)}
+          className="meta text-ink-soft hover:text-ink mt-4 min-h-11 w-full text-center underline underline-offset-4 transition-colors"
+        >
+          {t("cart.clear")}
+        </button>
+      )}
+
+      {failed && (
+        <p role="alert" className="text-destructive mt-3 text-center text-sm">
+          {t("cart.updateFailed")}
+        </p>
+      )}
     </Card>
   );
 }

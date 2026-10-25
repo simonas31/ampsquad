@@ -9,6 +9,7 @@ import { CategoryTree } from "@/components/shop/CategoryTree";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ShopFilterForm } from "@/components/shop/ShopFilterForm";
 import { Button } from "@/components/ui/button";
+import { useNavigating } from "@/hooks/use-navigating";
 import { useT } from "@/hooks/use-t";
 import { hasActiveFilters } from "@/lib/shop";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,9 @@ export default function Index({
   // up they sit beside them and this has no effect.
   const [filtersOpen, setFiltersOpen] = useState(false);
   const isFiltered = hasActiveFilters(filters);
+  // A new page of results or a changed filter takes a moment; until it
+  // arrives the old products dim, so the page never looks frozen.
+  const navigating = useNavigating();
 
   return (
     <>
@@ -85,7 +89,13 @@ export default function Index({
             </div>
           </aside>
 
-          <div className="lg:col-span-9">
+          <div
+            aria-busy={navigating}
+            className={cn(
+              "transition-opacity duration-200 lg:col-span-9",
+              navigating && "opacity-60",
+            )}
+          >
             {products.data.length > 0 ? (
               <>
                 <p role="status" className="meta text-ink-soft mb-8">

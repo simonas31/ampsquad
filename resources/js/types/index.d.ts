@@ -191,6 +191,8 @@ export interface Product {
   category?: { name: string; url: string } | null;
   /** False once the stock is used up; the product stays visible but cannot be bought. */
   inStock: boolean;
+  /** How many are left when only a few are; null for a well-stocked product. */
+  lowStockCount: number | null;
   /** The most one cart line may hold: the cart cap, or the stock when lower. */
   maxQuantity: number;
 }

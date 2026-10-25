@@ -49,6 +49,11 @@ class Product extends Model implements HasMedia
     public const int MAX_PRICE_CENTS = 10_000_000;
 
     /**
+     * At or below this many left, the shop says how many are left.
+     */
+    public const int LOW_STOCK_THRESHOLD = 5;
+
+    /**
      * The one currency prices are held and shown in.
      */
     public const string CURRENCY = 'EUR';
@@ -153,6 +158,17 @@ class Product extends Model implements HasMedia
     public function isInStock(): bool
     {
         return $this->stock_quantity > 0;
+    }
+
+    /**
+     * How many are left when only a few are, otherwise null: the exact stock
+     * of a well-stocked product is nobody's business but the shop's.
+     */
+    public function lowStockCount(): ?int
+    {
+        return $this->isInStock() && $this->stock_quantity <= self::LOW_STOCK_THRESHOLD
+            ? $this->stock_quantity
+            : null;
     }
 
     /**

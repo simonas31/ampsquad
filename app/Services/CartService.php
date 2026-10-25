@@ -123,7 +123,7 @@ class CartService
             $held = $item->exists ? min($item->quantity, $product->maxPurchasableQuantity()) : 0;
             $newQuantity = $held + $quantity;
 
-            $this->assertWithinLimit($newQuantity, $product);
+            $this->assertWithinLimit($newQuantity, $product, $held);
 
             $item->quantity = $newQuantity;
             $item->save();
@@ -206,9 +206,12 @@ class CartService
     }
 
     /**
-     * The cart cap, or what is left in stock when that is less.
+     * The cart cap, or what is left in stock when that is less. $held is
+     * what the cart already holds of the product when adding to it, so the
+     * message can say "you already have it all" instead of a bare stock
+     * count that looks like the visitor was refused for nothing.
      */
-    private function assertWithinLimit(int $quantity, Product $product): void
+    private function assertWithinLimit(int $quantity, Product $product, int $held = 0): void
     {
         $max = $product->maxPurchasableQuantity();
 
@@ -216,10 +219,11 @@ class CartService
             return;
         }
 
-        throw ValidationException::withMessages([
-            'quantity' => $max < CartItem::MAX_QUANTITY
-                ? __('shop.not_enough_stock', ['count' => $max])
-                : __('shop.max_quantity', ['max' => CartItem::MAX_QUANTITY]),
-        ]);
+        throw ValidationException::withMessages(['quantity' => match (true) {
+            $max >= CartItem::MAX_QUANTITY => __('shop.max_quantity', ['max' => CartItem::MAX_QUANTITY]),
+            $held >= $max => __('shop.all_in_cart', ['count' => $max]),
+            $held > 0 => __('shop.not_enough_stock_with_cart', ['count' => $max, 'held' => $held]),
+            default => __('shop.not_enough_stock', ['count' => $max]),
+        }]);
     }
 }

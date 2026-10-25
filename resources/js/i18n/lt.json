@@ -163,7 +163,9 @@
       "price_desc": "Kaina: nuo didžiausios",
       "name": "Pavadinimas nuo A iki Ž",
       "newest": "Naujausios"
-    }
+    },
+    "lowStock": "Liko tik {count} vnt.",
+    "addFailed": "Nepavyko įdėti prekės. Patikrinkite ryšį ir bandykite dar kartą."
   },
   "cart": {
     "linkLabel": "Krepšelis ({count})",
@@ -182,7 +184,11 @@
     "total": "Iš viso",
     "clear": "Ištuštinti krepšelį",
     "checkoutSoon": "Užsakymo internetu kol kas nėra. Susisiekite su mumis ir viską sutvarkysime.",
-    "contactToOrder": "Susisiekti dėl užsakymo"
+    "contactToOrder": "Susisiekti dėl užsakymo",
+    "updateFailed": "Nepavyko atnaujinti krepšelio. Patikrinkite ryšį ir bandykite dar kartą.",
+    "clearConfirm": "Pašalinti viską iš krepšelio?",
+    "clearCancel": "Palikti",
+    "clearYes": "Ištuštinti"
   },
   "errors": {
     "backHome": "Grįžti į pradžią",
