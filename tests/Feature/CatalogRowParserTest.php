@@ -238,6 +238,60 @@ class CatalogRowParserTest extends TestCase
         $this->assertNotSame([], $this->messagesFor($this->row($overrides)));
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function markup(): array
+    {
+        return [
+            'tag in the name' => ['name', '<b>Bold</b> cable'],
+            'line break in the excerpt' => ['excerpt', 'First line<br>second line'],
+            'self-closing break' => ['excerpt', 'First line<br/>second line'],
+            'list in the description' => ['description', '<ul><li>Type: cable</li></ul>'],
+            'wrapping div with attributes' => ['description', '<div data-content-type="html">Cable</div>'],
+            'link' => ['description', 'See <a href="https://example.com">here</a>'],
+            'table cell' => ['description', 'Voltage<td>AC 220V</td>'],
+            'upper-case tag' => ['description', '<P>Cable</P>'],
+            'named reference' => ['description', 'Fish &amp; chips'],
+            'numeric reference' => ['description', 'Range -10 °C to &#43;55 °C'],
+            'hex reference' => ['name', 'Plus &#x2B; sign'],
+            'non-breaking space reference' => ['excerpt', 'Cable&nbsp;5 m'],
+        ];
+    }
+
+    #[DataProvider('markup')]
+    public function test_text_must_be_plain(string $field, string $text): void
+    {
+        $this->assertSame(
+            [__('admin.catalog_import.errors.plain_text')],
+            $this->messagesFor($this->row([$field => $text])),
+        );
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function plainTextThatLooksLikeMarkup(): array
+    {
+        return [
+            'less-than sign before a number' => ['Operating voltage <5 V'],
+            'comparison' => ['3 < 5 and 7 > 2'],
+            'ampersand' => ['Tom & Jerry'],
+            'ampersand with digits' => ['Hi-PoE&24VAC;'],
+            'plus sign' => ['Range -10 °C...+55 °C'],
+            'unknown tag-like word' => ['Use <your-cable> here'],
+            'quotes' => ['Cable "Cat6" 5\' long'],
+        ];
+    }
+
+    #[DataProvider('plainTextThatLooksLikeMarkup')]
+    public function test_plain_text_that_only_resembles_markup_is_accepted(string $text): void
+    {
+        $row = (new CatalogRowParser)->parse($this->row(['description' => $text]));
+
+        $this->assertSame($text, $row->description);
+    }
+
     public function test_every_problem_in_a_row_is_reported_at_once(): void
     {
         $messages = $this->messagesFor($this->row(['sku' => '', 'price' => 'free', 'stock' => -1]));

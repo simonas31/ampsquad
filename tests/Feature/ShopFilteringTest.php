@@ -443,14 +443,20 @@ class ShopFilteringTest extends TestCase
 
     public function test_the_listing_runs_the_same_queries_however_many_products_it_shows(): void
     {
-        $category = ProductCategory::factory()->create();
-        $manufacturer = Manufacturer::factory()->create();
-        Product::factory()->count(2)->create(['product_category_id' => $category->id, 'manufacturer_id' => $manufacturer->id]);
-        $this->get('/shop');
-        $queriesForTwo = $this->queriesFor('/shop?q=a&sort=name');
+        // Every product matches the search: with no results, Eloquent skips
+        // the eager loads and the count would differ for the wrong reason.
+        $attributes = [
+            'name' => ['lt' => 'Cable', 'en' => 'Cable'],
+            'product_category_id' => ProductCategory::factory()->create()->id,
+            'manufacturer_id' => Manufacturer::factory()->create()->id,
+        ];
 
-        Product::factory()->count(9)->create(['product_category_id' => $category->id, 'manufacturer_id' => $manufacturer->id]);
-        $queriesForEleven = $this->queriesFor('/shop?q=a&sort=name');
+        Product::factory()->count(2)->create($attributes);
+        $this->get('/shop');
+        $queriesForTwo = $this->queriesFor('/shop?q=cable&sort=name');
+
+        Product::factory()->count(9)->create($attributes);
+        $queriesForEleven = $this->queriesFor('/shop?q=cable&sort=name');
 
         $this->assertSame($queriesForTwo, $queriesForEleven);
     }

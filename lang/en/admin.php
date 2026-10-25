@@ -178,6 +178,7 @@ return [
             'price_format' => 'The price must be a decimal string such as "19.99".',
             'price_range' => 'The price must be between 0.01 and :max.',
             'ean_format' => 'The EAN must be 8 to 14 digits.',
+            'plain_text' => 'The text must be plain: no HTML tags or character references such as &amp;.',
             'duplicate_sku' => 'The same SKU appears again later in the file; the last one is used.',
             'save_failed' => 'The product could not be saved.',
         ],

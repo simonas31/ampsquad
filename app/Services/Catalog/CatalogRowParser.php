@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Validator;
  * resources/catalog/catalog.template.json: text is plain (no HTML), the price
  * is a decimal string (floats would round), and stock is a whole number.
  * Keys it does not know are ignored.
+ *
+ * Text must be plain. Converters strip markup before the file is written, and
+ * this is the check that holds them to it: shoppers would otherwise see
+ * literal tags such as "<li>" on the product page.
  */
 final class CatalogRowParser
 {
@@ -28,6 +32,13 @@ final class CatalogRowParser
     public const int MAX_CATEGORY_DEPTH = 8;
 
     public const int MAX_STOCK = 100_000_000;
+
+    /**
+     * Markup that has no place in plain text: a common HTML tag, or a
+     * character reference like "&#43;" or "&amp;". Deliberately narrow, so
+     * ordinary text such as "<5 V" or "Hi-PoE&24VAC;" is left alone.
+     */
+    private const string MARKUP_PATTERN = '/<\/?(?:a|b|br|div|em|h[1-6]|i|img|li|ol|p|span|strong|sub|sup|table|tbody|td|th|tr|ul)\b[^>]*>|&(?:#\d+|#x[0-9a-f]+|[a-z]+);/i';
 
     /**
      * @var list<string>
@@ -48,6 +59,9 @@ final class CatalogRowParser
         $validator = Validator::make($this->trimmed($row), $this->rules(), [
             'price.regex' => __('admin.catalog_import.errors.price_format'),
             'ean.regex' => __('admin.catalog_import.errors.ean_format'),
+            'name.not_regex' => __('admin.catalog_import.errors.plain_text'),
+            'excerpt.not_regex' => __('admin.catalog_import.errors.plain_text'),
+            'description.not_regex' => __('admin.catalog_import.errors.plain_text'),
         ]);
 
         if ($validator->fails()) {
@@ -88,11 +102,11 @@ final class CatalogRowParser
     {
         return [
             'sku' => ['bail', 'required', 'string', 'max:'.self::MAX_SKU_LENGTH],
-            'name' => ['bail', 'required', 'string', 'max:'.self::MAX_NAME_LENGTH],
+            'name' => ['bail', 'required', 'string', 'max:'.self::MAX_NAME_LENGTH, 'not_regex:'.self::MARKUP_PATTERN],
             'category' => ['nullable', 'array', 'list', 'max:'.self::MAX_CATEGORY_DEPTH],
             'category.*' => ['bail', 'required', 'string', 'max:255'],
-            'excerpt' => ['nullable', 'string', 'max:'.self::MAX_EXCERPT_LENGTH],
-            'description' => ['nullable', 'string', 'max:'.self::MAX_DESCRIPTION_LENGTH],
+            'excerpt' => ['nullable', 'string', 'max:'.self::MAX_EXCERPT_LENGTH, 'not_regex:'.self::MARKUP_PATTERN],
+            'description' => ['nullable', 'string', 'max:'.self::MAX_DESCRIPTION_LENGTH, 'not_regex:'.self::MARKUP_PATTERN],
             'price' => ['bail', 'required', 'string', 'regex:/^\d{1,6}(\.\d{1,2})?$/', $this->priceIsInRange(...)],
             'stock' => ['required', 'integer:strict', 'min:0', 'max:'.self::MAX_STOCK],
             'image_url' => ['nullable', 'string', 'max:500', 'url:http,https'],

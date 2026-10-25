@@ -9,6 +9,8 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -185,6 +187,23 @@ class ProductTest extends TestCase
             [$untracked->id, $stocked->id],
             Product::query()->inStock()->pluck('id')->all(),
         );
+    }
+
+    public function test_the_featured_image_is_the_upload_or_else_the_suppliers_link_or_else_nothing(): void
+    {
+        Storage::fake('public');
+        $product = Product::factory()->create(['image_url' => 'http://bkgrupe.lt/media/a.jpg']);
+
+        $this->assertSame('http://bkgrupe.lt/media/a.jpg', $product->featuredImageUrl('large'));
+        $this->assertSame('http://bkgrupe.lt/media/a.jpg', $product->featuredImageUrl('thumbnail'));
+
+        $product->addMedia(UploadedFile::fake()->image('photo.png', 800, 600))->toMediaCollection('featured_image');
+        $uploaded = $product->fresh()->featuredImageUrl('large');
+
+        $this->assertNotNull($uploaded);
+        $this->assertStringNotContainsString('bkgrupe.lt', $uploaded);
+
+        $this->assertNull(Product::factory()->create()->featuredImageUrl('large'));
     }
 
     public function test_product_belongs_to_a_category_and_a_manufacturer(): void
