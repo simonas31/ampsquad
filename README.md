@@ -40,6 +40,7 @@ vendor/bin/sail npm run dev
 - Admin panel: http://localhost/admin, signing in as `admin@ampsquad.test` with password `password`.
   `AdminUserSeeder` uses fixed credentials for local development only; never run it in production.
 - Queued work (contact-form mail, image conversions, catalog imports) needs a worker locally: run `vendor/bin/sail artisan queue:work`.
+- `migrate --seed` also fills the shop with about 5,000 demo products (local environment only, about a minute), made by running a catalog file through the importer. Afterwards it plays the admin (restocks, sells out and switches off some products), imports a changed file and checks that none of that was undone. Re-seed from scratch with `vendor/bin/sail artisan migrate:fresh --seed`.
 
 ## Product catalog import
 
@@ -84,7 +85,7 @@ A file of about ten thousand products takes roughly a minute the first time and 
 | `excerpt` | no | Plain text on one line, up to 255 characters. Shown on product cards. | `products.excerpt`, both languages |
 | `description` | no | Plain text up to 5000 characters; `\n` separates lines. | `products.description`, both languages |
 | `price` | yes | A decimal **string** with a dot and one or two decimals: `"19.99"`, `"20"`. From `0.01` to `100000.00`, in euros. A JSON number is refused, because floats round. | `products.price_cents` |
-| `stock` | yes | A whole number, `0` or more (JSON integer, not a string). | `products.stock_quantity` |
+| `stock` | no | A whole number, `0` or more (JSON integer, not a string). The starting stock of a product the import **creates**; ignored for a product that already exists. Left out means `0`. | `products.stock_quantity`, new products only |
 | `image_url` | no | An absolute `http` or `https` URL, up to 500 characters. | `products.image_url` |
 | `manufacturer` | no | Text, up to 255 characters. | `manufacturers`, `products.manufacturer_id` |
 | `ean` | no | 8 to 14 digits, as text. Not unique: variants can share a barcode. | `products.ean` |
@@ -94,9 +95,10 @@ A file of about ten thousand products takes roughly a minute the first time and 
 ### What the import does
 
 - **Matching:** products are found by `sku`, ignoring case and accents (the database's own comparison). An unknown SKU creates a product; a known one is updated.
-- **What the file owns:** name, excerpt, description (the same text goes into both languages, since catalogs are Lithuanian only), price, stock, EAN, image link, category and manufacturer are overwritten on every import.
-- **What the admin owns:** `is_active`, `order`, an uploaded featured image, and the URL slug are never touched. A product that has been on sale keeps its slug when it is renamed.
-- **Unchanged products** are not written at all, so `updated_at` and the sitemap's `lastmod` only move when something really changed.
+- **What the file owns:** name, excerpt, description (the same text goes into both languages, since catalogs are Lithuanian only), price, EAN, image link, category and manufacturer are overwritten on every import.
+- **What the shop owns:** the stock quantity, `is_active`, an uploaded featured image, and the URL slug are never touched by an import. The file's `stock` only gives a **new** product its starting quantity; after that the quantity is managed in the admin panel (and, later, by orders), so a re-import can neither restock nor sell out a product. A product that has been on sale keeps its slug when it is renamed.
+- **New products** are created active, with the file's stock (`0`, so sold out, when the file has none).
+- **Unchanged products** are not written at all, so `updated_at` and the sitemap's `lastmod` only move when something really changed. A file that differs only in `stock` changes nothing.
 - **Missing products:** a product that is not in the file is left exactly as it is. Nothing is deleted or deactivated by an import.
 - **Deleted products:** a product deleted in the admin panel is still updated by the file but stays deleted.
 - **Repeated SKU in one file:** the last one wins; the earlier ones are reported as skipped.
@@ -116,18 +118,18 @@ A file of about ten thousand products takes roughly a minute the first time and 
 
 | Table | Purpose |
 |---|---|
-| `products` | Gains `sku` (unique, nullable), `ean` (indexed), `stock_quantity` (nullable), `image_url`, `product_category_id` and `manufacturer_id` (both nullable, set to null if the target is deleted). |
-| `product_categories` | The shop's own category tree: `parent_id`, translatable `name` and `slug` (unique per language), `order`. Separate from `categories`, which classifies portfolio projects. |
+| `products` | Includes `sku` (unique, nullable), `ean` (indexed), `stock_quantity` (not null, default `0`), `image_url`, `product_category_id` and `manufacturer_id` (both nullable, set to null if the target is deleted). There is no manual sort order: the shop lists by availability and name, and the admin list by newest. |
+| `product_categories` | The shop's own category tree: `parent_id`, translatable `name` and `slug` (unique per language). Separate from `categories`, which classifies portfolio projects. |
 | `manufacturers` | `name` (unique). |
 | `catalog_imports` | One row per import: uploader, filename, stored file, status, counters, the first 200 row errors, and why a whole file failed. |
 
-`stock_quantity` `NULL` means stock is not tracked and the product is always available, which is what hand-made products have. `0` means sold out.
+`stock_quantity` is never empty: `0` means sold out, which is also where every new product starts until someone stocks it. Hand-made products need a stock number too.
 
 ### In the shop
 
 The listing at `/shop` is filtered by query parameters, so every view has a shareable URL: `q` (words to find in the name, SKU or exact EAN), `category` (slug; includes sub-categories), `manufacturer` (id), `in_stock=1`, `min_price` and `max_price` (euros), and `sort` (`featured`, `price_asc`, `price_desc`, `name`, `newest`). Values that make no sense are ignored. Filtered and sorted pages are marked `noindex`.
 
-A sold-out product stays visible with an "Out of stock" marker and cannot be added to a cart. A cart never holds more of a product than is in stock; a line whose product sells out is flagged and left out of the totals. The default order puts what can be bought first.
+A sold-out product stays visible with an "Out of stock" marker and cannot be added to a cart. A cart line cannot be set above the stock, and a line whose product sells out is flagged and left out of the totals. The default order puts what can be bought first, then goes alphabetically.
 
 ### Converting other formats
 

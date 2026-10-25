@@ -24,7 +24,6 @@ class ProductCategoryFactory extends Factory
         return [
             'parent_id' => null,
             'name' => ['lt' => $name, 'en' => $name],
-            'order' => 0,
         ];
     }
 

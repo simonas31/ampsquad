@@ -15,6 +15,7 @@ use Filament\Actions\RestoreAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -40,7 +41,7 @@ class ProductResourceTest extends TestCase
             'excerpt' => 'Help choosing a charger.',
             'description' => 'A longer description of the consultation.',
             'price_cents' => '19.99',
-            'order' => 2,
+            'stock_quantity' => 4,
             'is_active' => true,
         ], $overrides);
     }
@@ -94,15 +95,15 @@ class ProductResourceTest extends TestCase
             ->assertCanNotSeeTableRecords([$deleted]);
     }
 
-    public function test_the_list_is_ordered_by_the_order_column(): void
+    public function test_the_list_shows_the_newest_products_first(): void
     {
         $this->signIn();
-        $third = Product::factory()->create(['order' => 3]);
-        $first = Product::factory()->create(['order' => 1]);
-        $second = Product::factory()->create(['order' => 2]);
+        $oldest = Product::factory()->create(['created_at' => now()->subDays(2)]);
+        $newest = Product::factory()->create(['created_at' => now()]);
+        $middle = Product::factory()->create(['created_at' => now()->subDay()]);
 
         Livewire::test(ListProducts::class)
-            ->assertCanSeeTableRecords([$first, $second, $third], inOrder: true);
+            ->assertCanSeeTableRecords([$newest, $middle, $oldest], inOrder: true);
     }
 
     public function test_the_list_can_be_filtered_by_active_state(): void
@@ -149,16 +150,38 @@ class ProductResourceTest extends TestCase
         $this->assertTrue($product->fresh()->is_active);
     }
 
-    public function test_products_can_be_reordered_from_the_list(): void
+    public function test_products_have_no_manual_order(): void
+    {
+        $this->assertFalse(Schema::hasColumn('products', 'order'));
+        $this->assertFalse(Schema::hasColumn('product_categories', 'order'));
+    }
+
+    public function test_stock_is_required_and_cannot_be_negative(): void
     {
         $this->signIn();
-        $first = Product::factory()->create(['order' => 1]);
-        $second = Product::factory()->create(['order' => 2]);
 
-        Livewire::test(ListProducts::class)
-            ->call('reorderTable', [$second->getKey(), $first->getKey()]);
+        Livewire::test(CreateProduct::class)
+            ->fillForm($this->validForm(['stock_quantity' => null]))
+            ->call('create')
+            ->assertHasFormErrors(['stock_quantity' => 'required'])
+            ->fillForm($this->validForm(['stock_quantity' => -1]))
+            ->call('create')
+            ->assertHasFormErrors(['stock_quantity']);
 
-        $this->assertLessThan($first->fresh()->order, $second->fresh()->order);
+        $this->assertSame(0, Product::query()->count());
+    }
+
+    public function test_editing_stock_by_hand_saves_it(): void
+    {
+        $this->signIn();
+        $product = Product::factory()->outOfStock()->create();
+
+        Livewire::test(EditProduct::class, ['record' => $product->id])
+            ->fillForm(['stock_quantity' => 12])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame(12, $product->fresh()->stock_quantity);
     }
 
     public function test_creating_a_product_stores_the_price_in_cents_and_generates_the_slug(): void
@@ -167,7 +190,7 @@ class ProductResourceTest extends TestCase
 
         Livewire::test(CreateProduct::class)
             ->assertFormFieldDoesNotExist('slug')
-            ->assertFormSet(['is_active' => true, 'order' => 0])
+            ->assertFormSet(['is_active' => true, 'stock_quantity' => 0])
             ->fillForm($this->validForm())
             ->call('create')
             ->assertHasNoFormErrors();
@@ -179,7 +202,7 @@ class ProductResourceTest extends TestCase
         $this->assertSame('Help choosing a charger.', $product->getTranslation('excerpt', $locale));
         $this->assertSame('ev-charger-consultation', $product->getTranslation('slug', $locale));
         $this->assertSame(1999, $product->price_cents);
-        $this->assertSame(2, $product->order);
+        $this->assertSame(4, $product->stock_quantity);
         $this->assertTrue($product->is_active);
     }
 

@@ -118,16 +118,14 @@ return [
         'price_helper' => 'Eurais, iki dviejų skaitmenų po kablelio, pvz. 19.99.',
         'is_active_helper' => 'Neaktyvios prekės paslėptos parduotuvėje ir jų negalima įdėti į krepšelį.',
         'catalog_section' => 'Katalogo duomenys',
-        'catalog_section_description' => 'Prekes su SKU atnaujina katalogo importai. Importas perrašo jų pavadinimą, santrauką, aprašymą, kainą, likutį, EAN, paveikslėlio nuorodą, kategoriją ir gamintoją.',
+        'catalog_section_description' => 'Prekes su SKU atnaujina katalogo importai. Importas perrašo jų pavadinimą, santrauką, aprašymą, kainą, EAN, paveikslėlio nuorodą, kategoriją ir gamintoją. Likučio ir aktyvumo jis niekada nekeičia.',
         'sku_helper' => 'Katalogo importas prekę randa pagal SKU, todėl jį pakeitus prekė atsiribos nuo katalogo.',
-        'stock_helper' => 'Palikite tuščią, jei likutis nevaldomas. 0 rodo prekę kaip išparduotą ir neleidžia jos dėti į krepšelį.',
+        'stock_helper' => 'Valdomas čia, importas jo nekeičia (nustato tik pradinį jo sukurtos prekės likutį). 0 rodo prekę kaip išparduotą ir neleidžia jos dėti į krepšelį.',
         'image_url_helper' => 'Nuoroda į paveikslėlį tiekėjo svetainėje. Jei įkeltas pagrindinis paveikslėlis, naudojamas jis.',
-        'stock_untracked' => 'Nevaldomas',
         'from_catalog' => 'Turi SKU (katalogo prekė)',
         'stock_filter' => [
             'in_stock' => 'Yra sandėlyje',
             'out_of_stock' => 'Išparduota',
-            'untracked' => 'Nevaldomas',
         ],
     ],
 

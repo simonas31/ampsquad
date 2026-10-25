@@ -6,7 +6,8 @@ namespace App\Services\Catalog;
 
 /**
  * One product from a catalog file after validation: trimmed, typed, and with
- * the price already in whole cents.
+ * the price already in whole cents. `stock` is only the starting quantity of
+ * a product the import creates; null when the file leaves it out.
  */
 final readonly class CatalogRow
 {
@@ -20,7 +21,7 @@ final readonly class CatalogRow
         public ?string $excerpt,
         public ?string $description,
         public int $priceCents,
-        public int $stock,
+        public ?int $stock,
         public ?string $imageUrl,
         public ?string $manufacturer,
         public ?string $ean,

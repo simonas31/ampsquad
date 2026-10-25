@@ -21,11 +21,14 @@ use Spatie\Translatable\HasTranslations;
 
 /**
  * Something the public shop sells. Deliberately flat: one price in the
- * shop's single currency (EUR), no variants. Stock is optional: products
- * from the catalog import carry a quantity, hand-made ones leave it unset
- * and are always available. Soft deleted rather than removed, so a product
- * that is in a cart (or, later, on an order) never leaves a dangling
- * reference.
+ * shop's single currency (EUR), no variants.
+ *
+ * Three kinds of data live here, with different owners. The catalog import
+ * owns the descriptive fields and the price (see CatalogImporter). The shop
+ * owns `stock_quantity` and `is_active`: an import seeds the quantity when it
+ * creates a product and never changes it afterwards. Soft deleted rather than
+ * removed, so a product that is in a cart (or, later, on an order) never
+ * leaves a dangling reference.
  */
 class Product extends Model implements HasMedia
 {
@@ -46,11 +49,16 @@ class Product extends Model implements HasMedia
     public const int MAX_PRICE_CENTS = 10_000_000;
 
     /**
+     * The one currency prices are held and shown in.
+     */
+    public const string CURRENCY = 'EUR';
+
+    /**
      * @var array<string, mixed>
      */
     protected $attributes = [
         'is_active' => true,
-        'order' => 0,
+        'stock_quantity' => 0,
     ];
 
     /**
@@ -62,7 +70,6 @@ class Product extends Model implements HasMedia
         'description',
         'price_cents',
         'is_active',
-        'order',
         'sku',
         'ean',
         'stock_quantity',
@@ -89,7 +96,6 @@ class Product extends Model implements HasMedia
         return [
             'price_cents' => 'integer',
             'is_active' => 'boolean',
-            'order' => 'integer',
             'stock_quantity' => 'integer',
         ];
     }
@@ -139,19 +145,14 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Manufacturer::class);
     }
 
-    /**
-     * Products whose stock is not tracked count as in stock.
-     */
     public function scopeInStock(Builder $query): Builder
     {
-        return $query->where(fn (Builder $stock) => $stock
-            ->whereNull('stock_quantity')
-            ->orWhere('stock_quantity', '>', 0));
+        return $query->where('stock_quantity', '>', 0);
     }
 
     public function isInStock(): bool
     {
-        return $this->stock_quantity === null || $this->stock_quantity > 0;
+        return $this->stock_quantity > 0;
     }
 
     /**
@@ -204,9 +205,9 @@ class Product extends Model implements HasMedia
     }
 
     /**
-     * Featured puts what can be bought first and then follows the admin's
-     * order. Every sort ends on the id, so pages never repeat or skip a
-     * product whose sort value is shared.
+     * Featured, the default, puts what can be bought first and then goes
+     * alphabetically. Every sort ends on the id, so pages never repeat or
+     * skip a product whose sort value is shared.
      *
      * @param  Builder<static>  $query
      * @return Builder<static>
@@ -214,10 +215,10 @@ class Product extends Model implements HasMedia
     public function scopeSortedBy(Builder $query, ShopSort $sort): Builder
     {
         match ($sort) {
-            ShopSort::Featured => $query->orderByRaw('coalesce(`stock_quantity`, 1) = 0')->orderBy('order'),
+            ShopSort::Featured => $this->orderedByName($query->orderByRaw('`stock_quantity` = 0')),
             ShopSort::PriceAsc => $query->orderBy('price_cents'),
             ShopSort::PriceDesc => $query->orderByDesc('price_cents'),
-            ShopSort::Name => $query->orderByRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci', [$this->localePath()]),
+            ShopSort::Name => $this->orderedByName($query),
             ShopSort::Newest => $query->orderByDesc('created_at'),
         };
 
@@ -238,9 +239,7 @@ class Product extends Model implements HasMedia
      */
     public function maxPurchasableQuantity(): int
     {
-        return $this->stock_quantity === null
-            ? CartItem::MAX_QUANTITY
-            : min(CartItem::MAX_QUANTITY, $this->stock_quantity);
+        return min(CartItem::MAX_QUANTITY, $this->stock_quantity);
     }
 
     /**
@@ -250,6 +249,17 @@ class Product extends Model implements HasMedia
     public function featuredImageUrl(string $conversion): ?string
     {
         return $this->getFirstMediaUrl('featured_image', $conversion) ?: $this->image_url;
+    }
+
+    /**
+     * By the current language's name, ignoring case and accents.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    private function orderedByName(Builder $query): Builder
+    {
+        return $query->orderByRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci', [$this->localePath()]);
     }
 
     /**

@@ -251,13 +251,12 @@ class ShopFilteringTest extends TestCase
 
     public function test_the_stock_filter_hides_what_is_sold_out(): void
     {
-        Product::factory()->create(['sku' => 'UNTRACKED']);
         Product::factory()->inStock()->create(['sku' => 'STOCKED']);
         Product::factory()->outOfStock()->create(['sku' => 'SOLD-OUT']);
 
-        $this->assertCount(3, $this->listedSkus(''));
-        $this->assertEqualsCanonicalizing(['UNTRACKED', 'STOCKED'], $this->listedSkus('in_stock=1'));
-        $this->assertCount(3, $this->listedSkus('in_stock=0'));
+        $this->assertCount(2, $this->listedSkus(''));
+        $this->assertSame(['STOCKED'], $this->listedSkus('in_stock=1'));
+        $this->assertCount(2, $this->listedSkus('in_stock=0'));
     }
 
     public function test_the_price_filter_takes_euros(): void
@@ -295,14 +294,15 @@ class ShopFilteringTest extends TestCase
         ];
     }
 
-    public function test_the_default_order_puts_what_can_be_bought_first_then_follows_the_admin(): void
+    public function test_the_default_order_puts_what_can_be_bought_first_then_goes_alphabetically(): void
     {
-        Product::factory()->outOfStock()->create(['sku' => 'SOLD-OUT-1', 'order' => 1]);
-        Product::factory()->create(['sku' => 'LATE', 'order' => 5]);
-        Product::factory()->inStock()->create(['sku' => 'EARLY', 'order' => 2]);
-        Product::factory()->outOfStock()->create(['sku' => 'SOLD-OUT-0', 'order' => 0]);
+        $this->named('Charlie', ['sku' => 'C']);
+        $this->named('Ąžuolas', ['sku' => 'SOLD-OUT-A', 'stock_quantity' => 0]);
+        $this->named('Bravo', ['sku' => 'B']);
+        $this->named('Alfa', ['sku' => 'A']);
+        $this->named('Delta', ['sku' => 'SOLD-OUT-D', 'stock_quantity' => 0]);
 
-        $this->assertSame(['EARLY', 'LATE', 'SOLD-OUT-0', 'SOLD-OUT-1'], $this->listedSkus(''));
+        $this->assertSame(['A', 'B', 'C', 'SOLD-OUT-A', 'SOLD-OUT-D'], $this->listedSkus(''));
     }
 
     public function test_products_can_be_sorted(): void
@@ -319,8 +319,8 @@ class ShopFilteringTest extends TestCase
 
     public function test_an_unknown_sort_falls_back_to_the_default(): void
     {
-        Product::factory()->create(['sku' => 'A1', 'order' => 1]);
-        Product::factory()->create(['sku' => 'A2', 'order' => 0]);
+        $this->named('Beta', ['sku' => 'A1']);
+        $this->named('Alpha', ['sku' => 'A2']);
 
         $props = $this->props('/shop?sort=drop-table');
 

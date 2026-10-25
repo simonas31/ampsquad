@@ -23,6 +23,7 @@ class ProductSeeder extends Seeder
                     'en' => 'A safety and condition check of your existing wiring.',
                 ],
                 'price_cents' => 8900,
+                'stock_quantity' => 50,
             ],
             [
                 'name' => ['lt' => 'Įkroviklio konsultacija', 'en' => 'EV charger consultation'],
@@ -31,6 +32,7 @@ class ProductSeeder extends Seeder
                     'en' => 'Help choosing and planning an EV charger installation.',
                 ],
                 'price_cents' => 4900,
+                'stock_quantity' => 50,
             ],
             [
                 'name' => ['lt' => 'Saulės elektrinės apžiūra', 'en' => 'Solar system check-up'],
@@ -39,11 +41,12 @@ class ProductSeeder extends Seeder
                     'en' => 'A technical inspection and performance check of a working solar system.',
                 ],
                 'price_cents' => 12000,
+                'stock_quantity' => 50,
             ],
         ];
 
-        foreach ($products as $order => $product) {
-            Product::query()->create([...$product, 'order' => $order]);
+        foreach ($products as $product) {
+            Product::query()->create($product);
         }
     }
 }

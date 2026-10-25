@@ -29,7 +29,7 @@ class ProductTest extends TestCase
         $this->assertSame(8900, $product->price_cents);
     }
 
-    public function test_new_products_are_active_and_unordered_by_default(): void
+    public function test_new_products_are_active_and_sold_out_by_default(): void
     {
         $product = Product::query()->create([
             'name' => ['lt' => 'Paslauga', 'en' => 'Service'],
@@ -37,7 +37,9 @@ class ProductTest extends TestCase
         ]);
 
         $this->assertTrue($product->is_active);
-        $this->assertSame(0, $product->order);
+        $this->assertSame(0, $product->stock_quantity);
+        $this->assertSame(0, $product->fresh()->stock_quantity);
+        $this->assertFalse($product->isInStock());
         $this->assertTrue($product->fresh()->is_active);
     }
 
@@ -169,24 +171,26 @@ class ProductTest extends TestCase
         $this->assertSame('http://bkgrupe.lt/media/catalog/product/a.jpg', $product->image_url);
     }
 
-    public function test_product_without_stock_tracking_counts_as_in_stock(): void
+    public function test_a_product_is_in_stock_only_while_it_has_stock(): void
     {
-        $this->assertNull(Product::factory()->create()->stock_quantity);
         $this->assertTrue(Product::factory()->create()->isInStock());
         $this->assertTrue(Product::factory()->inStock(1)->create()->isInStock());
         $this->assertFalse(Product::factory()->outOfStock()->create()->isInStock());
     }
 
-    public function test_in_stock_scope_keeps_untracked_and_stocked_products(): void
+    public function test_in_stock_scope_leaves_out_sold_out_products(): void
     {
-        $untracked = Product::factory()->create();
         $stocked = Product::factory()->inStock()->create();
         Product::factory()->outOfStock()->create();
 
-        $this->assertEqualsCanonicalizing(
-            [$untracked->id, $stocked->id],
-            Product::query()->inStock()->pluck('id')->all(),
-        );
+        $this->assertSame([$stocked->id], Product::query()->inStock()->pluck('id')->all());
+    }
+
+    public function test_stock_cannot_be_negative(): void
+    {
+        $this->expectException(QueryException::class);
+
+        Product::factory()->create(['stock_quantity' => -1]);
     }
 
     public function test_the_featured_image_is_the_upload_or_else_the_suppliers_link_or_else_nothing(): void

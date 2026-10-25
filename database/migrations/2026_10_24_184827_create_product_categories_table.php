@@ -20,7 +20,6 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('product_categories')->nullOnDelete();
             $table->json('name');
             $table->json('slug');
-            $table->unsignedInteger('order')->default(0);
             $table->timestamps();
 
             // Same generated-column approach as products.slug_lt/slug_en: the

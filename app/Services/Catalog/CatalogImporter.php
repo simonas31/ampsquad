@@ -19,10 +19,12 @@ use Throwable;
  *
  * Products are matched on SKU. A new SKU creates a product; a known one has
  * the fields the catalog owns overwritten (name, excerpt, description in both
- * languages, price, stock, EAN, image URL, category, manufacturer). What the
- * admin owns is never touched: is_active, order, an uploaded image, and the
- * slug. A product missing from the file is left alone, as is a product that
- * was deleted in the admin panel (it is updated but stays deleted).
+ * languages, price, EAN, image URL, category, manufacturer). What the shop
+ * owns is never touched: the stock quantity, is_active, an uploaded image,
+ * and the slug. The file's stock only seeds the quantity of a product the
+ * import creates; from then on the shop manages it. A product missing from
+ * the file is left alone, as is a product that was deleted in the admin
+ * panel (it is updated but stays deleted).
  *
  * A file the reader rejects writes nothing. Otherwise rows are written in
  * chunks, one transaction each, and a row that cannot be used is skipped and
@@ -184,12 +186,18 @@ final class CatalogImporter
         $product->fill([
             'sku' => $row->sku,
             'ean' => $row->ean,
-            'stock_quantity' => $row->stock,
             'image_url' => $row->imageUrl,
             'price_cents' => $row->priceCents,
             'product_category_id' => $this->taxonomy->categoryId($row->categoryPath),
             'manufacturer_id' => $this->taxonomy->manufacturerId($row->manufacturer),
         ]);
+
+        // The only place an import sets a quantity: a new product starts with
+        // what the file says (0 when it says nothing) and the shop owns it
+        // from then on.
+        if ($isNew) {
+            $product->stock_quantity = $row->stock ?? 0;
+        }
 
         $this->fillText($product, 'name', $row->name);
         $this->fillText($product, 'excerpt', $row->excerpt);

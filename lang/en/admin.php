@@ -118,16 +118,14 @@ return [
         'price_helper' => 'In euros, with up to two decimals, e.g. 19.99.',
         'is_active_helper' => 'Inactive products are hidden from the shop and cannot be added to a cart.',
         'catalog_section' => 'Catalog details',
-        'catalog_section_description' => 'Products with a SKU are kept up to date by catalog imports. An import overwrites their name, excerpt, description, price, stock, EAN, image link, category and manufacturer.',
+        'catalog_section_description' => 'Products with a SKU are kept up to date by catalog imports. An import overwrites their name, excerpt, description, price, EAN, image link, category and manufacturer. It never changes the stock or whether the product is active.',
         'sku_helper' => 'Catalog imports find a product by its SKU, so changing it detaches the product from the catalog.',
-        'stock_helper' => 'Leave empty if stock is not tracked. 0 shows the product as out of stock and stops it being added to a cart.',
+        'stock_helper' => 'Managed here, never by an import (it only sets the starting stock of a product it creates). 0 shows the product as out of stock and stops it being added to a cart.',
         'image_url_helper' => 'A link to an image on the supplier\'s site. An uploaded featured image is used instead when there is one.',
-        'stock_untracked' => 'Not tracked',
         'from_catalog' => 'Has a SKU (catalog product)',
         'stock_filter' => [
             'in_stock' => 'In stock',
             'out_of_stock' => 'Out of stock',
-            'untracked' => 'Not tracked',
         ],
     ],
 

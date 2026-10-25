@@ -28,19 +28,11 @@ class ProductCategory extends Model
     use HasTranslations;
 
     /**
-     * @var array<string, mixed>
-     */
-    protected $attributes = [
-        'order' => 0,
-    ];
-
-    /**
      * @var list<string>
      */
     protected $fillable = [
         'parent_id',
         'name',
-        'order',
     ];
 
     /**
@@ -50,16 +42,6 @@ class ProductCategory extends Model
         'name',
         'slug',
     ];
-
-    /**
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'order' => 'integer',
-        ];
-    }
 
     protected function slugSourceAttribute(): string
     {

@@ -100,7 +100,6 @@ class CatalogImporterTest extends TestCase
         $this->assertSame('IP kameros', $product->category->name);
         $this->assertSame('Hikvision', $product->manufacturer->name);
         $this->assertTrue($product->is_active);
-        $this->assertSame(0, $product->order);
         $this->assertSame('hikvision-kronsteinas', $product->getTranslation('slug', 'lt'));
         $this->assertSame('hikvision-kronsteinas', $product->getTranslation('slug', 'en'));
     }
@@ -128,6 +127,21 @@ class CatalogImporterTest extends TestCase
         $this->assertNull($product->getRawOriginal('excerpt'));
         $this->assertSame(0, $product->stock_quantity);
         $this->assertFalse($product->isInStock());
+    }
+
+    public function test_a_new_product_whose_file_row_has_no_stock_starts_sold_out(): void
+    {
+        $row = $this->product(['sku' => 'NO-STOCK']);
+        unset($row['stock']);
+
+        $this->importProducts([$row, $this->product(['sku' => 'NULL-STOCK', 'stock' => null])]);
+
+        foreach (['NO-STOCK', 'NULL-STOCK'] as $sku) {
+            $product = Product::query()->where('sku', $sku)->sole();
+
+            $this->assertSame(0, $product->stock_quantity);
+            $this->assertFalse($product->isInStock());
+        }
     }
 
     public function test_categories_are_built_as_a_tree_and_reused(): void
@@ -191,7 +205,7 @@ class CatalogImporterTest extends TestCase
         $original = Product::query()->where('sku', 'A1')->sole();
 
         $import = $this->importProducts([$this->product([
-            'sku' => 'A1', 'name' => 'New name', 'price' => '12.50', 'stock' => 0,
+            'sku' => 'A1', 'name' => 'New name', 'price' => '12.50', 'stock' => 99,
             'category' => ['Other'], 'manufacturer' => 'Acme', 'ean' => '12345678',
             'image_url' => 'http://bkgrupe.lt/new.jpg',
         ])]);
@@ -204,7 +218,7 @@ class CatalogImporterTest extends TestCase
         $this->assertSame($original->id, $product->id);
         $this->assertEquals(['lt' => 'New name', 'en' => 'New name'], $product->getTranslations('name'));
         $this->assertSame(1250, $product->price_cents);
-        $this->assertSame(0, $product->stock_quantity);
+        $this->assertSame(5, $product->stock_quantity);
         $this->assertSame('Other', $product->category->name);
         $this->assertSame('Acme', $product->manufacturer->name);
         $this->assertSame('12345678', $product->ean);
@@ -230,18 +244,53 @@ class CatalogImporterTest extends TestCase
         $this->assertNull($product->ean);
     }
 
-    public function test_what_the_admin_owns_survives_a_re_import(): void
+    public function test_what_the_shop_owns_survives_a_re_import(): void
     {
-        $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'Old name'])]);
+        $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'Old name', 'stock' => 3])]);
         $product = Product::query()->where('sku', 'A1')->sole();
-        $product->update(['is_active' => false, 'order' => 7]);
+        $product->update(['is_active' => false, 'stock_quantity' => 7]);
 
-        $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'New name'])]);
+        $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'New name', 'stock' => 50])]);
 
         $product->refresh();
 
+        $this->assertSame('New name', $product->name);
         $this->assertFalse($product->is_active);
-        $this->assertSame(7, $product->order);
+        $this->assertSame(7, $product->stock_quantity);
+    }
+
+    public function test_the_file_never_restocks_or_sells_out_a_product_the_shop_manages(): void
+    {
+        $this->importProducts([
+            $this->product(['sku' => 'SOLD-OUT-HERE', 'stock' => 40]),
+            $this->product(['sku' => 'RESTOCKED-HERE', 'stock' => 0]),
+            $this->product(['sku' => 'DELETED-HERE', 'stock' => 5]),
+        ]);
+        Product::query()->where('sku', 'SOLD-OUT-HERE')->sole()->update(['stock_quantity' => 0]);
+        Product::query()->where('sku', 'RESTOCKED-HERE')->sole()->update(['stock_quantity' => 12]);
+        Product::query()->where('sku', 'DELETED-HERE')->sole()->delete();
+
+        $import = $this->importProducts([
+            $this->product(['sku' => 'SOLD-OUT-HERE', 'stock' => 500]),
+            $this->product(['sku' => 'RESTOCKED-HERE', 'stock' => 0]),
+            $this->product(['sku' => 'DELETED-HERE', 'stock' => 500]),
+        ]);
+
+        $this->assertSame(0, $import->created_count);
+        $this->assertSame(0, Product::query()->where('sku', 'SOLD-OUT-HERE')->sole()->stock_quantity);
+        $this->assertSame(12, Product::query()->where('sku', 'RESTOCKED-HERE')->sole()->stock_quantity);
+        $this->assertSame(5, Product::query()->withTrashed()->where('sku', 'DELETED-HERE')->sole()->stock_quantity);
+    }
+
+    public function test_a_file_that_only_changes_stock_changes_nothing(): void
+    {
+        $row = $this->product(['sku' => 'A1', 'stock' => 3]);
+        $this->importProducts([$row]);
+
+        $import = $this->importProducts([[...$row, 'stock' => 80]]);
+
+        $this->assertSame(1, $import->unchanged_count);
+        $this->assertSame(0, $import->updated_count);
     }
 
     public function test_the_slug_of_a_product_that_has_been_on_sale_does_not_change(): void
@@ -276,7 +325,7 @@ class CatalogImporterTest extends TestCase
 
         $this->assertSame('Paslauga', $manual->fresh()->getTranslation('name', 'lt'));
         $this->assertNull($manual->fresh()->sku);
-        $this->assertNull($manual->fresh()->stock_quantity);
+        $this->assertSame(100, $manual->fresh()->stock_quantity);
     }
 
     public function test_a_product_deleted_in_the_admin_panel_is_updated_but_stays_deleted(): void

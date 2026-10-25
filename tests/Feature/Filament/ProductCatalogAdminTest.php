@@ -62,7 +62,7 @@ class ProductCatalogAdminTest extends TestCase
      */
     private function validForm(array $overrides = []): array
     {
-        return array_merge(['name' => 'Cable', 'price_cents' => '5.00', 'order' => 0], $overrides);
+        return array_merge(['name' => 'Cable', 'price_cents' => '5.00', 'stock_quantity' => 0], $overrides);
     }
 
     public function test_the_list_shows_catalog_details_and_the_suppliers_image(): void
@@ -134,18 +134,14 @@ class ProductCatalogAdminTest extends TestCase
     {
         $inStock = Product::factory()->inStock()->create();
         $outOfStock = Product::factory()->outOfStock()->create();
-        $untracked = Product::factory()->create();
 
         Livewire::test(ListProducts::class)
             ->filterTable('stock', 'in_stock')
             ->assertCanSeeTableRecords([$inStock])
-            ->assertCanNotSeeTableRecords([$outOfStock, $untracked])
+            ->assertCanNotSeeTableRecords([$outOfStock])
             ->filterTable('stock', 'out_of_stock')
             ->assertCanSeeTableRecords([$outOfStock])
-            ->assertCanNotSeeTableRecords([$inStock, $untracked])
-            ->filterTable('stock', 'untracked')
-            ->assertCanSeeTableRecords([$untracked])
-            ->assertCanNotSeeTableRecords([$inStock, $outOfStock]);
+            ->assertCanNotSeeTableRecords([$inStock]);
     }
 
     public function test_the_list_can_show_only_catalog_products(): void
@@ -199,7 +195,6 @@ class ProductCatalogAdminTest extends TestCase
         }
 
         $this->assertSame(2, Product::query()->whereNull('sku')->whereNull('ean')->whereNull('image_url')->count());
-        $this->assertNull(Product::query()->firstOrFail()->stock_quantity);
     }
 
     public function test_catalog_fields_are_validated(): void
@@ -219,12 +214,12 @@ class ProductCatalogAdminTest extends TestCase
         $product = Product::factory()->create(['sku' => 'KRDS1663ZJ']);
 
         Livewire::test(EditProduct::class, ['record' => $product->id])
-            ->fillForm(['order' => 5])
+            ->fillForm(['stock_quantity' => 5])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertSame('KRDS1663ZJ', $product->fresh()->sku);
-        $this->assertSame(5, $product->fresh()->order);
+        $this->assertSame(5, $product->fresh()->stock_quantity);
     }
 
     public function test_the_import_action_stores_the_upload_and_queues_the_import(): void

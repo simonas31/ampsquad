@@ -19,12 +19,32 @@ return new class extends Migration
             $table->json('slug');
             $table->json('excerpt')->nullable();
             $table->json('description')->nullable();
+
+            // The catalog import's upsert key. Nullable because products
+            // created by hand in the admin panel have none; MySQL allows
+            // any number of NULLs in a unique index.
+            $table->string('sku', 64)->nullable()->unique();
+            // Not unique: variants of one product can share a barcode.
+            $table->string('ean', 14)->nullable()->index();
+
             // Whole minor units (cents) of the shop's single currency, EUR.
             // Integers keep line totals exact and are what payment providers
             // expect, so no currency column or decimal math is needed yet.
             $table->unsignedInteger('price_cents');
+
+            // Owned by the shop, never by the catalog import: an import only
+            // seeds it when it creates a product. 0 means sold out, and every
+            // new product starts there until someone stocks it.
+            $table->unsignedInteger('stock_quantity')->default(0);
+
             $table->boolean('is_active')->default(true);
-            $table->unsignedInteger('order')->default(0);
+
+            // Hotlinked from the supplier, never downloaded. The uploaded
+            // featured_image media wins when a product has both.
+            $table->string('image_url', 500)->nullable();
+            $table->foreignId('product_category_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('manufacturer_id')->nullable()->constrained()->nullOnDelete();
+
             $table->softDeletes();
             $table->timestamps();
 
@@ -35,9 +55,6 @@ return new class extends Migration
             $table->string('slug_en')->virtualAs('json_unquote(json_extract(`slug`, \'$."en"\'))');
             $table->unique('slug_lt');
             $table->unique('slug_en');
-
-            // The shop listing: active products in admin-defined order.
-            $table->index(['is_active', 'order']);
         });
     }
 

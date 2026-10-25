@@ -66,11 +66,16 @@ class ProductForm
                         ? null
                         : number_format($state / 100, 2, '.', ''))
                     ->dehydrateStateUsing(fn (mixed $state): int => (int) round((float) $state * 100)),
-                TextInput::make('order')
-                    ->label(__('admin.fields.order'))
+                // The shop's own number: a catalog import only seeds it for a
+                // product it creates, so it sits outside the catalog section.
+                TextInput::make('stock_quantity')
+                    ->label(__('admin.fields.stock'))
+                    ->helperText(__('admin.products.stock_helper'))
                     ->required()
                     ->numeric()
+                    ->integer()
                     ->minValue(0)
+                    ->maxValue(CatalogRowParser::MAX_STOCK)
                     ->default(0),
                 Toggle::make('is_active')
                     ->label(__('admin.fields.is_active'))
@@ -90,13 +95,6 @@ class ProductForm
                             ->regex('/^\d{8,14}$/')
                             ->validationMessages(['regex' => __('admin.catalog_import.errors.ean_format')])
                             ->dehydrateStateUsing(self::blankToNull(...)),
-                        TextInput::make('stock_quantity')
-                            ->label(__('admin.fields.stock'))
-                            ->helperText(__('admin.products.stock_helper'))
-                            ->numeric()
-                            ->integer()
-                            ->minValue(0)
-                            ->maxValue(CatalogRowParser::MAX_STOCK),
                         Select::make('manufacturer_id')
                             ->label(__('admin.fields.manufacturer'))
                             ->relationship('manufacturer', 'name')

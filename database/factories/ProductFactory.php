@@ -32,8 +32,8 @@ class ProductFactory extends Factory
                 'en' => fake('en_US')->paragraph(4),
             ],
             'price_cents' => fake()->numberBetween(500, 50000),
+            'stock_quantity' => 100,
             'is_active' => true,
-            'order' => fake()->numberBetween(0, 20),
         ];
     }
 

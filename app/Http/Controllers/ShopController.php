@@ -102,7 +102,7 @@ class ShopController extends Controller
                 '@type' => 'Offer',
                 'url' => url()->current(),
                 'price' => number_format($product->price_cents / 100, 2, '.', ''),
-                'priceCurrency' => 'EUR',
+                'priceCurrency' => Product::CURRENCY,
                 'availability' => $product->isInStock()
                     ? 'https://schema.org/InStock'
                     : 'https://schema.org/OutOfStock',

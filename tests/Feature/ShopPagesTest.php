@@ -78,15 +78,20 @@ class ShopPagesTest extends TestCase
         );
     }
 
+    private function named(string $name): Product
+    {
+        return Product::factory()->create(['name' => ['lt' => $name, 'en' => $name]]);
+    }
+
     // -- listing -----------------------------------------------------------
 
-    public function test_the_listing_shows_active_products_in_admin_order(): void
+    public function test_the_listing_shows_active_products_alphabetically(): void
     {
-        $third = Product::factory()->create(['order' => 3]);
-        $first = Product::factory()->create(['order' => 1]);
-        $second = Product::factory()->create(['order' => 2]);
-        Product::factory()->inactive()->create(['order' => 0]);
-        Product::factory()->create(['order' => 0])->delete();
+        $third = $this->named('Charlie');
+        $first = $this->named('Alfa');
+        $second = $this->named('Bravo');
+        Product::factory()->inactive()->create(['name' => ['lt' => 'Aaa', 'en' => 'Aaa']]);
+        Product::factory()->create(['name' => ['lt' => 'Aab', 'en' => 'Aab']])->delete();
 
         $this->get('/shop')->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Shop/Index')

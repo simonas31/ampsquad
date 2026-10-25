@@ -25,8 +25,6 @@ class ProductsTable
 
     private const string STOCK_OUT = 'out_of_stock';
 
-    private const string STOCK_UNTRACKED = 'untracked';
-
     public static function configure(Table $table): Table
     {
         return $table
@@ -59,18 +57,13 @@ class ProductsTable
                     ->toggleable(),
                 TextColumn::make('price_cents')
                     ->label(__('admin.fields.price'))
-                    ->money('EUR', divideBy: 100)
+                    ->money(Product::CURRENCY, divideBy: 100)
                     ->sortable(),
                 TextColumn::make('stock_quantity')
                     ->label(__('admin.fields.stock'))
                     ->badge()
                     ->numeric()
-                    ->placeholder(__('admin.products.stock_untracked'))
-                    ->color(fn (?int $state): string => match (true) {
-                        $state === null => 'gray',
-                        $state === 0 => 'danger',
-                        default => 'success',
-                    })
+                    ->color(fn (int $state): string => $state === 0 ? 'danger' : 'success')
                     ->sortable(),
                 ToggleColumn::make('is_active')
                     ->label(__('admin.fields.is_active')),
@@ -78,19 +71,13 @@ class ProductsTable
                     ->label(__('admin.fields.ean'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('order')
-                    ->label(__('admin.fields.order'))
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('admin.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('order')
-            ->reorderable('order')
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('category')
                     ->label(__('admin.fields.category'))
@@ -109,12 +96,10 @@ class ProductsTable
                     ->options([
                         self::STOCK_IN => __('admin.products.stock_filter.in_stock'),
                         self::STOCK_OUT => __('admin.products.stock_filter.out_of_stock'),
-                        self::STOCK_UNTRACKED => __('admin.products.stock_filter.untracked'),
                     ])
                     ->query(fn (Builder $query, array $data): Builder => match ($data['value'] ?? null) {
                         self::STOCK_IN => $query->where('stock_quantity', '>', 0),
                         self::STOCK_OUT => $query->where('stock_quantity', 0),
-                        self::STOCK_UNTRACKED => $query->whereNull('stock_quantity'),
                         default => $query,
                     }),
                 TernaryFilter::make('is_active')

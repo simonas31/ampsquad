@@ -61,12 +61,13 @@ class CatalogRowParserTest extends TestCase
         $this->assertSame('6954273658830', $row->ean);
     }
 
-    public function test_only_sku_name_price_and_stock_are_required(): void
+    public function test_only_sku_name_and_price_are_required(): void
     {
         $row = (new CatalogRowParser)->parse([
-            'sku' => 'A1', 'name' => 'Minimal', 'price' => '0.99', 'stock' => 0,
+            'sku' => 'A1', 'name' => 'Minimal', 'price' => '0.99',
         ]);
 
+        $this->assertNull($row->stock);
         $this->assertSame([], $row->categoryPath);
         $this->assertNull($row->excerpt);
         $this->assertNull($row->description);
@@ -80,8 +81,10 @@ class CatalogRowParserTest extends TestCase
     {
         $row = (new CatalogRowParser)->parse($this->row([
             'category' => null, 'excerpt' => null, 'description' => '   ', 'image_url' => '',
-            'manufacturer' => null, 'ean' => '',
+            'manufacturer' => null, 'ean' => '', 'stock' => null,
         ]));
+
+        $this->assertNull($row->stock);
 
         $this->assertSame([], $row->categoryPath);
         $this->assertNull($row->excerpt);
@@ -119,7 +122,6 @@ class CatalogRowParserTest extends TestCase
             'sku' => ['sku'],
             'name' => ['name'],
             'price' => ['price'],
-            'stock' => ['stock'],
         ];
     }
 
@@ -193,7 +195,6 @@ class CatalogRowParserTest extends TestCase
             'negative' => [-1],
             'numeric string' => ['5'],
             'fraction' => [1.5],
-            'null' => [null],
             'too large' => [100_000_001],
         ];
     }
