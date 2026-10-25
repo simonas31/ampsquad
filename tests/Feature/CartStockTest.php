@@ -120,6 +120,28 @@ class CartStockTest extends TestCase
         $this->assertSame(2, CartItem::query()->sole()->quantity);
     }
 
+    public function test_a_cart_holds_only_so_many_different_products(): void
+    {
+        $cart = Cart::factory()->create();
+        CartItem::factory()->count(Cart::MAX_LINES)->for($cart)->create();
+        $extra = Product::factory()->create();
+        $existing = $cart->items()->first();
+
+        $this->visitorWith($cart)->post(route('cart.items.store'), ['product_id' => $extra->id, 'quantity' => 1])
+            ->assertSessionHasErrors(['product_id' => __('shop.cart_full', ['max' => Cart::MAX_LINES])]);
+        $this->assertSame(Cart::MAX_LINES, $cart->items()->count());
+
+        // More of a product already in the cart is not a new line.
+        $this->visitorWith($cart)->post(route('cart.items.store'), ['product_id' => $existing->product_id, 'quantity' => 2])
+            ->assertSessionHasNoErrors();
+        $this->assertSame(3, $existing->fresh()->quantity);
+
+        // Room again once a line goes.
+        $this->visitorWith($cart)->delete(route('cart.items.destroy', $existing))->assertSessionHasNoErrors();
+        $this->visitorWith($cart)->post(route('cart.items.store'), ['product_id' => $extra->id, 'quantity' => 1])
+            ->assertSessionHasNoErrors();
+    }
+
     public function test_plenty_of_stock_still_stops_at_the_cart_cap(): void
     {
         $product = Product::factory()->inStock(500)->create();

@@ -8,6 +8,7 @@ use App\Models\CatalogImport;
 use App\Models\Product;
 use App\Services\Catalog\CatalogImporter;
 use App\Services\Catalog\CatalogRowParser;
+use App\Settings\ShopSettings;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -74,7 +75,7 @@ class CatalogDemoSeeder extends Seeder
         $rows = $this->catalogRows();
 
         $first = $this->import($importer, $rows);
-        $this->command?->info("Imported {$first->created_count} demo products.");
+        $this->command?->info("Imported the demo catalog: {$first->created_count} created, {$first->updated_count} updated.");
 
         $this->playTheAdmin();
         $shopOwned = $this->shopOwnedState();
@@ -89,6 +90,12 @@ class CatalogDemoSeeder extends Seeder
 
         $this->assertShopOwnedStateIsKept($shopOwned);
         $this->command?->info('Stock and active state set in the shop survived the re-import.');
+
+        // The shop is off until an admin switches it on, so without this the
+        // products just made would be unreachable: /shop answers 404.
+        $settings = app(ShopSettings::class);
+        $settings->enabled = true;
+        $settings->save();
     }
 
     /**

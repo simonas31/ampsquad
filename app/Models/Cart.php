@@ -34,6 +34,14 @@ class Cart extends Model
     public const int LIFETIME_DAYS = 30;
 
     /**
+     * Most distinct products one cart may hold. Nobody orders more at once
+     * through a shop like this, and without a cap a script could grow a cart
+     * to thousands of lines, each loaded with its product and photo every
+     * time the cart page is opened.
+     */
+    public const int MAX_LINES = 100;
+
+    /**
      * @var list<string>
      */
     protected $fillable = [];

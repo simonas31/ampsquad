@@ -26,6 +26,18 @@ final class ShopCatalog
     public const int PER_PAGE = 12;
 
     /**
+     * What a listing card shows. The long description stays out: every row
+     * passes through the sort, and carrying five thousand characters per
+     * product through it is what made a large catalog slow.
+     *
+     * @var list<string>
+     */
+    private const array LISTING_COLUMNS = [
+        'id', 'name', 'slug', 'excerpt', 'sku', 'price_cents', 'stock_quantity',
+        'image_url', 'product_category_id', 'manufacturer_id', 'is_active', 'deleted_at',
+    ];
+
+    /**
      * Resolved categories by slug, so one request looks each up once.
      *
      * @var array<string, array{category: ProductCategory, ids: list<int>}|null>
@@ -38,6 +50,7 @@ final class ShopCatalog
     public function products(ShopFilters $filters): LengthAwarePaginator
     {
         return $this->matching($filters)
+            ->select(self::LISTING_COLUMNS)
             ->with(['media', 'category', 'manufacturer'])
             ->sortedBy($filters->sort)
             ->paginate(self::PER_PAGE)

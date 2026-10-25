@@ -18,9 +18,19 @@ use Inertia\Response;
 
 class ShopController extends Controller
 {
-    public function index(ShopIndexRequest $request, ShopCatalog $catalog): Response
+    public function index(ShopIndexRequest $request, ShopCatalog $catalog): Response|RedirectResponse
     {
         $filters = $request->filters();
+        $products = $catalog->products($filters);
+
+        // A page past the end (a bookmark from before products were removed,
+        // or a hand-edited link) would otherwise render "no products yet" for
+        // a shop that has plenty. Send it to the last page that exists.
+        if ($products->currentPage() > 1 && $products->isEmpty()) {
+            $lastPage = $products->lastPage();
+
+            return redirect()->route('shop.index', [...$request->query(), 'page' => $lastPage > 1 ? $lastPage : null]);
+        }
 
         $breadcrumbs = Breadcrumbs::make([
             ['label' => __('nav.home'), 'url' => route('home')],
@@ -28,7 +38,7 @@ class ShopController extends Controller
         ]);
 
         return Inertia::render('Shop/Index', [
-            'products' => ProductResource::collection($catalog->products($filters)),
+            'products' => ProductResource::collection($products),
             // A category that no longer exists is dropped, so the form and the
             // links built from it never carry a slug that matches nothing.
             'filters' => [...$filters->toArray(), 'category' => $catalog->selectedCategory($filters)?->slug],

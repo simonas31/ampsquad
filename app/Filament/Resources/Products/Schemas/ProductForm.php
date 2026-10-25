@@ -6,7 +6,6 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Services\Catalog\CatalogRowParser;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -33,7 +32,7 @@ class ProductForm
                             ->numeric()
                             ->integer()
                             ->minValue(0)
-                            ->maxValue(CatalogRowParser::MAX_STOCK)
+                            ->maxValue(Product::MAX_STOCK_QUANTITY)
                             ->default(0),
                         Toggle::make('is_active')
                             ->label(__('admin.fields.is_active'))
@@ -98,7 +97,7 @@ class ProductForm
                         TextInput::make('sku')
                             ->label(__('admin.fields.sku'))
                             ->helperText(__('admin.products.sku_helper'))
-                            ->maxLength(CatalogRowParser::MAX_SKU_LENGTH)
+                            ->maxLength(Product::MAX_SKU_LENGTH)
                             ->unique(ignoreRecord: true)
                             ->dehydrateStateUsing(self::blankToNull(...)),
                         TextInput::make('ean')
@@ -119,6 +118,7 @@ class ProductForm
                             ->label(__('admin.fields.image_url'))
                             ->helperText(__('admin.products.image_url_helper'))
                             ->url()
+                            ->rule('url:http,https')
                             ->maxLength(500)
                             ->dehydrateStateUsing(self::blankToNull(...))
                             ->columnSpanFull(),

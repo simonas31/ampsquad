@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Validator;
  */
 final class CatalogRowParser
 {
-    public const int MAX_SKU_LENGTH = 64;
+    public const int MAX_SKU_LENGTH = Product::MAX_SKU_LENGTH;
 
     public const int MAX_NAME_LENGTH = 255;
 
@@ -31,7 +31,7 @@ final class CatalogRowParser
 
     public const int MAX_CATEGORY_DEPTH = 8;
 
-    public const int MAX_STOCK = 100_000_000;
+    public const int MAX_STOCK = Product::MAX_STOCK_QUANTITY;
 
     /**
      * Markup that has no place in plain text: a common HTML tag, or a

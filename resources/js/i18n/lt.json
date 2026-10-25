@@ -165,7 +165,8 @@
       "newest": "Naujausios"
     },
     "lowStock": "Liko tik {count} vnt.",
-    "addFailed": "Nepavyko įdėti prekės. Patikrinkite ryšį ir bandykite dar kartą."
+    "addFailed": "Nepavyko įdėti prekės. Patikrinkite ryšį ir bandykite dar kartą.",
+    "pageExpired": "Jūsų sesija baigėsi, puslapis atnaujintas. Bandykite dar kartą."
   },
   "cart": {
     "linkLabel": "Krepšelis ({count})",

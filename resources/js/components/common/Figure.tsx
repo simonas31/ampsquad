@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import type { Frame } from "@/lib/project-image";
 import { cn, riseDelay } from "@/lib/utils";
 
@@ -27,6 +27,8 @@ interface FigureProps {
   sizes?: string;
   /** Called when the image cannot be loaded, e.g. a link that has gone dead. */
   onError?: () => void;
+  /** What the browser tells the image's server about this page. */
+  referrerPolicy?: ComponentProps<"img">["referrerPolicy"];
 }
 
 /**
@@ -45,6 +47,7 @@ export function Figure({
   className,
   sizes,
   onError,
+  referrerPolicy,
 }: FigureProps) {
   if (!frame && !fallback) {
     return null;
@@ -63,6 +66,7 @@ export function Figure({
           height={frame.height}
           sizes={sizes}
           onError={onError}
+          referrerPolicy={referrerPolicy}
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : undefined}
           decoding="async"

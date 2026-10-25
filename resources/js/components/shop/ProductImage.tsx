@@ -45,6 +45,10 @@ export function ProductImage({
       sizes={sizes}
       className={className}
       onError={() => setFailedUrl(imageUrl)}
+      // Catalog photographs are hotlinked from the supplier's site, which may
+      // refuse requests that name another site as the referrer, and has no
+      // business learning which of our pages its images are shown on.
+      referrerPolicy="no-referrer"
       fallback={
         <div className="text-ink-soft/40 flex h-full w-full items-center justify-center">
           <Package className="size-1/4 max-h-12 min-h-5" aria-hidden="true" />

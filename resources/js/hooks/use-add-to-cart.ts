@@ -56,6 +56,10 @@ export function useAddToCart(productId: number) {
     });
   }
 
+  // The server also sends errors that belong to no field (an expired
+  // session), which the form's typed errors do not list.
+  const errors: Record<string, string | undefined> = form.errors;
+
   return {
     quantity: form.data.quantity,
     setQuantity: (quantity: number) => form.setData("quantity", quantity),
@@ -63,8 +67,9 @@ export function useAddToCart(productId: number) {
     processing: form.processing,
     added,
     error:
-      form.errors.quantity ??
-      form.errors.product_id ??
+      errors.quantity ??
+      errors.product_id ??
+      (errors.page_expired ? t("shop.pageExpired") : undefined) ??
       (failed ? t("shop.addFailed") : undefined),
   };
 }

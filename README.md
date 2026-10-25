@@ -129,7 +129,7 @@ A file of about ten thousand products takes roughly a minute the first time and 
 
 The listing at `/shop` is filtered by query parameters, so every view has a shareable URL: `q` (words to find in the name, SKU or exact EAN), `category` (slug; includes sub-categories), `manufacturer` (id), `in_stock=1`, `min_price` and `max_price` (euros), and `sort` (`availability`, `price_asc`, `price_desc`, `name`, `newest`). Values that make no sense are ignored. Filtered and sorted pages are marked `noindex`.
 
-A sold-out product stays visible with an "Out of stock" marker and cannot be added to a cart. A cart line cannot be set above the stock. If the stock falls below what a line holds, the line is flagged and counts only what is left, and the stored quantity is corrected the next time the visitor changes it (viewing a cart never rewrites it). A line whose product sells out is flagged and left out of the totals. The default order puts what can be bought first, then goes alphabetically.
+A sold-out product stays visible with an "Out of stock" marker and cannot be added to a cart. A cart holds at most 100 different products, and a line cannot be set above the stock. If the stock falls below what a line holds, the line is flagged and counts only what is left, and the stored quantity is corrected the next time the visitor changes it (viewing a cart never rewrites it). A line whose product sells out is flagged and left out of the totals. The default order puts what can be bought first, then goes alphabetically.
 
 ### In the admin panel
 

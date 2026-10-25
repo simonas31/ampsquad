@@ -27,6 +27,11 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /**
+     * @var array<int, array{labelKey: string, url: string}>|null
+     */
+    private ?array $navigation = null;
+
+    /**
      * Determines the current asset version.
      *
      * @see https://inertiajs.com/asset-versioning
@@ -45,8 +50,6 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $navigation = $this->navigationLinks();
-
         return [
             ...parent::share($request),
             'locale' => fn () => [
@@ -59,11 +62,22 @@ class HandleInertiaRequests extends Middleware
                     ])
                     ->values(),
             ],
-            'navigation' => $navigation,
-            'pageLinks' => fn () => $this->pageLinks($navigation),
+            'navigation' => fn () => $this->navigation(),
+            'pageLinks' => fn () => $this->pageLinks($this->navigation()),
             'site' => fn () => $this->siteContact(),
             'cartSummary' => fn () => $this->cartSummary($request),
         ];
+    }
+
+    /**
+     * The main navigation, worked out once per request however many props
+     * need it, and not at all for a partial reload that asks for neither.
+     *
+     * @return array<int, array{labelKey: string, url: string}>
+     */
+    private function navigation(): array
+    {
+        return $this->navigation ??= $this->navigationLinks();
     }
 
     /**

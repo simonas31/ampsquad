@@ -209,6 +209,21 @@ class ProductCatalogAdminTest extends TestCase
             ->assertHasFormErrors(['sku', 'ean', 'stock_quantity', 'image_url']);
     }
 
+    public function test_the_image_link_must_be_http_or_https_like_the_imports_require(): void
+    {
+        foreach (['ftp://example.com/a.jpg', 'javascript://example.com/%0Aalert(1)', 'file:///etc/passwd'] as $link) {
+            Livewire::test(CreateProduct::class)
+                ->fillForm($this->validForm(['image_url' => $link]))
+                ->call('create')
+                ->assertHasFormErrors(['image_url']);
+        }
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm($this->validForm(['image_url' => 'https://example.com/a.jpg']))
+            ->call('create')
+            ->assertHasNoFormErrors();
+    }
+
     public function test_a_product_keeps_its_own_sku_when_it_is_saved_again(): void
     {
         $product = Product::factory()->create(['sku' => 'KRDS1663ZJ']);

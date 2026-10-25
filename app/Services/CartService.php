@@ -106,7 +106,7 @@ class CartService
     /**
      * Adds to the line for the product, creating it if needed.
      *
-     * @throws ValidationException when the product cannot be bought or the line would pass the cap
+     * @throws ValidationException when the product cannot be bought, the cart is full, or the line would pass the cap
      */
     public function add(Cart $cart, Product $product, int $quantity): CartItem
     {
@@ -116,6 +116,12 @@ class CartService
             $this->assertPurchasable($product);
 
             $item = $cart->items()->firstOrNew(['product_id' => $product->getKey()]);
+
+            if (! $item->exists && $cart->items()->count() >= Cart::MAX_LINES) {
+                throw ValidationException::withMessages([
+                    'product_id' => __('shop.cart_full', ['max' => Cart::MAX_LINES]),
+                ]);
+            }
 
             // Builds on what the line is worth, so a line left holding more
             // than the stock is corrected by the next add instead of failing

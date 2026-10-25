@@ -49,6 +49,14 @@ class Product extends Model implements HasMedia
     public const int MAX_PRICE_CENTS = 10_000_000;
 
     /**
+     * Longest SKU, and the most stock one product can hold: limits of the
+     * product itself, shared by the catalog import and the admin panel.
+     */
+    public const int MAX_SKU_LENGTH = 64;
+
+    public const int MAX_STOCK_QUANTITY = 100_000_000;
+
+    /**
      * At or below this many left, the shop says how many are left.
      */
     public const int LOW_STOCK_THRESHOLD = 5;

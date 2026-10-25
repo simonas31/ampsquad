@@ -6,7 +6,6 @@ namespace App\Filament\Resources\Products\Tables;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Services\Catalog\CatalogRowParser;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -90,7 +89,7 @@ class ProductsTable
                     ->type('number')
                     ->inputMode('numeric')
                     ->step(1)
-                    ->rules(['required', 'integer', 'min:0', 'max:'.CatalogRowParser::MAX_STOCK])
+                    ->rules(['required', 'integer', 'min:0', 'max:'.Product::MAX_STOCK_QUANTITY])
                     ->sortable(),
                 ToggleColumn::make('is_active')
                     ->label(__('admin.fields.is_active')),
@@ -202,7 +201,7 @@ class ProductsTable
                     ->numeric()
                     ->integer()
                     ->minValue(0)
-                    ->maxValue(CatalogRowParser::MAX_STOCK)
+                    ->maxValue(Product::MAX_STOCK_QUANTITY)
                     ->default(0),
             ])
             ->action(fn (LazyCollection $records, array $data) => self::updateInChunks($records, ['stock_quantity' => (int) $data['stock_quantity']]))

@@ -38,7 +38,11 @@ export function CartLineItem({ line }: CartLineItemProps) {
     },
     onFinish: () => setProcessing(false),
     onError: (errors: Record<string, string>) =>
-      setError(errors.quantity ?? errors.product_id),
+      setError(
+        errors.quantity ??
+          errors.product_id ??
+          (errors.page_expired ? t("shop.pageExpired") : undefined),
+      ),
     // Stay on the cart and say so, instead of swapping it for an error page.
     onHttpException: () => {
       setError(t("cart.updateFailed"));

@@ -44,8 +44,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
             $status = $response->getStatusCode();
 
+            // The error carries a code, not a sentence: this runs before the
+            // request's language is chosen, so the page words it itself.
             if ($status === 419) {
-                return back()->with(['message' => 'The page expired, please try again.']);
+                return back()->withErrors(['page_expired' => 'page_expired']);
             }
 
             if (! app()->environment(['local', 'testing']) && in_array($status, [403, 404, 500, 503], true)) {

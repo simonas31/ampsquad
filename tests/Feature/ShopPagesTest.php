@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Product;
+use App\Services\Shop\ShopCatalog;
 use App\Settings\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -98,8 +99,31 @@ class ShopPagesTest extends TestCase
                 ->missing('products')
                 ->missing('categories')
                 ->missing('manufacturers')
+                ->missing('navigation')
+                ->missing('pageLinks')
             )
         );
+    }
+
+    public function test_a_page_past_the_end_goes_to_the_last_page_that_exists(): void
+    {
+        Product::factory()->count(ShopCatalog::PER_PAGE * 2 + 1)->create();
+
+        $this->get('/shop?page=9')->assertRedirect(route('shop.index', ['page' => 3]));
+        $this->get('/shop?page=3')->assertOk();
+    }
+
+    public function test_a_page_past_the_end_keeps_the_filters(): void
+    {
+        Product::factory()->create(['sku' => 'KEEP']);
+
+        $this->get('/shop?q=KEEP&page=5')->assertRedirect(route('shop.index', ['q' => 'KEEP']));
+    }
+
+    public function test_an_empty_shop_does_not_redirect_forever(): void
+    {
+        $this->get('/shop?page=2')->assertRedirect(route('shop.index'));
+        $this->get('/shop')->assertOk();
     }
 
     public function test_a_product_says_how_many_are_left_only_when_few_are(): void

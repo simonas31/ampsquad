@@ -22,7 +22,7 @@ export function CartSummary({ cart }: { cart: CartData }) {
   const contactUrl = useNavUrl("nav.contact", "/contact");
   const [confirming, setConfirming] = useState(false);
   const [clearing, setClearing] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<string>();
 
   function clear() {
     router.delete(cart.clearUrl, {
@@ -30,15 +30,19 @@ export function CartSummary({ cart }: { cart: CartData }) {
       only: CART_PROPS,
       onStart: () => {
         setClearing(true);
-        setFailed(false);
+        setFailure(undefined);
       },
       onFinish: () => setClearing(false),
+      onError: (errors) =>
+        setFailure(
+          errors.page_expired ? t("shop.pageExpired") : t("cart.updateFailed"),
+        ),
       onHttpException: () => {
-        setFailed(true);
+        setFailure(t("cart.updateFailed"));
 
         return false;
       },
-      onNetworkError: () => setFailed(true),
+      onNetworkError: () => setFailure(t("cart.updateFailed")),
     });
   }
 
@@ -104,9 +108,9 @@ export function CartSummary({ cart }: { cart: CartData }) {
         </button>
       )}
 
-      {failed && (
+      {failure && (
         <p role="alert" className="text-destructive mt-3 text-center text-sm">
-          {t("cart.updateFailed")}
+          {failure}
         </p>
       )}
     </Card>

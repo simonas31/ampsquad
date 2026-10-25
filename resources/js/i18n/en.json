@@ -165,7 +165,8 @@
       "newest": "Newest"
     },
     "lowStock": "Only {count} left",
-    "addFailed": "Could not add this product. Check your connection and try again."
+    "addFailed": "Could not add this product. Check your connection and try again.",
+    "pageExpired": "Your session expired and the page was refreshed. Please try again."
   },
   "cart": {
     "linkLabel": "Cart ({count})",
