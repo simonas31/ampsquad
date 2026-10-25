@@ -1,4 +1,5 @@
 import { Package } from "lucide-react";
+import { useState } from "react";
 import { Figure } from "@/components/common/Figure";
 
 interface ProductImageProps {
@@ -14,8 +15,9 @@ interface ProductImageProps {
 
 /**
  * A product photograph in the site's image frame. Products without an
- * uploaded image get a quiet icon on the same bed, so the grid keeps its
- * rhythm instead of collapsing.
+ * image, and products whose image cannot be loaded (catalog products link
+ * to the supplier's site, which can move or drop a file), get a quiet icon
+ * on the same bed, so the grid keeps its rhythm instead of collapsing.
  */
 export function ProductImage({
   imageUrl,
@@ -26,12 +28,15 @@ export function ProductImage({
   sizes,
   className,
 }: ProductImageProps) {
+  // Remembers which URL failed rather than a flag, so a different image
+  // (the same card reused for another product) gets its own chance to load.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const src = imageUrl !== null && imageUrl !== failedUrl ? imageUrl : null;
+
   return (
     <Figure
       frame={
-        imageUrl
-          ? { src: imageUrl, width: 1200, height: 900, isPlaceholder: false }
-          : null
+        src ? { src, width: 1200, height: 900, isPlaceholder: false } : null
       }
       alt={alt}
       ratio={ratio}
@@ -39,6 +44,7 @@ export function ProductImage({
       zoom={zoom}
       sizes={sizes}
       className={className}
+      onError={() => setFailedUrl(imageUrl)}
       fallback={
         <div className="text-ink-soft/40 flex h-full w-full items-center justify-center">
           <Package className="size-1/4 max-h-12 min-h-5" aria-hidden="true" />

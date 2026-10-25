@@ -73,7 +73,7 @@ class CartService
 
         return (int) CartItem::query()
             ->whereHas('cart', fn (Builder $cart) => $cart->where('token', $token))
-            ->whereHas('product', fn (Builder $product) => $product->where('is_active', true)->whereNull('deleted_at'))
+            ->whereHas('product', fn (Builder $product) => $product->where('is_active', true)->whereNull('deleted_at')->inStock())
             ->sum('quantity');
     }
 
@@ -114,7 +114,7 @@ class CartService
             $item = $cart->items()->firstOrNew(['product_id' => $product->getKey()]);
             $newQuantity = ($item->exists ? $item->quantity : 0) + $quantity;
 
-            $this->assertWithinLimit($newQuantity);
+            $this->assertWithinLimit($newQuantity, $product);
 
             $item->quantity = $newQuantity;
             $item->save();
@@ -136,7 +136,7 @@ class CartService
             $item->refresh()->load('product');
 
             $this->assertPurchasable($item->product);
-            $this->assertWithinLimit($quantity);
+            $this->assertWithinLimit($quantity, $item->product);
 
             $item->update(['quantity' => $quantity]);
 
@@ -185,19 +185,32 @@ class CartService
 
     private function assertPurchasable(Product $product): void
     {
-        if (! $product->isPurchasable()) {
-            throw ValidationException::withMessages([
-                'product_id' => __('shop.product_unavailable'),
-            ]);
+        if ($product->isPurchasable()) {
+            return;
         }
+
+        $isOnSale = $product->is_active && ! $product->trashed();
+
+        throw ValidationException::withMessages([
+            'product_id' => $isOnSale ? __('shop.out_of_stock') : __('shop.product_unavailable'),
+        ]);
     }
 
-    private function assertWithinLimit(int $quantity): void
+    /**
+     * The cart cap, or what is left in stock when that is less.
+     */
+    private function assertWithinLimit(int $quantity, Product $product): void
     {
-        if ($quantity < CartItem::MIN_QUANTITY || $quantity > CartItem::MAX_QUANTITY) {
-            throw ValidationException::withMessages([
-                'quantity' => __('shop.max_quantity', ['max' => CartItem::MAX_QUANTITY]),
-            ]);
+        $max = $product->maxPurchasableQuantity();
+
+        if ($quantity >= CartItem::MIN_QUANTITY && $quantity <= $max) {
+            return;
         }
+
+        throw ValidationException::withMessages([
+            'quantity' => $max < CartItem::MAX_QUANTITY
+                ? __('shop.not_enough_stock', ['count' => $max])
+                : __('shop.max_quantity', ['max' => CartItem::MAX_QUANTITY]),
+        ]);
     }
 }

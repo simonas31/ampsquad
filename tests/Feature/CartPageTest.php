@@ -41,7 +41,6 @@ class CartPageTest extends TestCase
             ->where('cart.subtotalCents', 0)
             ->where('cart.totalQuantity', 0)
             ->where('cart.hasUnavailableItems', false)
-            ->where('maxQuantity', 99)
         );
 
         $this->assertSame(0, Cart::query()->count());

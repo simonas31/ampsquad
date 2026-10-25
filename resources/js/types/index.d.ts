@@ -177,15 +177,63 @@ export interface Product {
   description?: string | null;
   priceCents: number;
   url: string;
+  /** An uploaded photograph, or the supplier's image link; null when neither exists. */
   imageUrl: string | null;
   imageThumbUrl: string | null;
+  sku: string | null;
+  /** Only sent where the manufacturer was loaded: the listing and the product page. */
+  manufacturer?: string | null;
+  /** Only sent where the category was loaded: the listing and the product page. */
+  category?: { name: string; url: string } | null;
+  /** False once the stock is used up; the product stays visible but cannot be bought. */
+  inStock: boolean;
+  /** The most one cart line may hold: the cart cap, or the stock when lower. */
+  maxQuantity: number;
+}
+
+export type ShopSort =
+  | "featured"
+  | "price_asc"
+  | "price_desc"
+  | "name"
+  | "newest";
+
+/** What the shop listing is currently narrowed to, as the server understood it. */
+export interface ShopFilters {
+  search: string;
+  /** Slug of the chosen category; null for all. */
+  category: string | null;
+  manufacturer: number | null;
+  inStock: boolean;
+  /** Euros as typed; empty for no limit. */
+  minPrice: string;
+  maxPrice: string;
+  sort: ShopSort;
+}
+
+export interface CategoryNode {
+  id: number;
+  name: string;
+  slug: string;
+  /** Products in it and everything below it, under the current filters. */
+  count: number;
+  isSelected: boolean;
+  /** Filled only for the chosen category and its ancestors. */
+  children: CategoryNode[];
+}
+
+export interface ManufacturerOption {
+  id: number;
+  name: string;
+  count: number;
 }
 
 export interface CartLine {
   id: number;
   quantity: number;
-  /** False once the product was deactivated or deleted. */
+  /** False once the product was deactivated, deleted or sold out. */
   isAvailable: boolean;
+  maxQuantity: number;
   unitPriceCents: number;
   lineTotalCents: number;
   /** PATCH to set the quantity, DELETE to remove the line. */

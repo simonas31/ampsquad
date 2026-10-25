@@ -32,6 +32,7 @@ class CartItemResource extends JsonResource
             'id' => $this->id,
             'quantity' => $this->quantity,
             'isAvailable' => $isAvailable,
+            'maxQuantity' => $this->product->maxPurchasableQuantity(),
             'unitPriceCents' => $this->product->price_cents,
             'lineTotalCents' => $this->lineTotalCents(),
             'url' => route('cart.items.update', $this->resource, false),
@@ -39,7 +40,7 @@ class CartItemResource extends JsonResource
                 'id' => $this->product->id,
                 'name' => $this->product->name,
                 'url' => $isAvailable ? route('shop.show', $this->product->slug) : null,
-                'imageThumbUrl' => $this->product->getFirstMediaUrl('featured_image', 'thumbnail') ?: null,
+                'imageThumbUrl' => $this->product->featuredImageUrl('thumbnail'),
             ],
         ];
     }

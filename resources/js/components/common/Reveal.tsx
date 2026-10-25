@@ -4,6 +4,12 @@ import { cn } from "@/lib/utils";
 interface RevealProps extends ComponentProps<"div"> {
   /** Stagger delay in milliseconds, for items revealed together. */
   delay?: number;
+  /**
+   * How much of the element must be on screen before it is revealed, from
+   * 0 (a single pixel) to 1. The default suits sections; an element taller
+   * than the screen can never show 15% of itself, so a long list needs 0.
+   */
+  threshold?: number;
 }
 
 function prefersReducedMotion(): boolean {
@@ -16,7 +22,13 @@ function prefersReducedMotion(): boolean {
  * on scroll-back. Reduced-motion users get the content immediately, so
  * nothing depends on the observer firing.
  */
-export function Reveal({ delay = 0, className, style, ...props }: RevealProps) {
+export function Reveal({
+  delay = 0,
+  threshold = 0.15,
+  className,
+  style,
+  ...props
+}: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(prefersReducedMotion);
 
@@ -34,13 +46,13 @@ export function Reveal({ delay = 0, className, style, ...props }: RevealProps) {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 },
+      { threshold },
     );
 
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, [visible]);
+  }, [visible, threshold]);
 
   return (
     <div

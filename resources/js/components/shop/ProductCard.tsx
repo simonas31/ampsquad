@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useT } from "@/hooks/use-t";
 import { formatCents } from "@/lib/shop";
+import { cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
 /**
  * A product as an image, a name that links to its page, a line of copy and
  * the price beside a one-click add. The photograph and name are one link;
  * the add button sits outside it so the card never nests interactive
- * elements.
+ * elements. A sold-out product keeps its card, marked on the photograph,
+ * with the button switched off.
  */
 export function ProductCard({ product }: { product: Product }) {
   const t = useT();
@@ -21,20 +23,39 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <li className="group flex flex-col">
       <Link href={product.url} className="block">
-        <ProductImage
-          imageUrl={product.imageThumbUrl ?? product.imageUrl}
-          alt=""
-          ratio="4 / 3"
-          zoom
-          sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-        />
-        <h3 className="display text-ink group-hover:decoration-signal group-focus-within:decoration-signal mt-5 text-2xl underline-offset-[8px] group-hover:underline group-hover:decoration-[3px] group-focus-within:underline">
+        <div className="relative">
+          <ProductImage
+            imageUrl={product.imageThumbUrl ?? product.imageUrl}
+            alt=""
+            ratio="4 / 3"
+            zoom
+            sizes="(min-width: 1280px) 22vw, (min-width: 640px) 45vw, 100vw"
+          />
+
+          {!product.inStock && (
+            <span className="meta bg-ink text-bone absolute top-3 left-3 rounded-full px-3 py-1">
+              {t("shop.outOfStock")}
+            </span>
+          )}
+        </div>
+
+        {product.manufacturer && (
+          <p className="meta text-ink-soft mt-5">{product.manufacturer}</p>
+        )}
+        <h3
+          className={cn(
+            "display text-ink group-hover:decoration-signal group-focus-within:decoration-signal text-2xl underline-offset-[8px] group-hover:underline group-hover:decoration-[3px] group-focus-within:underline",
+            product.manufacturer ? "mt-1" : "mt-5",
+          )}
+        >
           {product.name}
         </h3>
       </Link>
 
       {product.excerpt && (
-        <p className="text-ink-soft mt-2 text-pretty">{product.excerpt}</p>
+        <p className="text-ink-soft mt-2 line-clamp-3 text-pretty">
+          {product.excerpt}
+        </p>
       )}
 
       <div className="mt-auto flex items-center justify-between gap-4 pt-5">
@@ -45,10 +66,14 @@ export function ProductCard({ product }: { product: Product }) {
         <Button
           size="sm"
           onClick={addToCart.submit}
-          disabled={addToCart.processing}
+          disabled={addToCart.processing || !product.inStock}
         >
           <ShoppingBag aria-hidden="true" />
-          {addToCart.processing ? t("shop.adding") : t("shop.addToCart")}
+          {product.inStock
+            ? addToCart.processing
+              ? t("shop.adding")
+              : t("shop.addToCart")
+            : t("shop.outOfStock")}
         </Button>
       </div>
 

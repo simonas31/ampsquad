@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ShopIndexRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\CartItem;
 use App\Models\Product;
+use App\Services\Shop\ShopCatalog;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\LocalizedUrls;
 use App\Support\Seo\SeoData;
@@ -17,15 +18,9 @@ use Inertia\Response;
 
 class ShopController extends Controller
 {
-    public function index(): Response
+    public function index(ShopIndexRequest $request, ShopCatalog $catalog): Response
     {
-        $products = Product::query()
-            ->active()
-            ->with('media')
-            ->orderBy('order')
-            ->orderBy('id')
-            ->paginate(12)
-            ->withQueryString();
+        $filters = $request->filters();
 
         $breadcrumbs = Breadcrumbs::make([
             ['label' => __('nav.home'), 'url' => route('home')],
@@ -33,10 +28,18 @@ class ShopController extends Controller
         ]);
 
         return Inertia::render('Shop/Index', [
-            'products' => ProductResource::collection($products),
+            'products' => ProductResource::collection($catalog->products($filters)),
+            // A category that no longer exists is dropped, so the form and the
+            // links built from it never carry a slug that matches nothing.
+            'filters' => [...$filters->toArray(), 'category' => $catalog->selectedCategory($filters)?->slug],
+            'categories' => $catalog->categoryTree($filters),
+            'manufacturers' => $catalog->manufacturers($filters),
+            'shopUrl' => route('shop.index'),
             'breadcrumbs' => $breadcrumbs->toArray(),
+            // Searches and filtered cuts repeat the same products.
             'seo' => SeoData::make(
                 pageTitle: __('nav.shop'),
+                noindex: $filters->isActive(),
                 jsonLd: [$breadcrumbs->jsonLd()],
             ),
         ]);
@@ -48,7 +51,7 @@ class ShopController extends Controller
 
         $product = Product::query()
             ->active()
-            ->with('media')
+            ->with(['media', 'category', 'manufacturer'])
             ->where($slugColumn, $slug)
             ->first();
 
@@ -67,11 +70,10 @@ class ShopController extends Controller
         ]);
 
         $description = $product->excerpt ?: Str::limit((string) $product->description, 160);
-        $image = $product->getFirstMediaUrl('featured_image', 'large') ?: null;
+        $image = $product->featuredImageUrl('large');
 
         return Inertia::render('Shop/Show', [
             'product' => new ProductResource($product),
-            'maxQuantity' => CartItem::MAX_QUANTITY,
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(
                 pageTitle: $product->name,
@@ -93,12 +95,17 @@ class ShopController extends Controller
             'name' => $product->name,
             'description' => $description,
             'image' => $image,
+            'sku' => $product->sku,
+            'gtin' => $product->ean,
+            'brand' => $product->manufacturer === null ? null : ['@type' => 'Brand', 'name' => $product->manufacturer->name],
             'offers' => [
                 '@type' => 'Offer',
                 'url' => url()->current(),
                 'price' => number_format($product->price_cents / 100, 2, '.', ''),
                 'priceCurrency' => 'EUR',
-                'availability' => 'https://schema.org/InStock',
+                'availability' => $product->isInStock()
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
             ],
         ]);
     }

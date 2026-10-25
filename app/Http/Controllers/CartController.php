@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CartResource;
-use App\Models\CartItem;
 use App\Services\CartService;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\SeoData;
@@ -27,7 +26,6 @@ class CartController extends Controller
 
         return Inertia::render('Cart', [
             'cart' => new CartResource($this->carts->forDisplay($request)),
-            'maxQuantity' => CartItem::MAX_QUANTITY,
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.cart'), noindex: true),
         ]);

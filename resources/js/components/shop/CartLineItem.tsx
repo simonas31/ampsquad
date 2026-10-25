@@ -10,7 +10,6 @@ import type { CartLine } from "@/types";
 
 interface CartLineItemProps {
   line: CartLine;
-  maxQuantity: number;
 }
 
 /**
@@ -22,7 +21,7 @@ interface CartLineItemProps {
  * A line whose product is no longer sold keeps its place, struck through,
  * with a reason instead of the quantity control. It can only be removed.
  */
-export function CartLineItem({ line, maxQuantity }: CartLineItemProps) {
+export function CartLineItem({ line }: CartLineItemProps) {
   const t = useT();
   const { locale } = usePage().props;
   const [processing, setProcessing] = useState(false);
@@ -74,7 +73,7 @@ export function CartLineItem({ line, maxQuantity }: CartLineItemProps) {
               className="mt-4"
               value={line.quantity}
               min={1}
-              max={maxQuantity}
+              max={line.maxQuantity}
               label={t("cart.lineQuantity", { name: line.product.name })}
               decreaseLabel={t("shop.decreaseQuantity")}
               increaseLabel={t("shop.increaseQuantity")}

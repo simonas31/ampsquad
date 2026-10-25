@@ -10,11 +10,10 @@ import type { Breadcrumb, CartData } from "@/types";
 
 interface CartProps {
   cart: CartData;
-  maxQuantity: number;
   breadcrumbs: Breadcrumb[];
 }
 
-export default function Cart({ cart, maxQuantity, breadcrumbs }: CartProps) {
+export default function Cart({ cart, breadcrumbs }: CartProps) {
   const t = useT();
   const shopUrl = useNavUrl("nav.shop", "/shop");
 
@@ -36,11 +35,7 @@ export default function Cart({ cart, maxQuantity, breadcrumbs }: CartProps) {
 
               <ul>
                 {cart.items.map((line) => (
-                  <CartLineItem
-                    key={line.id}
-                    line={line}
-                    maxQuantity={maxQuantity}
-                  />
+                  <CartLineItem key={line.id} line={line} />
                 ))}
               </ul>
             </div>

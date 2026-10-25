@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ShopSort;
 use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasSlug;
 use Database\Factories\ProductFactory;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
@@ -162,10 +164,99 @@ class Product extends Model implements HasMedia
     }
 
     /**
+     * Words of a search that are looked for; the rest are ignored.
+     */
+    public const int MAX_SEARCH_TERMS = 5;
+
+    /**
+     * Products whose name, SKU or EAN contain every word of $text. Names are
+     * compared the way the database's own text columns are, ignoring case
+     * and accents, so "kronsteinas" finds "Kronšteinas".
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeSearch(Builder $query, string $text): Builder
+    {
+        $words = array_slice(array_filter(explode(' ', Str::squish($text))), 0, self::MAX_SEARCH_TERMS);
+
+        foreach ($words as $word) {
+            $like = '%'.addcslashes($word, '%_\\').'%';
+
+            $query->where(fn (Builder $match) => $match
+                ->whereRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci like ?', [$this->localePath(), $like])
+                ->orWhere('sku', 'like', $like)
+                ->orWhere('ean', $word));
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopePricedBetween(Builder $query, ?int $minCents, ?int $maxCents): Builder
+    {
+        return $query
+            ->when($minCents !== null, fn (Builder $priced) => $priced->where('price_cents', '>=', $minCents))
+            ->when($maxCents !== null, fn (Builder $priced) => $priced->where('price_cents', '<=', $maxCents));
+    }
+
+    /**
+     * Featured puts what can be bought first and then follows the admin's
+     * order. Every sort ends on the id, so pages never repeat or skip a
+     * product whose sort value is shared.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeSortedBy(Builder $query, ShopSort $sort): Builder
+    {
+        match ($sort) {
+            ShopSort::Featured => $query->orderByRaw('coalesce(`stock_quantity`, 1) = 0')->orderBy('order'),
+            ShopSort::PriceAsc => $query->orderBy('price_cents'),
+            ShopSort::PriceDesc => $query->orderByDesc('price_cents'),
+            ShopSort::Name => $query->orderByRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci', [$this->localePath()]),
+            ShopSort::Newest => $query->orderByDesc('created_at'),
+        };
+
+        return $sort === ShopSort::Newest ? $query->orderByDesc('id') : $query->orderBy('id');
+    }
+
+    /**
      * Whether this product can currently be added to, or stay in, a cart.
      */
     public function isPurchasable(): bool
     {
-        return $this->is_active && ! $this->trashed();
+        return $this->is_active && ! $this->trashed() && $this->isInStock();
+    }
+
+    /**
+     * The most of this product one cart line may hold: the cart cap, or
+     * what is left in stock when that is less.
+     */
+    public function maxPurchasableQuantity(): int
+    {
+        return $this->stock_quantity === null
+            ? CartItem::MAX_QUANTITY
+            : min(CartItem::MAX_QUANTITY, $this->stock_quantity);
+    }
+
+    /**
+     * The uploaded photograph if there is one, otherwise the supplier's
+     * image link the catalog import saved.
+     */
+    public function featuredImageUrl(string $conversion): ?string
+    {
+        return $this->getFirstMediaUrl('featured_image', $conversion) ?: $this->image_url;
+    }
+
+    /**
+     * Path of the current language inside a translatable JSON column.
+     */
+    private function localePath(): string
+    {
+        return '$."'.app()->getLocale().'"';
     }
 }

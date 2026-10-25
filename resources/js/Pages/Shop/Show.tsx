@@ -9,15 +9,15 @@ import { Button } from "@/components/ui/button";
 import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useT } from "@/hooks/use-t";
 import { formatCents } from "@/lib/shop";
+import { cn } from "@/lib/utils";
 import type { Breadcrumb, Product } from "@/types";
 
 interface ShowProps {
   product: Product;
-  maxQuantity: number;
   breadcrumbs: Breadcrumb[];
 }
 
-export default function Show({ product, maxQuantity, breadcrumbs }: ShowProps) {
+export default function Show({ product, breadcrumbs }: ShowProps) {
   const t = useT();
   const { locale, cart } = usePage().props;
   const addToCart = useAddToCart(product.id);
@@ -53,11 +53,48 @@ export default function Show({ product, maxQuantity, breadcrumbs }: ShowProps) {
               {formatCents(product.priceCents, locale.current)}
             </p>
 
+            <p
+              className={cn(
+                "meta mt-3",
+                product.inStock ? "text-ink-soft" : "text-destructive",
+              )}
+            >
+              {product.inStock ? t("shop.inStock") : t("shop.outOfStock")}
+            </p>
+
             {product.description && (
               <p className="text-ink-soft mt-6 text-lg whitespace-pre-line text-pretty">
                 {product.description}
               </p>
             )}
+
+            <dl className="border-rule mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t pt-6 text-[0.9375rem] empty:hidden">
+              {product.sku && (
+                <>
+                  <dt className="meta text-ink-soft">{t("shop.sku")}</dt>
+                  <dd className="text-ink break-all">{product.sku}</dd>
+                </>
+              )}
+              {product.manufacturer && (
+                <>
+                  <dt className="meta text-ink-soft">{t("shop.manufacturer")}</dt>
+                  <dd className="text-ink">{product.manufacturer}</dd>
+                </>
+              )}
+              {product.category && (
+                <>
+                  <dt className="meta text-ink-soft">{t("shop.category")}</dt>
+                  <dd>
+                    <Link
+                      href={product.category.url}
+                      className="text-ink underline underline-offset-4 hover:no-underline"
+                    >
+                      {product.category.name}
+                    </Link>
+                  </dd>
+                </>
+              )}
+            </dl>
 
             <form
               onSubmit={submit}
@@ -67,11 +104,11 @@ export default function Show({ product, maxQuantity, breadcrumbs }: ShowProps) {
                 editable
                 value={addToCart.quantity}
                 min={1}
-                max={maxQuantity}
+                max={Math.max(1, product.maxQuantity)}
                 label={t("shop.quantity")}
                 decreaseLabel={t("shop.decreaseQuantity")}
                 increaseLabel={t("shop.increaseQuantity")}
-                disabled={addToCart.processing}
+                disabled={addToCart.processing || !product.inStock}
                 onChange={addToCart.setQuantity}
               />
 
@@ -80,10 +117,14 @@ export default function Show({ product, maxQuantity, breadcrumbs }: ShowProps) {
                 variant="accent"
                 size="lg"
                 className="w-full"
-                disabled={addToCart.processing}
+                disabled={addToCart.processing || !product.inStock}
               >
                 <ShoppingBag aria-hidden="true" />
-                {addToCart.processing ? t("shop.adding") : t("shop.addToCart")}
+                {product.inStock
+                  ? addToCart.processing
+                    ? t("shop.adding")
+                    : t("shop.addToCart")
+                  : t("shop.outOfStock")}
               </Button>
 
               <div role="status" className="min-h-6">

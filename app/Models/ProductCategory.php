@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasSlug;
 use Database\Factories\ProductCategoryFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -113,6 +114,20 @@ class ProductCategory extends Model
         }
 
         return $ids;
+    }
+
+    /**
+     * Alphabetically by the current language's name, ignoring case and
+     * accents.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeOrderedByName(Builder $query): Builder
+    {
+        return $query
+            ->orderByRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci', ['$."'.app()->getLocale().'"'])
+            ->orderBy('id');
     }
 
     public function parent(): BelongsTo

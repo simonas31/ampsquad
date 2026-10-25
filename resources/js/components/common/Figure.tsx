@@ -25,6 +25,8 @@ interface FigureProps {
   fallback?: ReactNode;
   className?: string;
   sizes?: string;
+  /** Called when the image cannot be loaded, e.g. a link that has gone dead. */
+  onError?: () => void;
 }
 
 /**
@@ -42,6 +44,7 @@ export function Figure({
   fallback,
   className,
   sizes,
+  onError,
 }: FigureProps) {
   if (!frame && !fallback) {
     return null;
@@ -59,6 +62,7 @@ export function Figure({
           width={frame.width}
           height={frame.height}
           sizes={sizes}
+          onError={onError}
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : undefined}
           decoding="async"

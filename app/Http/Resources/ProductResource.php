@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Prices go out as whole cents; the client only formats them.
+ * Prices go out as whole cents; the client only formats them. `category` is
+ * left out unless the product's category was loaded.
  *
  * @mixin Product
  */
@@ -27,8 +28,16 @@ class ProductResource extends JsonResource
             'description' => $this->when($request->routeIs('shop.show'), fn () => $this->description),
             'priceCents' => $this->price_cents,
             'url' => route('shop.show', $this->slug),
-            'imageUrl' => $this->getFirstMediaUrl('featured_image', 'large') ?: null,
-            'imageThumbUrl' => $this->getFirstMediaUrl('featured_image', 'thumbnail') ?: null,
+            'imageUrl' => $this->featuredImageUrl('large'),
+            'imageThumbUrl' => $this->featuredImageUrl('thumbnail'),
+            'sku' => $this->sku,
+            'manufacturer' => $this->whenLoaded('manufacturer', fn (): ?string => $this->manufacturer?->name),
+            'category' => $this->whenLoaded('category', fn (): ?array => $this->category === null ? null : [
+                'name' => $this->category->name,
+                'url' => route('shop.index', ['category' => $this->category->slug]),
+            ]),
+            'inStock' => $this->isInStock(),
+            'maxQuantity' => $this->maxPurchasableQuantity(),
         ];
     }
 }
