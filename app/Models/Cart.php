@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\CartLineStatus;
 use Database\Factories\CartFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,9 @@ use Illuminate\Support\Str;
 /**
  * A guest's shopping cart, found again through the token in their cookie.
  * Totals are never stored: they are worked out from the products' current
- * prices, and lines whose product can no longer be bought are left out.
+ * prices and stock. A line holding more than is in stock counts only what is
+ * left, and a line whose product can no longer be bought counts for nothing
+ * (see CartItem::countedQuantity()).
  */
 class Cart extends Model
 {
@@ -59,28 +62,37 @@ class Cart extends Model
     }
 
     /**
-     * Sum of the purchasable lines, in cents.
+     * Sum of the counted lines, in cents.
      */
     public function subtotalCents(): int
     {
-        return $this->purchasableItems()->sum(fn (CartItem $item): int => $item->lineTotalCents());
+        return $this->lines()->sum(fn (CartItem $item): int => $item->lineTotalCents());
     }
 
     /**
-     * Number of units across the purchasable lines (the header badge).
+     * Number of counted units (the header badge).
      */
     public function totalQuantity(): int
     {
-        return $this->purchasableItems()->sum('quantity');
+        return $this->lines()->sum(fn (CartItem $item): int => $item->countedQuantity());
+    }
+
+    /**
+     * Whether any line is not worth what it holds, so the visitor should
+     * look at the cart before relying on its totals.
+     */
+    public function hasLinesWithStatus(CartLineStatus $status): bool
+    {
+        return $this->lines()->contains(fn (CartItem $item): bool => $item->status() === $status);
     }
 
     /**
      * @return Collection<int, CartItem>
      */
-    private function purchasableItems(): Collection
+    private function lines(): Collection
     {
         $this->loadMissing('items.product');
 
-        return $this->items->filter(fn (CartItem $item): bool => $item->isAvailable());
+        return $this->items;
     }
 }

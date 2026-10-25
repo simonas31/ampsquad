@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Enums\CartLineStatus;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
@@ -112,7 +113,7 @@ class CartTest extends TestCase
         $item = $cart->items()->with('product')->firstOrFail();
 
         $this->assertTrue($item->product->is($product));
-        $this->assertFalse($item->isAvailable());
+        $this->assertSame(CartLineStatus::Unavailable, $item->status());
     }
 
     public function test_changing_an_item_touches_the_cart(): void

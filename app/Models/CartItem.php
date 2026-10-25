@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\CartLineStatus;
 use Database\Factories\CartItemFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * One product in a cart, with the quantity the visitor asked for. That
+ * quantity is a request, not a promise: status(), countedQuantity() and
+ * lineTotalCents() say what it is worth at the product's current stock and
+ * price, and reading a cart never rewrites the line.
+ */
 class CartItem extends Model
 {
     /** @use HasFactory<CartItemFactory> */
@@ -65,19 +72,31 @@ class CartItem extends Model
         return $this->belongsTo(Product::class)->withTrashed();
     }
 
-    /**
-     * Whether the product can still be bought.
-     */
-    public function isAvailable(): bool
+    public function status(): CartLineStatus
     {
-        return $this->product->isPurchasable();
+        return match (true) {
+            ! $this->product->isPurchasable() => CartLineStatus::Unavailable,
+            $this->quantity > $this->product->maxPurchasableQuantity() => CartLineStatus::Reduced,
+            default => CartLineStatus::Available,
+        };
     }
 
     /**
-     * Quantity times the product's current price, in cents.
+     * The units that count: the quantity, held down to what is in stock,
+     * and none at all once the product cannot be bought.
+     */
+    public function countedQuantity(): int
+    {
+        return $this->product->isPurchasable()
+            ? min($this->quantity, $this->product->maxPurchasableQuantity())
+            : 0;
+    }
+
+    /**
+     * Counted units times the product's current price, in cents.
      */
     public function lineTotalCents(): int
     {
-        return $this->quantity * $this->product->price_cents;
+        return $this->countedQuantity() * $this->product->price_cents;
     }
 }

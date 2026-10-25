@@ -19,7 +19,7 @@ final readonly class ShopFilters
         public bool $inStockOnly = false,
         public ?int $minPriceCents = null,
         public ?int $maxPriceCents = null,
-        public ShopSort $sort = ShopSort::Featured,
+        public ShopSort $sort = ShopSort::Availability,
     ) {}
 
     /**
@@ -34,7 +34,7 @@ final readonly class ShopFilters
             || $this->inStockOnly
             || $this->minPriceCents !== null
             || $this->maxPriceCents !== null
-            || $this->sort !== ShopSort::Featured;
+            || $this->sort !== ShopSort::Availability;
     }
 
     /**

@@ -137,7 +137,6 @@
     "sku": "SKU",
     "manufacturer": "Manufacturer",
     "category": "Category",
-    "availability": "Availability",
     "productCount": "Products: {count}",
     "noResults": "No products match your filters.",
     "clearFilters": "Clear filters",
@@ -159,7 +158,7 @@
       "apply": "Apply"
     },
     "sort": {
-      "featured": "Featured",
+      "availability": "In stock first",
       "price_asc": "Price: low to high",
       "price_desc": "Price: high to low",
       "name": "Name A to Z",
@@ -176,6 +175,8 @@
     "lineQuantity": "Quantity of {name}",
     "unavailable": "This product is no longer available or is out of stock. Remove it to continue.",
     "unavailableNotice": "Some products in your cart are no longer available or are out of stock, and are not included in the total.",
+    "reducedNotice": "Some products in your cart have less in stock than you asked for. Only what is in stock is counted in the total.",
+    "reducedLine": "Only {count} in stock, you asked for {requested}.",
     "summary": "Summary",
     "items": "Items",
     "total": "Total",

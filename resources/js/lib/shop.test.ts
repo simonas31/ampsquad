@@ -53,7 +53,7 @@ const noFilters: ShopFilters = {
   inStock: false,
   minPrice: "",
   maxPrice: "",
-  sort: "featured",
+  sort: "availability",
 };
 
 describe("shopUrl", () => {
@@ -84,7 +84,7 @@ describe("shopUrl", () => {
         ...noFilters,
         search: "   ",
         minPrice: " ",
-        sort: "featured",
+        sort: "availability",
         category: "kabeliai",
       }),
     ).toBe("/shop?category=kabeliai");

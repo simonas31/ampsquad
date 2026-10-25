@@ -10,7 +10,7 @@ namespace App\Enums;
  */
 enum ShopSort: string
 {
-    case Featured = 'featured';
+    case Availability = 'availability';
     case PriceAsc = 'price_asc';
     case PriceDesc = 'price_desc';
     case Name = 'name';

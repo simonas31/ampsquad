@@ -1,4 +1,5 @@
 import { Link, router, usePage } from "@inertiajs/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavUrl } from "@/hooks/use-nav-url";
@@ -10,11 +11,16 @@ import type { CartData } from "@/types";
  * The cart's total and what to do next. There is no checkout yet, so the
  * next step is to get in touch; when checkout exists this button becomes
  * the way into it.
+ *
+ * Everything here comes from the `cart` the page was given, including where
+ * to empty it (`clearUrl`). The shared header summary is a different prop
+ * (`cartSummary`) and is not needed.
  */
 export function CartSummary({ cart }: { cart: CartData }) {
   const t = useT();
-  const { locale, cart: summary } = usePage().props;
+  const { locale } = usePage().props;
   const contactUrl = useNavUrl("nav.contact", "/contact");
+  const [clearing, setClearing] = useState(false);
 
   return (
     <Card className="p-6 lg:sticky lg:top-28">
@@ -41,15 +47,20 @@ export function CartSummary({ cart }: { cart: CartData }) {
         <Link href={contactUrl}>{t("cart.contactToOrder")}</Link>
       </Button>
 
-      {summary && (
-        <button
-          type="button"
-          onClick={() => router.delete(summary.url, { preserveScroll: true })}
-          className="meta text-ink-soft hover:text-ink mt-4 min-h-11 w-full text-center underline underline-offset-4 transition-colors"
-        >
-          {t("cart.clear")}
-        </button>
-      )}
+      <button
+        type="button"
+        disabled={clearing}
+        onClick={() =>
+          router.delete(cart.clearUrl, {
+            preserveScroll: true,
+            onStart: () => setClearing(true),
+            onFinish: () => setClearing(false),
+          })
+        }
+        className="meta text-ink-soft hover:text-ink mt-4 min-h-11 w-full text-center underline underline-offset-4 transition-colors disabled:opacity-50"
+      >
+        {t("cart.clear")}
+      </button>
     </Card>
   );
 }

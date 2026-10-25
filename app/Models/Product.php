@@ -205,7 +205,7 @@ class Product extends Model implements HasMedia
     }
 
     /**
-     * Featured, the default, puts what can be bought first and then goes
+     * Availability, the default, puts what can be bought first and then goes
      * alphabetically. Every sort ends on the id, so pages never repeat or
      * skip a product whose sort value is shared.
      *
@@ -215,7 +215,7 @@ class Product extends Model implements HasMedia
     public function scopeSortedBy(Builder $query, ShopSort $sort): Builder
     {
         match ($sort) {
-            ShopSort::Featured => $this->orderedByName($query->orderByRaw('`stock_quantity` = 0')),
+            ShopSort::Availability => $this->orderedByName($query->orderByRaw('`stock_quantity` = 0')),
             ShopSort::PriceAsc => $query->orderBy('price_cents'),
             ShopSort::PriceDesc => $query->orderByDesc('price_cents'),
             ShopSort::Name => $this->orderedByName($query),

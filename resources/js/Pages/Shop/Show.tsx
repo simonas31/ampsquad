@@ -19,7 +19,7 @@ interface ShowProps {
 
 export default function Show({ product, breadcrumbs }: ShowProps) {
   const t = useT();
-  const { locale, cart } = usePage().props;
+  const { locale, cartSummary } = usePage().props;
   const addToCart = useAddToCart(product.id);
   const backUrl = breadcrumbs[1]?.url;
 
@@ -128,11 +128,11 @@ export default function Show({ product, breadcrumbs }: ShowProps) {
               </Button>
 
               <div role="status" className="min-h-6">
-                {addToCart.added && cart && (
+                {addToCart.added && cartSummary && (
                   <p className="meta text-ink">
                     {t("shop.added")}.{" "}
                     <Link
-                      href={cart.url}
+                      href={cartSummary.url}
                       className="underline underline-offset-4 hover:no-underline"
                     >
                       {t("shop.viewCart")}

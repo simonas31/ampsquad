@@ -15,7 +15,13 @@ interface ShopFilterFormProps {
   baseUrl: string;
 }
 
-const sorts: ShopSort[] = ["featured", "price_asc", "price_desc", "name", "newest"];
+const sorts: ShopSort[] = [
+  "availability",
+  "price_asc",
+  "price_desc",
+  "name",
+  "newest",
+];
 
 /**
  * Search, manufacturer, stock, price range and sort as one GET form. Choices

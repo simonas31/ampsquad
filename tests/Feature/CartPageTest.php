@@ -68,7 +68,8 @@ class CartPageTest extends TestCase
             ->where('cart.items.0.quantity', 2)
             ->where('cart.items.0.unitPriceCents', 1000)
             ->where('cart.items.0.lineTotalCents', 2000)
-            ->where('cart.items.0.isAvailable', true)
+            ->where('cart.items.0.status', 'available')
+            ->where('cart.items.0.requestedQuantity', 2)
             ->where('cart.items.0.url', '/cart/items/'.$first->id)
             ->where('cart.items.0.product.name', $first->product->name)
             ->where('cart.items.0.product.url', route('shop.show', $first->product->slug))
@@ -91,9 +92,12 @@ class CartPageTest extends TestCase
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
             ->has('cart.items', 3)
             ->where('cart.items.1.id', $inactive->id)
-            ->where('cart.items.1.isAvailable', false)
+            ->where('cart.items.1.status', 'unavailable')
+            ->where('cart.items.1.quantity', 0)
+            ->where('cart.items.1.requestedQuantity', 1)
+            ->where('cart.items.1.lineTotalCents', 0)
             ->where('cart.items.1.product.url', null)
-            ->where('cart.items.2.isAvailable', false)
+            ->where('cart.items.2.status', 'unavailable')
             ->where('cart.items.2.product.name', $deletedProduct->name)
             ->where('cart.hasUnavailableItems', true)
             ->where('cart.subtotalCents', 1000)
@@ -162,7 +166,7 @@ class CartPageTest extends TestCase
         CartItem::factory()->quantity(9)->create();
 
         $this->visitorWith($cart)->get('/')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('cart.count', 5)
+            ->where('cartSummary.count', 5)
         );
     }
 
@@ -171,7 +175,7 @@ class CartPageTest extends TestCase
         CartItem::factory()->quantity(9)->create();
 
         $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('cart.count', 0)
+            ->where('cartSummary.count', 0)
         );
     }
 

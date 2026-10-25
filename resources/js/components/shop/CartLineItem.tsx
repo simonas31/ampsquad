@@ -18,8 +18,10 @@ interface CartLineItemProps {
  * straight to the server; the page re-renders with its recalculated totals,
  * so nothing is worked out on the client.
  *
- * A line whose product is no longer sold keeps its place, struck through,
- * with a reason instead of the quantity control. It can only be removed.
+ * A line with less in stock than it asked for shows only what is left, with
+ * a note, and counts that. A line whose product is no longer sold keeps its
+ * place, dimmed, with a reason instead of the quantity control and no total,
+ * since nothing counts. It can only be removed.
  */
 export function CartLineItem({ line }: CartLineItemProps) {
   const t = useT();
@@ -37,6 +39,8 @@ export function CartLineItem({ line }: CartLineItemProps) {
     onError: (errors: Record<string, string>) =>
       setError(errors.quantity ?? errors.product_id),
   };
+
+  const isUnavailable = line.status === "unavailable";
 
   const name = line.product.url ? (
     <Link
@@ -56,7 +60,7 @@ export function CartLineItem({ line }: CartLineItemProps) {
         alt=""
         ratio="1 / 1"
         sizes="112px"
-        className={cn("size-20 shrink-0 sm:size-28", !line.isAvailable && "opacity-50")}
+        className={cn("size-20 shrink-0 sm:size-28", isUnavailable && "opacity-50")}
       />
 
       <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:justify-between sm:gap-8">
@@ -68,7 +72,7 @@ export function CartLineItem({ line }: CartLineItemProps) {
             })}
           </p>
 
-          {line.isAvailable ? (
+          {!isUnavailable ? (
             <QuantityStepper
               className="mt-4"
               value={line.quantity}
@@ -88,6 +92,15 @@ export function CartLineItem({ line }: CartLineItemProps) {
             </p>
           )}
 
+          {line.status === "reduced" && (
+            <p className="text-ink mt-3 max-w-[40ch] text-sm">
+              {t("cart.reducedLine", {
+                count: line.quantity,
+                requested: line.requestedQuantity,
+              })}
+            </p>
+          )}
+
           {error && (
             <p role="alert" className="text-destructive mt-2 text-sm">
               {error}
@@ -96,14 +109,11 @@ export function CartLineItem({ line }: CartLineItemProps) {
         </div>
 
         <div className="flex items-center justify-between gap-6 sm:flex-col sm:items-end sm:justify-start">
-          <p
-            className={cn(
-              "text-ink text-lg font-semibold tabular-nums",
-              !line.isAvailable && "text-ink-soft line-through",
-            )}
-          >
-            {formatCents(line.lineTotalCents, locale.current)}
-          </p>
+          {!isUnavailable && (
+            <p className="text-ink text-lg font-semibold tabular-nums">
+              {formatCents(line.lineTotalCents, locale.current)}
+            </p>
+          )}
 
           <button
             type="button"

@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\CartLineStatus;
 use App\Models\Cart;
-use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Needs `items.product.media` loaded (see CartService::forDisplay()). The
- * totals leave out lines that can no longer be bought; those lines are
- * still listed, flagged, so the visitor can see and remove them.
+ * totals count what can be bought: a line holding more than is in stock counts
+ * only what is left, and a line that can no longer be bought counts for
+ * nothing. Both are still listed, flagged by their status, so the visitor can
+ * see and fix them.
+ *
+ * `clearUrl` is where DELETE empties the cart. It lives here, not in the
+ * shared `cartSummary` prop, because this page's own `cart` prop and the
+ * shared one must never be mistaken for each other.
  *
  * @mixin Cart
  */
@@ -27,9 +33,9 @@ class CartResource extends JsonResource
             'items' => CartItemResource::collection($this->items),
             'subtotalCents' => $this->subtotalCents(),
             'totalQuantity' => $this->totalQuantity(),
-            'hasUnavailableItems' => $this->items->contains(
-                fn (CartItem $item): bool => ! $item->isAvailable(),
-            ),
+            'hasReducedItems' => $this->hasLinesWithStatus(CartLineStatus::Reduced),
+            'hasUnavailableItems' => $this->hasLinesWithStatus(CartLineStatus::Unavailable),
+            'clearUrl' => route('cart.destroy', absolute: false),
         ];
     }
 }

@@ -9,28 +9,28 @@ import { cn } from "@/lib/utils";
  */
 export function CartLink({ className }: { className?: string }) {
   const t = useT();
-  const { cart } = usePage().props;
+  const { cartSummary } = usePage().props;
 
-  if (!cart) {
+  if (!cartSummary) {
     return null;
   }
 
   return (
     <Link
-      href={cart.url}
-      aria-label={t("cart.linkLabel", { count: cart.count })}
+      href={cartSummary.url}
+      aria-label={t("cart.linkLabel", { count: cartSummary.count })}
       className={cn(
         "text-ink hover:bg-concrete relative inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
         className,
       )}
     >
       <ShoppingBag className="size-5" aria-hidden="true" />
-      {cart.count > 0 && (
+      {cartSummary.count > 0 && (
         <span
           aria-hidden="true"
           className="bg-signal text-ink absolute top-0.5 right-0 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-semibold tabular-nums"
         >
-          {cart.count > 99 ? "99+" : cart.count}
+          {cartSummary.count > 99 ? "99+" : cartSummary.count}
         </span>
       )}
     </Link>

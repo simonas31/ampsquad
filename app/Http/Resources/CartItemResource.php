@@ -11,11 +11,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Needs `product` (with its media) loaded.
  *
- * `url` is where the line is updated (PATCH) or removed (DELETE), relative
- * so the request always stays on the page's own origin. A line
- * whose product can no longer be bought still shows what it was, with
- * `isAvailable` false and no product link, because the shop page for it
- * would 404.
+ * `quantity` is what counts and `requestedQuantity` what the visitor asked
+ * for; they differ on a `reduced` line (less in stock than requested) and on
+ * an `unavailable` one, where nothing counts. `url` is where the line is
+ * updated (PATCH) or removed (DELETE), relative so the request always stays
+ * on the page's own origin. A line whose product can no longer be bought
+ * still shows what it was, with no product link, because the shop page for
+ * it would 404.
  *
  * @mixin CartItem
  */
@@ -26,12 +28,13 @@ class CartItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $isAvailable = $this->isAvailable();
+        $status = $this->status();
 
         return [
             'id' => $this->id,
-            'quantity' => $this->quantity,
-            'isAvailable' => $isAvailable,
+            'status' => $status,
+            'quantity' => $this->countedQuantity(),
+            'requestedQuantity' => $this->quantity,
             'maxQuantity' => $this->product->maxPurchasableQuantity(),
             'unitPriceCents' => $this->product->price_cents,
             'lineTotalCents' => $this->lineTotalCents(),
@@ -39,7 +42,7 @@ class CartItemResource extends JsonResource
             'product' => [
                 'id' => $this->product->id,
                 'name' => $this->product->name,
-                'url' => $isAvailable ? route('shop.show', $this->product->slug) : null,
+                'url' => $status->isCounted() ? route('shop.show', $this->product->slug) : null,
                 'imageThumbUrl' => $this->product->featuredImageUrl('thumbnail'),
             ],
         ];

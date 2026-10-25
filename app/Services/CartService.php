@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
@@ -60,8 +59,9 @@ class CartService
     }
 
     /**
-     * Units in the visitor's cart that can still be bought (the header
-     * badge), in a single query. Matches Cart::totalQuantity().
+     * Units in the visitor's cart that can be bought (the header badge), in a
+     * single query. Matches Cart::totalQuantity(): a line counts its quantity
+     * or what is left in stock, whichever is less.
      */
     public function totalQuantity(Request $request): int
     {
@@ -72,9 +72,13 @@ class CartService
         }
 
         return (int) CartItem::query()
-            ->whereHas('cart', fn (Builder $cart) => $cart->where('token', $token))
-            ->whereHas('product', fn (Builder $product) => $product->where('is_active', true)->whereNull('deleted_at')->inStock())
-            ->sum('quantity');
+            ->join('carts', 'carts.id', '=', 'cart_items.cart_id')
+            ->join('products', 'products.id', '=', 'cart_items.product_id')
+            ->where('carts.token', $token)
+            ->where('products.is_active', true)
+            ->whereNull('products.deleted_at')
+            ->where('products.stock_quantity', '>', 0)
+            ->sum(DB::raw('least(cart_items.quantity, products.stock_quantity)'));
     }
 
     /**
@@ -112,7 +116,12 @@ class CartService
             $this->assertPurchasable($product);
 
             $item = $cart->items()->firstOrNew(['product_id' => $product->getKey()]);
-            $newQuantity = ($item->exists ? $item->quantity : 0) + $quantity;
+
+            // Builds on what the line is worth, so a line left holding more
+            // than the stock is corrected by the next add instead of failing
+            // on a quantity the visitor never saw.
+            $held = $item->exists ? min($item->quantity, $product->maxPurchasableQuantity()) : 0;
+            $newQuantity = $held + $quantity;
 
             $this->assertWithinLimit($newQuantity, $product);
 

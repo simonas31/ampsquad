@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
  * back off a few seconds later, for the "Added" confirmation.
  */
 export function useAddToCart(productId: number) {
-  const { cart } = usePage().props;
+  const { cartSummary } = usePage().props;
   const form = useForm({ product_id: productId, quantity: 1 });
   const [added, setAdded] = useState(false);
 
@@ -22,13 +22,13 @@ export function useAddToCart(productId: number) {
   }, [added]);
 
   function submit() {
-    if (!cart) {
+    if (!cartSummary) {
       return;
     }
 
     setAdded(false);
 
-    form.post(cart.itemsUrl, {
+    form.post(cartSummary.itemsUrl, {
       preserveScroll: true,
       onSuccess: () => {
         setAdded(true);

@@ -63,9 +63,13 @@ export interface SiteData {
   };
 }
 
-/** What the header's cart link needs; null while the shop is switched off. */
+/**
+ * What the header's cart link needs; null while the shop is switched off.
+ * Shared as `cartSummary`: the cart page's own `cart` prop (CartData) is a
+ * different thing and would replace a shared prop of that name.
+ */
 export interface CartSummary {
-  /** The cart page. DELETE on it empties the cart. */
+  /** The cart page. */
   url: string;
   /** POST here to add a product. */
   itemsUrl: string;
@@ -84,7 +88,7 @@ export interface SharedData {
     footer: PageLink[];
   };
   site: SiteData;
-  cart: CartSummary | null;
+  cartSummary: CartSummary | null;
 }
 
 export interface Category {
@@ -192,7 +196,7 @@ export interface Product {
 }
 
 export type ShopSort =
-  | "featured"
+  | "availability"
   | "price_asc"
   | "price_desc"
   | "name"
@@ -228,11 +232,20 @@ export interface ManufacturerOption {
   count: number;
 }
 
+/**
+ * `reduced`: less is in stock than the line asked for, so only what is left
+ * counts. `unavailable`: the product was deactivated, deleted or sold out,
+ * and nothing counts.
+ */
+export type CartLineStatus = "available" | "reduced" | "unavailable";
+
 export interface CartLine {
   id: number;
+  status: CartLineStatus;
+  /** The units that count; 0 while unavailable. */
   quantity: number;
-  /** False once the product was deactivated, deleted or sold out. */
-  isAvailable: boolean;
+  /** What the visitor asked for; more than `quantity` on a reduced line. */
+  requestedQuantity: number;
   maxQuantity: number;
   unitPriceCents: number;
   lineTotalCents: number;
@@ -249,10 +262,13 @@ export interface CartLine {
 
 export interface CartData {
   items: CartLine[];
-  /** Leaves out unavailable lines. */
+  /** Counts what can be bought (see CartLineStatus). */
   subtotalCents: number;
   totalQuantity: number;
+  hasReducedItems: boolean;
   hasUnavailableItems: boolean;
+  /** DELETE here empties the cart. */
+  clearUrl: string;
 }
 
 export interface Video {

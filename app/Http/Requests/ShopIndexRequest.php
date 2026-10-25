@@ -45,7 +45,7 @@ class ShopIndexRequest extends FormRequest
             inStockOnly: filter_var($this->text('in_stock'), FILTER_VALIDATE_BOOLEAN),
             minPriceCents: $this->priceCents('min_price'),
             maxPriceCents: $this->priceCents('max_price'),
-            sort: ShopSort::tryFrom($this->text('sort')) ?? ShopSort::Featured,
+            sort: ShopSort::tryFrom($this->text('sort')) ?? ShopSort::Availability,
         );
     }
 

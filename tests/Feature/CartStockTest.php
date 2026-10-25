@@ -170,9 +170,9 @@ class CartStockTest extends TestCase
             ->where('cart.subtotalCents', 2000)
             ->where('cart.totalQuantity', 2)
             ->where('cart.hasUnavailableItems', true)
-            ->where('cart.items.0.isAvailable', true)
+            ->where('cart.items.0.status', 'available')
             ->where('cart.items.0.maxQuantity', 5)
-            ->where('cart.items.1.isAvailable', false)
+            ->where('cart.items.1.status', 'unavailable')
             ->where('cart.items.1.maxQuantity', 0)
             ->where('cart.items.1.product.url', null)
         );
@@ -188,7 +188,7 @@ class CartStockTest extends TestCase
         $soldOut->update(['stock_quantity' => 0]);
 
         $this->visitorWith($cart)->get('/')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('cart.count', 2)
+            ->where('cartSummary.count', 2)
         );
     }
 

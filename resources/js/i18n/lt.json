@@ -137,7 +137,6 @@
     "sku": "SKU",
     "manufacturer": "Gamintojas",
     "category": "Kategorija",
-    "availability": "Prieinamumas",
     "productCount": "Prekių: {count}",
     "noResults": "Pagal pasirinktus filtrus prekių nerasta.",
     "clearFilters": "Išvalyti filtrus",
@@ -159,7 +158,7 @@
       "apply": "Taikyti"
     },
     "sort": {
-      "featured": "Rekomenduojamos",
+      "availability": "Pirmiausia esančios sandėlyje",
       "price_asc": "Kaina: nuo mažiausios",
       "price_desc": "Kaina: nuo didžiausios",
       "name": "Pavadinimas nuo A iki Ž",
@@ -176,6 +175,8 @@
     "lineQuantity": "Kiekis: {name}",
     "unavailable": "Ši prekė nebepasiekiama arba išparduota. Pašalinkite ją, kad galėtumėte tęsti.",
     "unavailableNotice": "Kai kurios krepšelio prekės nebepasiekiamos arba išparduotos ir neįtrauktos į sumą.",
+    "reducedNotice": "Kai kurių krepšelio prekių sandėlyje liko mažiau, nei prašėte. Į sumą įtraukiamas tik turimas kiekis.",
+    "reducedLine": "Sandėlyje liko tik {count}, prašėte {requested}.",
     "summary": "Suvestinė",
     "items": "Prekių",
     "total": "Iš viso",

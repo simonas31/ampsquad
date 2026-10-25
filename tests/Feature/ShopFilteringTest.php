@@ -325,7 +325,7 @@ class ShopFilteringTest extends TestCase
         $props = $this->props('/shop?sort=drop-table');
 
         $this->assertSame(['A2', 'A1'], array_column($props['products']['data'], 'sku'));
-        $this->assertSame('featured', $props['filters']['sort']);
+        $this->assertSame('availability', $props['filters']['sort']);
     }
 
     public function test_pages_do_not_repeat_products_that_share_a_sort_value(): void
@@ -371,7 +371,7 @@ class ShopFilteringTest extends TestCase
             'inStock' => false,
             'minPrice' => '',
             'maxPrice' => '',
-            'sort' => 'featured',
+            'sort' => 'availability',
         ], $this->props()['filters']);
     }
 

@@ -62,7 +62,7 @@ class HandleInertiaRequests extends Middleware
             'navigation' => $navigation,
             'pageLinks' => fn () => $this->pageLinks($navigation),
             'site' => fn () => $this->siteContact(),
-            'cart' => fn () => $this->cartSummary($request),
+            'cartSummary' => fn () => $this->cartSummary($request),
         ];
     }
 
@@ -118,6 +118,10 @@ class HandleInertiaRequests extends Middleware
      * the link disappears with it. The URLs are relative because the page
      * sends requests to them: an absolute one built from APP_URL would be
      * cross-origin (and blocked) whenever the site is opened on another host.
+     *
+     * Shared as `cartSummary`, never `cart`: the cart page's own `cart` prop
+     * (the full cart) would replace a shared one of that name, leaving the
+     * header link without its URL on that page.
      *
      * @return array{url: string, itemsUrl: string, count: int}|null
      */

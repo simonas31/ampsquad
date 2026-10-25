@@ -62,7 +62,8 @@ class ShopPagesTest extends TestCase
         $props = $this->homeProps();
 
         $this->assertNotContains('nav.shop', array_column($props['navigation'], 'labelKey'));
-        $this->assertNull($props['cart']);
+        $this->assertNull($props['cartSummary']);
+        $this->assertArrayNotHasKey('cart', $props);
     }
 
     public function test_an_enabled_shop_adds_the_nav_link_before_contact_and_the_cart_summary(): void
@@ -74,7 +75,7 @@ class ShopPagesTest extends TestCase
         $this->assertSame(route('shop.index'), array_column($props['navigation'], 'url', 'labelKey')['nav.shop']);
         $this->assertSame(
             ['url' => '/cart', 'itemsUrl' => '/cart/items', 'count' => 0],
-            $props['cart'],
+            $props['cartSummary'],
         );
     }
 

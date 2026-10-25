@@ -26,6 +26,11 @@ export default function Cart({ cart, breadcrumbs }: CartProps) {
           <div className="grid grid-cols-1 gap-x-10 gap-y-12 lg:grid-cols-12">
             <div className="lg:col-span-8">
               <div role="status">
+                {cart.hasReducedItems && (
+                  <p className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm">
+                    {t("cart.reducedNotice")}
+                  </p>
+                )}
                 {cart.hasUnavailableItems && (
                   <p className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm">
                     {t("cart.unavailableNotice")}

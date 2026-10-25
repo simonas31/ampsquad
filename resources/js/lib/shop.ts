@@ -56,7 +56,7 @@ export function shopUrl(base: string, filters: Partial<ShopFilters>): string {
     params.set("max_price", maxPrice);
   }
 
-  if (filters.sort && filters.sort !== "featured") {
+  if (filters.sort && filters.sort !== "availability") {
     params.set("sort", filters.sort);
   }
 
