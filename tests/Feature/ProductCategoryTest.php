@@ -54,6 +54,35 @@ class ProductCategoryTest extends TestCase
         ProductCategory::factory()->create(['slug' => $first->getTranslations('slug')]);
     }
 
+    public function test_path_labels_spell_out_the_whole_path_of_every_category(): void
+    {
+        $top = ProductCategory::factory()->create(['name' => ['lt' => 'Tinklo įranga', 'en' => 'Tinklo įranga']]);
+        $mid = ProductCategory::factory()->childOf($top)->create(['name' => ['lt' => 'Komutatoriai', 'en' => 'Komutatoriai']]);
+        $leaf = ProductCategory::factory()->childOf($mid)->create(['name' => ['lt' => 'PoE', 'en' => 'PoE']]);
+
+        $this->assertSame([
+            $top->id => 'Tinklo įranga',
+            $mid->id => 'Tinklo įranga › Komutatoriai',
+            $leaf->id => 'Tinklo įranga › Komutatoriai › PoE',
+        ], ProductCategory::pathLabels());
+    }
+
+    public function test_ids_with_descendants_covers_the_whole_subtree_and_nothing_else(): void
+    {
+        $top = ProductCategory::factory()->create();
+        $child = ProductCategory::factory()->childOf($top)->create();
+        $grandchild = ProductCategory::factory()->childOf($child)->create();
+        $sibling = ProductCategory::factory()->childOf($top)->create();
+        $unrelated = ProductCategory::factory()->create();
+
+        $this->assertEqualsCanonicalizing(
+            [$top->id, $child->id, $grandchild->id, $sibling->id],
+            ProductCategory::idsWithDescendants($top->id),
+        );
+        $this->assertEqualsCanonicalizing([$child->id, $grandchild->id], ProductCategory::idsWithDescendants($child->id));
+        $this->assertSame([$unrelated->id], ProductCategory::idsWithDescendants($unrelated->id));
+    }
+
     public function test_deleting_a_category_keeps_its_products_and_children(): void
     {
         $parent = ProductCategory::factory()->create();

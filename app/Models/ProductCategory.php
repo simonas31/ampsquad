@@ -65,6 +65,56 @@ class ProductCategory extends Model
         return 'name';
     }
 
+    /**
+     * Every category labelled with its whole path, "Top › Sub › Leaf", for
+     * pickers where the bare name is ambiguous. The tree has a few hundred
+     * nodes, so it is read in one query and walked in memory.
+     *
+     * @return array<int, string>
+     */
+    public static function pathLabels(): array
+    {
+        $categories = static::query()->get(['id', 'parent_id', 'name'])->keyBy('id');
+        $labels = [];
+
+        foreach ($categories as $category) {
+            $names = [];
+
+            for ($node = $category; $node !== null; $node = $categories->get($node->parent_id)) {
+                array_unshift($names, $node->name);
+            }
+
+            $labels[$category->id] = implode(' › ', $names);
+        }
+
+        natcasesort($labels);
+
+        return $labels;
+    }
+
+    /**
+     * The category's id followed by the ids of everything below it, so a
+     * filter on "Tinklo įranga" also finds products filed under its
+     * sub-categories.
+     *
+     * @return list<int>
+     */
+    public static function idsWithDescendants(int $id): array
+    {
+        $childrenOf = static::query()->get(['id', 'parent_id'])->groupBy('parent_id');
+        $ids = [$id];
+        $pending = [$id];
+
+        while ($pending !== []) {
+            foreach ($childrenOf->get(array_pop($pending), []) as $child) {
+                $ids[] = $child->id;
+                $pending[] = $child->id;
+            }
+        }
+
+        return $ids;
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
