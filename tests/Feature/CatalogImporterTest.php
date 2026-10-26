@@ -51,6 +51,11 @@ class CatalogImporterTest extends TestCase
         ], $overrides);
     }
 
+    private function stored(string $sku): Product
+    {
+        return Product::query()->where('sku', $sku)->sole();
+    }
+
     /**
      * @param  list<mixed>  $products
      */
@@ -99,7 +104,7 @@ class CatalogImporterTest extends TestCase
         $this->assertSame('http://bkgrupe.lt/media/SKU-1.jpg', $product->image_url);
         $this->assertSame('IP kameros', $product->category->name);
         $this->assertSame('Hikvision', $product->manufacturer->name);
-        $this->assertTrue($product->is_active);
+        $this->assertFalse($product->is_active);
         $this->assertSame('hikvision-kronsteinas', $product->getTranslation('slug', 'lt'));
         $this->assertSame('hikvision-kronsteinas', $product->getTranslation('slug', 'en'));
     }
@@ -244,6 +249,25 @@ class CatalogImporterTest extends TestCase
         $this->assertNull($product->ean);
     }
 
+    public function test_new_products_are_created_inactive_so_nothing_reaches_the_shop_unreviewed(): void
+    {
+        $this->importProducts([$this->product(['sku' => 'A1']), $this->product(['sku' => 'A2'])]);
+
+        $this->assertSame(0, Product::query()->active()->count());
+        $this->assertSame(2, Product::query()->where('is_active', false)->count());
+    }
+
+    public function test_a_re_import_neither_switches_a_product_on_nor_off(): void
+    {
+        $this->importProducts([$this->product(['sku' => 'A1']), $this->product(['sku' => 'A2'])]);
+        $this->stored('A1')->update(['is_active' => true]);
+
+        $this->importProducts([$this->product(['sku' => 'A1']), $this->product(['sku' => 'A2'])]);
+
+        $this->assertTrue($this->stored('A1')->is_active);
+        $this->assertFalse($this->stored('A2')->is_active);
+    }
+
     public function test_what_the_shop_owns_survives_a_re_import(): void
     {
         $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'Old name', 'stock' => 3])]);
@@ -296,6 +320,7 @@ class CatalogImporterTest extends TestCase
     public function test_the_slug_of_a_product_that_has_been_on_sale_does_not_change(): void
     {
         $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'Old name'])]);
+        $this->stored('A1')->update(['is_active' => true]);
 
         $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'New name'])]);
 
@@ -303,6 +328,15 @@ class CatalogImporterTest extends TestCase
 
         $this->assertSame('New name', $product->name);
         $this->assertSame('old-name', $product->getTranslation('slug', 'lt'));
+    }
+
+    public function test_the_slug_of_a_product_not_yet_on_sale_follows_its_name(): void
+    {
+        $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'Old name'])]);
+
+        $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'New name'])]);
+
+        $this->assertSame('new-name', $this->stored('A1')->getTranslation('slug', 'lt'));
     }
 
     public function test_products_missing_from_the_file_are_left_alone(): void
@@ -313,7 +347,7 @@ class CatalogImporterTest extends TestCase
 
         $product = Product::query()->where('sku', 'A1')->sole();
 
-        $this->assertTrue($product->is_active);
+        $this->assertFalse($product->is_active);
         $this->assertSame(3, $product->stock_quantity);
     }
 

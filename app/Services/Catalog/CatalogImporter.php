@@ -21,8 +21,9 @@ use Throwable;
  * the fields the catalog owns overwritten (name, excerpt, description in both
  * languages, price, EAN, image URL, category, manufacturer). What the shop
  * owns is never touched: the stock quantity, is_active, an uploaded image,
- * and the slug. The file's stock only seeds the quantity of a product the
- * import creates; from then on the shop manages it. A product missing from
+ * and the slug. A product the import creates starts switched off, with the
+ * file's stock as its quantity, so nothing reaches the shop before someone
+ * has looked at it; from then on the shop manages both. A product missing from
  * the file is left alone, as is a product that was deleted in the admin
  * panel (it is updated but stays deleted).
  *
@@ -192,11 +193,13 @@ final class CatalogImporter
             'manufacturer_id' => $this->taxonomy->manufacturerId($row->manufacturer),
         ]);
 
-        // The only place an import sets a quantity: a new product starts with
-        // what the file says (0 when it says nothing) and the shop owns it
+        // The only place an import sets what the shop owns: a new product
+        // starts with what the file says for stock (0 when it says nothing)
+        // and switched off, until an admin activates it. The shop owns both
         // from then on.
         if ($isNew) {
             $product->stock_quantity = $row->stock ?? 0;
+            $product->is_active = false;
         }
 
         $this->fillText($product, 'name', $row->name);

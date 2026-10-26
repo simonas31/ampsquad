@@ -118,7 +118,7 @@ return [
         'price_helper' => 'In euros, with up to two decimals, e.g. 19.99.',
         'is_active_helper' => 'Inactive products are hidden from the shop and cannot be added to a cart.',
         'shop_section' => 'Managed in the shop',
-        'shop_section_description' => 'Catalog imports never change the stock, whether the product is active, or the uploaded photo.',
+        'shop_section_description' => 'Catalog imports never change the stock, whether the product is active, or the uploaded photo. Products an import creates start inactive, with the file\'s stock.',
         'catalog_section' => 'Product data',
         'catalog_section_description' => 'Products with a SKU are kept up to date by catalog imports, which overwrite everything in this section (including the price) on every run. Products made by hand have no SKU and are edited freely.',
         'sku_helper' => 'Catalog imports find a product by its SKU, so changing it detaches the product from the catalog.',

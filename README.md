@@ -97,7 +97,7 @@ A file of about ten thousand products takes roughly a minute the first time and 
 - **Matching:** products are found by `sku`, ignoring case and accents (the database's own comparison). An unknown SKU creates a product; a known one is updated.
 - **What the file owns:** name, excerpt, description (the same text goes into both languages, since catalogs are Lithuanian only), price, EAN, image link, category and manufacturer are overwritten on every import.
 - **What the shop owns:** the stock quantity, `is_active`, an uploaded featured image, and the URL slug are never touched by an import. The file's `stock` only gives a **new** product its starting quantity; after that the quantity is managed in the admin panel (and, later, by orders), so a re-import can neither restock nor sell out a product. A product that has been on sale keeps its slug when it is renamed.
-- **New products** are created active, with the file's stock (`0`, so sold out, when the file has none).
+- **New products** are created **inactive**, with the file's stock (`0`, so sold out, when the file has none). Nothing reaches the shop until an admin switches it on: in Shop → Products, filter by *Active: no*, select, and use the **Activate** bulk action. Later imports never change whether a product is active.
 - **Unchanged products** are not written at all, so `updated_at` and the sitemap's `lastmod` only move when something really changed. A file that differs only in `stock` changes nothing.
 - **Missing products:** a product that is not in the file is left exactly as it is. Nothing is deleted or deactivated by an import.
 - **Deleted products:** a product deleted in the admin panel is still updated by the file but stays deleted.

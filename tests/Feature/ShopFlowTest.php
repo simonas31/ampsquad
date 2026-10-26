@@ -67,6 +67,14 @@ class ShopFlowTest extends TestCase
         return $import->fresh();
     }
 
+    /**
+     * What an admin does after an import: switch the new products on.
+     */
+    private function activateAll(): void
+    {
+        Product::query()->update(['is_active' => true]);
+    }
+
     private function product(string $sku): Product
     {
         return Product::query()->where('sku', $sku)->sole();
@@ -85,6 +93,14 @@ class ShopFlowTest extends TestCase
         ]);
         $a = $this->product('A');
         $b = $this->product('B');
+
+        // Imported products start switched off: not in the shop, not buyable.
+        $this->assertFalse($a->is_active);
+        $this->get('/shop')->assertInertia(fn (AssertableInertia $page) => $page->has('products.data', 0));
+        $this->post(route('cart.items.store'), ['product_id' => $a->id, 'quantity' => 1])->assertSessionHasErrors('product_id');
+        $this->assertSame(0, Cart::query()->count());
+
+        $this->activateAll();
 
         // A visitor fills a cart from the imported products.
         $this->post(route('cart.items.store'), ['product_id' => $a->id, 'quantity' => 4])->assertSessionHasNoErrors();
@@ -166,6 +182,7 @@ class ShopFlowTest extends TestCase
     public function test_a_product_that_stays_deleted_in_the_shop_still_sits_in_the_cart_as_unavailable(): void
     {
         $this->importCatalog([$this->row('A')]);
+        $this->activateAll();
         $a = $this->product('A');
 
         $this->post(route('cart.items.store'), ['product_id' => $a->id, 'quantity' => 1]);
@@ -193,6 +210,7 @@ class ShopFlowTest extends TestCase
     public function test_the_listing_does_not_carry_descriptions_through_the_query(): void
     {
         $this->importCatalog([$this->row('A', ['description' => str_repeat('long text ', 100)])]);
+        $this->activateAll();
 
         $products = app(ShopCatalog::class)->products(new ShopFilters);
 

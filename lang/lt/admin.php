@@ -118,7 +118,7 @@ return [
         'price_helper' => 'Eurais, iki dviejų skaitmenų po kablelio, pvz. 19.99.',
         'is_active_helper' => 'Neaktyvios prekės paslėptos parduotuvėje ir jų negalima įdėti į krepšelį.',
         'shop_section' => 'Valdoma parduotuvėje',
-        'shop_section_description' => 'Katalogo importai niekada nekeičia likučio, prekės aktyvumo ar įkelto paveikslėlio.',
+        'shop_section_description' => 'Katalogo importai niekada nekeičia likučio, prekės aktyvumo ar įkelto paveikslėlio. Importo sukurtos prekės pradeda neaktyvios, su failo likučiu.',
         'catalog_section' => 'Prekės duomenys',
         'catalog_section_description' => 'Prekes su SKU atnaujina katalogo importai: kiekvieno paleidimo metu jie perrašo viską šiame skyriuje (įskaitant kainą). Rankiniu būdu sukurtos prekės SKU neturi ir redaguojamos laisvai.',
         'sku_helper' => 'Katalogo importas prekę randa pagal SKU, todėl jį pakeitus prekė atsiribos nuo katalogo.',

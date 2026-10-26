@@ -22,8 +22,9 @@ use RuntimeException;
  * through the importer. The data is the same on every run.
  *
  * It also demonstrates the rule that an import never changes what the shop
- * manages. After the first import it plays the admin (restocks some products,
- * sells others out, switches some off), then imports a second file in which
+ * manages. After the first import it plays the admin (switches the new
+ * products on, restocks some, sells others out, switches some off again),
+ * then imports a second file in which
  * every product has a different stock and many have new names and prices, and
  * checks that only the catalog fields moved.
  */
@@ -187,11 +188,14 @@ class CatalogDemoSeeder extends Seeder
     }
 
     /**
-     * What an admin does over time: restocks some products, sells out
-     * others, and switches some off.
+     * What an admin does over time: switches the imported products on (an
+     * import creates them switched off), restocks some, sells out others,
+     * and switches some off again.
      */
     private function playTheAdmin(): void
     {
+        Product::query()->whereNotNull('sku')->update(['is_active' => true]);
+
         $products = Product::query()->whereNotNull('sku')->orderBy('id')->get(['id']);
 
         foreach ($products as $index => $product) {
