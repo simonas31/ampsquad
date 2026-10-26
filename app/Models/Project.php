@@ -94,16 +94,25 @@ class Project extends Model implements HasMedia
         return $this->getOriginal('status') === ProjectStatus::Published;
     }
 
+    /**
+     * Public site content, so it lives on the public disk whatever
+     * FILESYSTEM_DISK is. Filament's upload falls back to that setting (the
+     * private `local` disk by default) when a collection names no disk, and a
+     * private file has no public URL: nginx answers 404 for every image.
+     */
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('featured_image')
+            ->useDisk('public')
             ->singleFile()
             ->acceptsMimeTypes(self::$imageMimeTypes);
 
         $this->addMediaCollection('gallery')
+            ->useDisk('public')
             ->acceptsMimeTypes(self::$imageMimeTypes);
 
         $this->addMediaCollection('content_blocks')
+            ->useDisk('public')
             ->acceptsMimeTypes(self::$imageMimeTypes);
     }
 
