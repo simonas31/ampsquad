@@ -7,10 +7,12 @@ namespace App\Models;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use Database\Factories\OrderFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -161,6 +163,34 @@ class Order extends Model
     }
 
     /**
+     * Orders that hold money they cannot keep: a payment came for an order
+     * that expired or was cancelled and has not been refunded, or the order
+     * was paid more than once.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeNeedingAPerson(Builder $query): Builder
+    {
+        return $query->where(fn (Builder $either) => $either
+            ->where(fn (Builder $closed) => $closed
+                ->whereIn('status', [OrderStatus::Expired, OrderStatus::Cancelled])
+                ->whereHas('payments', fn (Builder $payments) => $payments->where('status', PaymentStatus::Succeeded)))
+            ->orWhereHas('payments', fn (Builder $payments) => $payments->where('status', PaymentStatus::Succeeded), '>', 1));
+    }
+
+    /**
+     * The same as scopeNeedingAPerson(), for one order.
+     */
+    public function needsAPerson(): bool
+    {
+        $succeeded = $this->payments()->where('status', PaymentStatus::Succeeded)->count();
+
+        return $succeeded > 1
+            || ($succeeded === 1 && in_array($this->status, [OrderStatus::Expired, OrderStatus::Cancelled], true));
+    }
+
+    /**
      * Where the customer can still pay, while the order waits for it and its
      * window is open; otherwise null.
      */
@@ -194,6 +224,14 @@ class Order extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * The newest payment, for lists that show where an order's money stands.
+     */
+    public function latestPayment(): HasOne
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
     }
 
     public function paymentEvents(): HasMany

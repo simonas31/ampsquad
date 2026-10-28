@@ -1,16 +1,16 @@
 @component('mail::message')
-# Payment needs attention: order {{ $order->number }}
+# {{ __('mail.payment_problem.title', ['number' => $order->number]) }}
 
 {{ $explanation }}
 
-**Order:** {{ $order->number }} ({{ $order->status->getLabel() }})<br>
-**Customer:** {{ $order->customer_name }}, {{ $order->customer_email }}, {{ $order->customer_phone }}<br>
-**Order total:** {{ \Illuminate\Support\Number::currency($order->total_incl_vat_cents / 100, $order->currency, 'en') }}
+**{{ __('mail.payment_problem.order') }}:** {{ $order->number }} ({{ $order->status->getLabel() }})<br>
+**{{ __('mail.payment_problem.customer') }}:** {{ $order->customer_name }}, {{ $order->customer_email }}, {{ $order->customer_phone }}<br>
+**{{ __('mail.payment_problem.order_total') }}:** {{ \Illuminate\Support\Number::currency($order->total_incl_vat_cents / 100, $order->currency, app()->getLocale()) }}
 
-@component('mail::button', ['url' => url('/admin')])
-Open the admin panel
+@component('mail::button', ['url' => $adminUrl])
+{{ __('mail.payment_problem.open') }}
 @endcomponent
 
-Thanks,<br>
+{{ __('mail.thanks') }}<br>
 {{ config('app.name') }}
 @endcomponent

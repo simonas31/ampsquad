@@ -1,39 +1,39 @@
 @php
-    $money = fn (int $cents): string => \Illuminate\Support\Number::currency($cents / 100, $order->currency, 'en');
+    $money = fn (int $cents): string => \Illuminate\Support\Number::currency($cents / 100, $order->currency, app()->getLocale());
 @endphp
 @component('mail::message')
-# New paid order {{ $order->number }}
+# {{ __('mail.order_paid.title', ['number' => $order->number]) }}
 
-Paid and waiting to be looked at.
+{{ __('mail.order_paid.intro') }}
 
-**Customer:** {{ $order->customer_name }}<br>
-**Email:** {{ $order->customer_email }}<br>
-**Phone:** {{ $order->customer_phone }}
+**{{ __('mail.order_paid.customer') }}:** {{ $order->customer_name }}<br>
+**{{ __('mail.order_paid.email') }}:** {{ $order->customer_email }}<br>
+**{{ __('mail.order_paid.phone') }}:** {{ $order->customer_phone }}
 
 @component('mail::table')
-| Product | SKU | Qty | Total incl. VAT |
+| {{ __('mail.order_paid.product') }} | {{ __('mail.order_paid.sku') }} | {{ __('mail.order_paid.quantity') }} | {{ __('mail.order_paid.total_incl_vat') }} |
 |:--|:--|:-:|--:|
 @foreach ($order->lines as $line)
 | {{ $line->product_name }} | {{ $line->sku }} | {{ $line->quantity }} | {{ $money($line->line_total_incl_vat_cents) }} |
 @endforeach
 @endcomponent
 
-**Delivery:** {{ $order->shipping_label }} ({{ $money($order->shipping_incl_vat_cents) }} incl. VAT)<br>
+**{{ __('mail.order_paid.delivery') }}:** {{ __('mail.order_paid.delivery_line', ['method' => $order->shipping_label, 'price' => $money($order->shipping_incl_vat_cents)]) }}<br>
 @if ($order->delivery_address)
-**Address:** {{ $order->delivery_address }}<br>
+**{{ __('mail.order_paid.address') }}:** {{ $order->delivery_address }}<br>
 @endif
-**Total:** {{ $money($order->total_incl_vat_cents) }} (VAT {{ $order->vat_rate_percent }}%: {{ $money($order->vat_cents) }})
+**{{ __('mail.order_paid.total') }}:** {{ __('mail.order_paid.total_line', ['total' => $money($order->total_incl_vat_cents), 'rate' => $order->vat_rate_percent, 'vat' => $money($order->vat_cents)]) }}
 
 @if ($order->customer_note)
-**Customer's note:**
+**{{ __('mail.order_paid.note') }}:**
 
 {{ $order->customer_note }}
 @endif
 
-@component('mail::button', ['url' => url('/admin')])
-Open the admin panel
+@component('mail::button', ['url' => $adminUrl])
+{{ __('mail.order_paid.open') }}
 @endcomponent
 
-Thanks,<br>
+{{ __('mail.thanks') }}<br>
 {{ config('app.name') }}
 @endcomponent

@@ -156,6 +156,14 @@ Whatever produces the file (a script, a spreadsheet macro, a person) should foll
 - A queue worker must be running. In production it is the Supervisor program in [deploy/README.md](deploy/README.md), which also explains why `DB_QUEUE_RETRY_AFTER` must be `1900` (the import job's timeout is 1800 seconds).
 - The upload goes through PHP, so `upload_max_filesize` and `post_max_size` must be at least 50M on the server. Sail already allows 100M; the production default of 2M does not.
 
+## Emails
+
+Every email is bilingual: the text is in `lang/{lt,en}/mail.php` and the views in `resources/views/mail/` hold no wording of their own.
+
+- **Customers** get their order confirmation in the language they ordered in.
+- **The shop's team** (contact requests, paid orders, payments that need a person) gets the app's current language, which in the queue worker that sends the mail is Lithuanian (`APP_LOCALE`), so Lithuanian by default. `RecipientNotifier::notify()` takes an optional locale to send one in English. Run synchronously (`QUEUE_CONNECTION=sync`) it follows the language of the page the visitor was reading.
+- A new email must have both languages and a test that renders both. The rule is also in [CLAUDE.md](CLAUDE.md) so it is applied to future work.
+
 ## Orders and stock
 
 The data and rules checkout is built on, and the backend of checkout itself (below). There is no checkout *page* yet, so online checkout stays switched off: the cart still ends in "Contact us".
@@ -178,6 +186,22 @@ The data and rules checkout is built on, and the backend of checkout itself (bel
 - **An order moves along fixed steps, once.** `OrderStatus::allowedTransitions()` lists them: awaiting payment, then paid, expired or cancelled; paid, then shipped or cancelled; shipped, then refunded; expired can still become paid (a bank confirming late). `Order::transitionTo()` makes the move with one guarded `UPDATE`, so of two requests racing for the same move exactly one gets `true`, and only that one may give stock back or send mail.
 - **The payment window** is `Order::PAYMENT_WINDOW_MINUTES` (15), with `Order::EXPIRY_GRACE_MINUTES` (5) more before an unpaid order is given up.
 - **Delivery** is whatever shipping methods the shop has set up in the admin panel, pickup included. An order keeps the method's name, details and price as they were; a method that is not pickup needs an address or parcel locker.
+
+### Orders in the admin panel
+
+**Shop → Orders** lists every order, newest first, a page at a time (10 to 100, never all). Search finds the order number, the customer's name, email or phone. Filters sit above the table: status (several at once), the days the order was placed, payment state, and **Needs a person** (money taken that an order cannot keep: paid after it expired or was cancelled and not yet refunded, or paid twice). The menu badge counts paid orders waiting to be shipped.
+
+An order is opened, not edited. Its page shows everything the order kept (customer, delivery, amounts, products, payments, the provider's messages and what was done with each) and the actions that apply to where it stands:
+
+| Order is | Actions |
+|---|---|
+| Paid | **Mark as shipped** (also for pickup: handed over). **Cancel order**, with a choice to put the goods back in stock; refund the customer in the OPAY portal first or afterwards. |
+| Awaiting payment | **Cancel order**: nobody paid, so the stock always goes back. |
+| Shipped | **Record refund**, once the goods came back and the customer was refunded in OPAY's portal: marks the order and its payment refunded, and puts the goods back in stock only if you tick it. |
+| Cancelled or expired, with money still taken, or paid twice | **Record payment refunded** for the payment you refunded. |
+| Any | **Internal notes**: the only thing that can be edited. |
+
+Every action goes through `OrderAdministration` under the order's lock, and only the click that really moves the order may put stock back, so a double click, two admins, or a payment arriving at that moment never give stock back twice. If an order moved meanwhile, nothing is done and the page says so. Nothing is ever sent to OPAY from the panel: refunds are made in its portal and only recorded here. Orders cannot be created, edited or deleted (`OrderPolicy`).
 
 ### Checkout and payment
 

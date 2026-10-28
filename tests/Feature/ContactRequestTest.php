@@ -199,16 +199,25 @@ class ContactRequestTest extends TestCase
         $contactRequest = ContactRequest::factory()->create();
         $contactRequest->addMedia(UploadedFile::fake()->create('plan.pdf', 50))->toMediaCollection('attachments');
 
-        $html = (new ContactRequestReceivedMail($contactRequest))->render();
+        app()->setLocale('lt');
+        $lithuanian = (new ContactRequestReceivedMail($contactRequest))->render();
+        app()->setLocale('en');
+        $english = (new ContactRequestReceivedMail($contactRequest))->render();
 
-        $this->assertStringContainsString('Attachments (1)', $html);
-        $this->assertStringContainsString('plan.pdf', $html);
+        $this->assertStringContainsString('Priedai (1)', $lithuanian);
+        $this->assertStringContainsString('Attachments (1)', $english);
+        $this->assertStringContainsString('plan.pdf', $lithuanian);
+        $this->assertStringContainsString('plan.pdf', $english);
     }
 
     public function test_notification_email_omits_the_attachments_line_when_there_are_none(): void
     {
-        $html = (new ContactRequestReceivedMail(ContactRequest::factory()->create()))->render();
+        foreach (['lt', 'en'] as $locale) {
+            app()->setLocale($locale);
+            $html = (new ContactRequestReceivedMail(ContactRequest::factory()->create()))->render();
 
-        $this->assertStringNotContainsString('Attachments', $html);
+            $this->assertStringNotContainsString('Priedai', $html);
+            $this->assertStringNotContainsString('Attachments', $html);
+        }
     }
 }

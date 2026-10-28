@@ -22,7 +22,7 @@ class ContactRequestReceivedMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New contact request from '.$this->contactRequest->name,
+            subject: __('mail.contact_request.subject', ['name' => $this->contactRequest->name]),
         );
     }
 

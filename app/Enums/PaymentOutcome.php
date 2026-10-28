@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
 /**
  * What was done with a message from the payment provider, kept on the
  * message (payment_events.outcome). The problems are the ones where money
  * and the order disagree, which a person has to look at.
  */
-enum PaymentOutcome: string
+enum PaymentOutcome: string implements HasColor, HasLabel
 {
     /** The order is paid. */
     case Paid = 'paid';
@@ -49,6 +52,21 @@ enum PaymentOutcome: string
 
     /** The amount or currency paid is not the order's: the order was left unpaid. */
     case AmountMismatch = 'amount_mismatch';
+
+    public function getLabel(): string
+    {
+        return __('admin.enums.payment_outcome.'.$this->value);
+    }
+
+    public function getColor(): string
+    {
+        return match (true) {
+            $this->needsAPerson() => 'danger',
+            $this === self::Paid, $this === self::PaidLate, $this === self::AlreadyPaid => 'success',
+            $this === self::Pending => 'warning',
+            default => 'gray',
+        };
+    }
 
     public function needsAPerson(): bool
     {

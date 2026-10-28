@@ -8,6 +8,7 @@ use App\Enums\NotificationType;
 use App\Enums\PaymentOutcome;
 use App\Events\OrderPaid;
 use App\Events\PaymentNeedsAPerson;
+use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Recipients\Pages\CreateRecipient;
 use App\Mail\OrderConfirmationMail;
 use App\Mail\OrderPaidMail;
@@ -148,26 +149,50 @@ class OrderNotificationsTest extends TestCase
     {
         $order = $this->paidOrder();
 
-        $mail = new OrderPaidMail($order);
-        $html = $mail->render();
+        foreach (['lt' => 'Naujas apmokėtas užsakymas', 'en' => 'New paid order'] as $locale => $subject) {
+            app()->setLocale($locale);
+            $mail = new OrderPaidMail($order);
+            $html = $mail->render();
 
-        $this->assertStringContainsString("New paid order {$order->number}", $mail->envelope()->subject);
-        foreach (['Jonas Jonaitis', 'jonas@example.test', '+37060000000', 'Maršrutizatorius', 'RT-100', 'Gedimino pr. 1, Vilnius', 'Please call first.', 'DPD'] as $expected) {
-            $this->assertStringContainsString($expected, $html);
+            $this->assertStringContainsString("{$subject} {$order->number}", $mail->envelope()->subject);
+            foreach (['Jonas Jonaitis', 'jonas@example.test', '+37060000000', 'Maršrutizatorius', 'RT-100', 'Gedimino pr. 1, Vilnius', 'Please call first.', 'DPD'] as $expected) {
+                $this->assertStringContainsString($expected, $html, "{$locale}: {$expected}");
+            }
+            $this->assertStringContainsString(OrderResource::getUrl('view', ['record' => $order], panel: 'admin'), $html);
         }
     }
 
-    public function test_each_problem_says_what_to_do(): void
+    public function test_each_problem_says_what_to_do_in_both_languages(): void
     {
         $order = $this->paidOrder();
 
-        foreach ([PaymentOutcome::PaidAfterExpiry, PaymentOutcome::PaidAfterCancel, PaymentOutcome::DoublePayment, PaymentOutcome::AmountMismatch] as $outcome) {
-            $mail = new PaymentNeedsAPersonMail($order, $outcome);
+        foreach (['lt', 'en'] as $locale) {
+            app()->setLocale($locale);
 
-            $this->assertTrue($outcome->needsAPerson());
-            $this->assertStringContainsString($order->number, $mail->envelope()->subject);
-            $this->assertStringContainsString(PaymentNeedsAPersonMail::explanationOf($outcome), $mail->render());
-            $this->assertStringContainsString('OPAY', PaymentNeedsAPersonMail::explanationOf($outcome));
+            foreach ([PaymentOutcome::PaidAfterExpiry, PaymentOutcome::PaidAfterCancel, PaymentOutcome::DoublePayment, PaymentOutcome::AmountMismatch] as $outcome) {
+                $mail = new PaymentNeedsAPersonMail($order, $outcome);
+                $explanation = PaymentNeedsAPersonMail::explanationOf($outcome);
+
+                $this->assertTrue($outcome->needsAPerson());
+                $this->assertStringContainsString($order->number, $mail->envelope()->subject);
+                $this->assertStringContainsString($explanation, strip_tags(html_entity_decode($mail->render())));
+                $this->assertStringContainsString('OPAY', $explanation);
+                $this->assertStringContainsString(OrderResource::getUrl('view', ['record' => $order], panel: 'admin'), $mail->render());
+            }
+        }
+
+        app()->setLocale('lt');
+        $this->assertStringContainsString('Grąžinkite', PaymentNeedsAPersonMail::explanationOf(PaymentOutcome::DoublePayment));
+        app()->setLocale('en');
+        $this->assertStringContainsString('Refund', PaymentNeedsAPersonMail::explanationOf(PaymentOutcome::DoublePayment));
+    }
+
+    public function test_an_outcome_with_no_explanation_of_its_own_gets_the_general_one(): void
+    {
+        foreach (['lt', 'en'] as $locale) {
+            app()->setLocale($locale);
+
+            $this->assertSame(__('mail.payment_problem.explanations.default'), PaymentNeedsAPersonMail::explanationOf(PaymentOutcome::Paid));
         }
     }
 

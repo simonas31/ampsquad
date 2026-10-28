@@ -453,3 +453,17 @@ livewire(ListUsers::class)
   - `$view`: `protected string` (not `protected static string`) on `Page` and `Widget` classes
 
 </laravel-boost-guidelines>
+
+# Project conventions (AmpSquad)
+
+These are this project's own rules, kept outside the Laravel Boost block above so that updating Boost does not overwrite them.
+
+## Emails are always bilingual
+
+- Every email the app sends, to customers or to the shop's team, is written in both Lithuanian and English: its text lives in `lang/{lt,en}/mail.php`, never hardcoded in a Mailable or a view under `resources/views/mail/`.
+- Build the subject in the Mailable's `envelope()` and the body in the view with `__()`; format money and dates with the current locale.
+- **Customer emails** use the language the customer ordered in (`Mail::to(...)->locale($order->locale)`).
+- **Emails to the shop's team** (contact requests, paid orders, payments that need a person) go out in the app's current language, which is Lithuanian (`APP_LOCALE=lt`) in the queue worker that sends them, so Lithuanian by default. `RecipientNotifier::notify()` sets the locale on the mail explicitly and takes an optional `$locale` to send one in English.
+- A new email is not done until both languages render in a test (`app()->setLocale()` then `->render()`), and a missing key in either language would fail it.
+- The same applies to anything else shown to people in the admin panel: strings in `lang/{lt,en}/admin.php`.
+

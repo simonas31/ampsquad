@@ -1,27 +1,27 @@
 @component('mail::message')
-# New contact request
+# {{ __('mail.contact_request.title') }}
 
-**Name:** {{ $contactRequest->name }}
+**{{ __('mail.contact_request.name') }}:** {{ $contactRequest->name }}
 
-**Email:** {{ $contactRequest->email }}
+**{{ __('mail.contact_request.email') }}:** {{ $contactRequest->email }}
 
 @if ($contactRequest->phone)
-**Phone:** {{ $contactRequest->phone }}
+**{{ __('mail.contact_request.phone') }}:** {{ $contactRequest->phone }}
 @endif
 
-**Message:**
+**{{ __('mail.contact_request.message') }}:**
 
 {{ $contactRequest->message }}
 
 @php $attachments = $contactRequest->getMedia('attachments'); @endphp
 @if ($attachments->isNotEmpty())
-**Attachments ({{ $attachments->count() }}):** {{ $attachments->pluck('file_name')->implode(', ') }}
+**{{ __('mail.contact_request.attachments', ['count' => $attachments->count()]) }}:** {{ $attachments->pluck('file_name')->implode(', ') }}
 @endif
 
 @component('mail::button', ['url' => url('/admin/contact-requests/' . $contactRequest->id)])
-View in admin
+{{ __('mail.contact_request.view') }}
 @endcomponent
 
-Thanks,<br>
+{{ __('mail.thanks') }}<br>
 {{ config('app.name') }}
 @endcomponent
