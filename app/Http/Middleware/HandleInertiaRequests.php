@@ -172,6 +172,7 @@ class HandleInertiaRequests extends Middleware
         $fixedUrls = array_column($navigation, 'url');
 
         $pages = Page::query()
+            ->withSlugInCurrentLocale()
             ->where(fn ($query) => $query->where('show_in_header', true)->orWhere('show_in_footer', true))
             ->orderBy('id')
             ->get();
@@ -244,7 +245,7 @@ class HandleInertiaRequests extends Middleware
             return null;
         }
 
-        $about = Page::query()->where('key', 'about')->first();
+        $about = Page::query()->withSlugInCurrentLocale()->where('key', 'about')->first();
 
         if (! $about) {
             return null;

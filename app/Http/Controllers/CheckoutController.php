@@ -108,12 +108,16 @@ class CheckoutController extends Controller
      * and to the privacy policy. The page is found by its key or, as admins
      * make pages by their title and slug, by any of the slugs it is known by
      * in either language, so it does not matter which of the two was set.
+     * A page with no slug in the current language has no URL there, so it is
+     * left out rather than linked.
      */
     private function pageUrl(string $key, string ...$slugs): ?string
     {
         $page = Page::query()
-            ->where('key', $key)
-            ->when($slugs !== [], fn ($query) => $query->orWhereIn('slug_lt', $slugs)->orWhereIn('slug_en', $slugs))
+            ->withSlugInCurrentLocale()
+            ->where(fn ($query) => $query
+                ->where('key', $key)
+                ->when($slugs !== [], fn ($query) => $query->orWhereIn('slug_lt', $slugs)->orWhereIn('slug_en', $slugs)))
             ->first();
 
         return $page === null ? null : route('pages.show', ['slug' => $page->slug], absolute: false);

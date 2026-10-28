@@ -131,6 +131,20 @@ class CheckoutTest extends TestCase
         );
     }
 
+    public function test_a_page_with_no_slug_in_the_current_locale_is_not_linked(): void
+    {
+        $cart = $this->filledCart();
+        Page::factory()->buyingAndSellingRules()->create(['title' => ['lt' => 'Pirkimo-pardavimo taisyklės'], 'slug' => ['lt' => 'pirkimo-pardavimo-taisyklės']]);
+        Page::factory()->privacyPolicy()->create();
+
+        app()->setLocale('en');
+
+        $this->visitorWith($cart)->get('/checkout')->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('rulesUrl', null)
+            ->where('privacyUrl', '/en/privacy-policy')
+        );
+    }
+
     public function test_a_page_with_neither_that_key_nor_those_slugs_is_not_taken_for_the_rules(): void
     {
         $cart = $this->filledCart();

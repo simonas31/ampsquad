@@ -106,6 +106,28 @@ class NavigationTest extends TestCase
         $this->assertSame('FAQ', $this->pageLinks()['header'][0]['title']);
     }
 
+    public function test_a_flagged_page_with_no_slug_in_the_current_locale_is_left_out_of_the_menus(): void
+    {
+        Page::factory()->inHeader()->inFooter()->create(['key' => 'rules', 'title' => ['lt' => 'Taisyklės'], 'slug' => ['lt' => 'taisykles']]);
+        $faq = Page::factory()->inHeader()->create(['key' => 'faq', 'title' => ['lt' => 'DUK', 'en' => 'FAQ'], 'slug' => ['lt' => 'duk', 'en' => 'faq']]);
+
+        app()->setLocale('en');
+
+        $links = $this->pageLinks();
+
+        $this->assertSame([['title' => 'FAQ', 'url' => route('pages.show', ['slug' => $faq->slug])]], $links['header']);
+        $this->assertSame([], $links['footer']);
+    }
+
+    public function test_the_about_link_is_left_out_when_the_about_page_has_no_slug_in_the_current_locale(): void
+    {
+        Page::factory()->about()->create(['title' => ['lt' => 'Apie mus'], 'slug' => ['lt' => 'apie-mus']]);
+
+        app()->setLocale('en');
+
+        $this->assertNotContains('nav.about', $this->navigationLabelKeys());
+    }
+
     public function test_no_menu_links_are_shared_when_no_page_is_flagged(): void
     {
         Page::factory()->create();
