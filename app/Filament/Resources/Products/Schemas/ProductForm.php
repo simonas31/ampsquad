@@ -82,8 +82,8 @@ class ProductForm
                         // The sub-cent rule keeps "1.005" from being silently
                         // rounded to a price the admin never typed. The helper
                         // shows what the shop will charge with VAT.
-                        TextInput::make('price_net_cents')
-                            ->label(__('admin.fields.price_net'))
+                        TextInput::make('price_excl_vat_cents')
+                            ->label(__('admin.fields.price_excl_vat'))
                             ->helperText(fn (mixed $state): string => self::priceHelperText($state))
                             ->live(onBlur: true)
                             ->required()
@@ -91,7 +91,7 @@ class ProductForm
                             ->prefix('€')
                             ->step(0.01)
                             ->minValue(0.01)
-                            ->maxValue(Product::MAX_PRICE_NET_CENTS / 100)
+                            ->maxValue(Product::MAX_PRICE_EXCL_VAT_CENTS / 100)
                             ->rule('decimal:0,2')
                             ->formatStateUsing(fn (?int $state): ?string => $state === null
                                 ? null
@@ -140,15 +140,15 @@ class ProductForm
     {
         $helper = __('admin.products.price_helper');
 
-        if (! is_numeric($state) || (float) $state < 0.01 || (float) $state > Product::MAX_PRICE_NET_CENTS / 100) {
+        if (! is_numeric($state) || (float) $state < 0.01 || (float) $state > Product::MAX_PRICE_EXCL_VAT_CENTS / 100) {
             return $helper;
         }
 
-        $grossCents = Product::netToGrossCents((int) round((float) $state * 100));
+        $inclVatCents = Product::addVat((int) round((float) $state * 100));
 
-        return $helper.' '.__('admin.products.price_gross_hint', [
+        return $helper.' '.__('admin.products.price_incl_vat_hint', [
             'rate' => Product::vatRatePercent(),
-            'price' => Number::currency($grossCents / 100, Product::CURRENCY, app()->getLocale()),
+            'price' => Number::currency($inclVatCents / 100, Product::CURRENCY, app()->getLocale()),
         ]);
     }
 

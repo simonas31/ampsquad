@@ -83,7 +83,7 @@ export function CartLineItem({ line }: CartLineItemProps) {
           {name}
           <p className="meta text-ink-soft mt-1 tabular-nums">
             {t("cart.unitPrice", {
-              price: formatCents(line.unitPriceGrossCents, locale.current),
+              price: formatCents(line.unitPriceInclVatCents, locale.current),
             })}
           </p>
 
@@ -127,11 +127,11 @@ export function CartLineItem({ line }: CartLineItemProps) {
           {!isUnavailable && (
             <div className="sm:text-right">
               <p className="text-ink text-lg font-semibold tabular-nums">
-                {formatCents(line.lineTotalGrossCents, locale.current)}
+                {formatCents(line.lineTotalInclVatCents, locale.current)}
               </p>
               <p className="meta text-ink-soft tabular-nums">
                 {t("shop.withoutVat", {
-                  price: formatCents(line.lineTotalNetCents, locale.current),
+                  price: formatCents(line.lineTotalExclVatCents, locale.current),
                 })}
               </p>
             </div>

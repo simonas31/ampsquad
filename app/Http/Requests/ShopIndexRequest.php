@@ -43,8 +43,8 @@ class ShopIndexRequest extends FormRequest
                 ? (int) $this->text('manufacturer')
                 : null,
             inStockOnly: filter_var($this->text('in_stock'), FILTER_VALIDATE_BOOLEAN),
-            minPriceGrossCents: $this->priceGrossCents('min_price'),
-            maxPriceGrossCents: $this->priceGrossCents('max_price'),
+            minPriceInclVatCents: $this->priceInclVatCents('min_price'),
+            maxPriceInclVatCents: $this->priceInclVatCents('max_price'),
             sort: ShopSort::tryFrom($this->text('sort')) ?? ShopSort::Availability,
         );
     }
@@ -63,7 +63,7 @@ class ShopIndexRequest extends FormRequest
      * Euros with VAT as typed ("10", "10.5", "10.50") to cents, or null when
      * the visitor typed something else or a sum no product can cost.
      */
-    private function priceGrossCents(string $key): ?int
+    private function priceInclVatCents(string $key): ?int
     {
         $text = str_replace(',', '.', $this->text($key));
 
@@ -73,6 +73,6 @@ class ShopIndexRequest extends FormRequest
 
         $cents = CatalogRowParser::priceToCents($text);
 
-        return $cents <= Product::netToGrossCents(Product::MAX_PRICE_NET_CENTS) ? $cents : null;
+        return $cents <= Product::addVat(Product::MAX_PRICE_EXCL_VAT_CENTS) ? $cents : null;
     }
 }

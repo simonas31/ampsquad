@@ -138,7 +138,7 @@ class ProductListManagementTest extends TestCase
         $dear = Product::factory()->priced(9000)->inStock(2)->create();
 
         Livewire::test(ListProducts::class)
-            ->sortTable('price_net_cents')
+            ->sortTable('price_excl_vat_cents')
             ->assertCanSeeTableRecords([$cheap, $dear], inOrder: true)
             ->sortTable('stock_quantity')
             ->assertCanSeeTableRecords([$dear, $cheap], inOrder: true);
@@ -149,10 +149,10 @@ class ProductListManagementTest extends TestCase
         $product = Product::factory()->priced(1999)->create();
 
         Livewire::test(ListProducts::class)
-            ->assertTableColumnStateSet('price_net_cents', 1999, $product)
-            ->assertTableColumnStateSet('price_gross', 2419, $product)
-            ->assertTableColumnFormattedStateSet('price_net_cents', Number::currency(19.99, 'EUR', app()->getLocale()), $product)
-            ->assertTableColumnFormattedStateSet('price_gross', Number::currency(24.19, 'EUR', app()->getLocale()), $product);
+            ->assertTableColumnStateSet('price_excl_vat_cents', 1999, $product)
+            ->assertTableColumnStateSet('price_incl_vat', 2419, $product)
+            ->assertTableColumnFormattedStateSet('price_excl_vat_cents', Number::currency(19.99, 'EUR', app()->getLocale()), $product)
+            ->assertTableColumnFormattedStateSet('price_incl_vat', Number::currency(24.19, 'EUR', app()->getLocale()), $product);
     }
 
     public function test_the_price_with_vat_sorts_in_the_same_order_as_the_price_without_it(): void
@@ -161,9 +161,9 @@ class ProductListManagementTest extends TestCase
         $dear = Product::factory()->priced(9000)->create();
 
         Livewire::test(ListProducts::class)
-            ->sortTable('price_gross')
+            ->sortTable('price_incl_vat')
             ->assertCanSeeTableRecords([$cheap, $dear], inOrder: true)
-            ->sortTable('price_gross', 'desc')
+            ->sortTable('price_incl_vat', 'desc')
             ->assertCanSeeTableRecords([$dear, $cheap], inOrder: true);
     }
 

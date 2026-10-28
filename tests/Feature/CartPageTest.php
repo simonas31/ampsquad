@@ -41,9 +41,9 @@ class CartPageTest extends TestCase
 
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
             ->where('cart.vatRate', 9)
-            ->where('cart.subtotalNetCents', 2000)
+            ->where('cart.subtotalExclVatCents', 2000)
             ->where('cart.vatCents', 180)
-            ->where('cart.totalGrossCents', 2180)
+            ->where('cart.totalInclVatCents', 2180)
         );
     }
 
@@ -52,9 +52,9 @@ class CartPageTest extends TestCase
         $this->get('/cart')->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Cart')
             ->where('cart.items', [])
-            ->where('cart.subtotalNetCents', 0)
+            ->where('cart.subtotalExclVatCents', 0)
             ->where('cart.vatCents', 0)
-            ->where('cart.totalGrossCents', 0)
+            ->where('cart.totalInclVatCents', 0)
             ->where('cart.totalQuantity', 0)
             ->where('cart.hasUnavailableItems', false)
         );
@@ -99,22 +99,22 @@ class CartPageTest extends TestCase
             ->has('cart.items', 2)
             ->where('cart.items.0.id', $first->id)
             ->where('cart.items.0.quantity', 2)
-            ->where('cart.items.0.unitPriceNetCents', 1000)
-            ->where('cart.items.0.unitPriceGrossCents', 1210)
-            ->where('cart.items.0.lineTotalNetCents', 2000)
-            ->where('cart.items.0.lineTotalGrossCents', 2420)
+            ->where('cart.items.0.unitPriceExclVatCents', 1000)
+            ->where('cart.items.0.unitPriceInclVatCents', 1210)
+            ->where('cart.items.0.lineTotalExclVatCents', 2000)
+            ->where('cart.items.0.lineTotalInclVatCents', 2420)
             ->where('cart.items.0.status', 'available')
             ->where('cart.items.0.requestedQuantity', 2)
             ->where('cart.items.0.url', '/cart/items/'.$first->id)
             ->where('cart.items.0.product.name', $first->product->name)
             ->where('cart.items.0.product.url', route('shop.show', $first->product->slug))
             ->where('cart.items.1.id', $second->id)
-            ->where('cart.items.1.lineTotalNetCents', 1000)
-            ->where('cart.items.1.lineTotalGrossCents', 1212)
-            ->where('cart.subtotalNetCents', 3000)
+            ->where('cart.items.1.lineTotalExclVatCents', 1000)
+            ->where('cart.items.1.lineTotalInclVatCents', 1212)
+            ->where('cart.subtotalExclVatCents', 3000)
             ->where('cart.vatRate', 21)
             ->where('cart.vatCents', 632)
-            ->where('cart.totalGrossCents', 3632)
+            ->where('cart.totalInclVatCents', 3632)
             ->where('cart.totalQuantity', 6)
         );
     }
@@ -134,12 +134,12 @@ class CartPageTest extends TestCase
             ->where('cart.items.1.status', 'unavailable')
             ->where('cart.items.1.quantity', 0)
             ->where('cart.items.1.requestedQuantity', 1)
-            ->where('cart.items.1.lineTotalNetCents', 0)
+            ->where('cart.items.1.lineTotalExclVatCents', 0)
             ->where('cart.items.1.product.url', null)
             ->where('cart.items.2.status', 'unavailable')
             ->where('cart.items.2.product.name', $deletedProduct->name)
             ->where('cart.hasUnavailableItems', true)
-            ->where('cart.subtotalNetCents', 1000)
+            ->where('cart.subtotalExclVatCents', 1000)
             ->where('cart.totalQuantity', 1)
         );
     }
@@ -150,11 +150,11 @@ class CartPageTest extends TestCase
         $product = Product::factory()->priced(1000)->create();
         CartItem::factory()->for($cart)->for($product)->quantity(2)->create();
 
-        $product->update(['price_net_cents' => 1500]);
+        $product->update(['price_excl_vat_cents' => 1500]);
 
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('cart.items.0.unitPriceNetCents', 1500)
-            ->where('cart.subtotalNetCents', 3000)
+            ->where('cart.items.0.unitPriceExclVatCents', 1500)
+            ->where('cart.subtotalExclVatCents', 3000)
         );
     }
 

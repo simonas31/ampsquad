@@ -108,7 +108,7 @@ class ShopFlowTest extends TestCase
         $this->visitorWith($cart)->post(route('cart.items.store'), ['product_id' => $b->id, 'quantity' => 3])->assertSessionHasNoErrors();
 
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('cart.subtotalNetCents', 4 * 1000 + 3 * 500)
+            ->where('cart.subtotalExclVatCents', 4 * 1000 + 3 * 500)
             ->where('cart.totalQuantity', 7)
             ->where('cartSummary.count', 7)
             ->where('cart.hasReducedItems', false)
@@ -122,7 +122,7 @@ class ShopFlowTest extends TestCase
             ->where('cart.items.0.quantity', 2)
             ->where('cart.items.0.requestedQuantity', 4)
             ->where('cart.items.1.status', 'available')
-            ->where('cart.subtotalNetCents', 2 * 1000 + 3 * 500)
+            ->where('cart.subtotalExclVatCents', 2 * 1000 + 3 * 500)
             ->where('cart.totalQuantity', 5)
             ->where('cartSummary.count', 5)
             ->where('cart.hasReducedItems', true)
@@ -132,15 +132,15 @@ class ShopFlowTest extends TestCase
         // The price follows the file; the quantity and B's place in the shop do not.
         $this->importCatalog([$this->row('A', ['price' => '12.50', 'stock' => 500])]);
 
-        $this->assertSame(1250, $a->fresh()->price_net_cents);
+        $this->assertSame(1250, $a->fresh()->price_excl_vat_cents);
         $this->assertSame(2, $a->fresh()->stock_quantity);
         $this->assertSame(3, $b->fresh()->stock_quantity);
         $this->assertTrue($b->fresh()->is_active);
 
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('cart.items.0.unitPriceNetCents', 1250)
+            ->where('cart.items.0.unitPriceExclVatCents', 1250)
             ->where('cart.items.0.status', 'reduced')
-            ->where('cart.subtotalNetCents', 2 * 1250 + 3 * 500)
+            ->where('cart.subtotalExclVatCents', 2 * 1250 + 3 * 500)
         );
 
         // The shop takes B off sale: it stays visible in the cart and counts for nothing.
@@ -149,7 +149,7 @@ class ShopFlowTest extends TestCase
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
             ->where('cart.items.1.status', 'unavailable')
             ->where('cart.items.1.quantity', 0)
-            ->where('cart.subtotalNetCents', 2 * 1250)
+            ->where('cart.subtotalExclVatCents', 2 * 1250)
             ->where('cart.totalQuantity', 2)
             ->where('cartSummary.count', 2)
             ->where('cart.hasUnavailableItems', true)
@@ -195,7 +195,7 @@ class ShopFlowTest extends TestCase
         $this->assertTrue($a->fresh()->trashed());
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
             ->where('cart.items.0.status', 'unavailable')
-            ->where('cart.subtotalNetCents', 0)
+            ->where('cart.subtotalExclVatCents', 0)
         );
 
         // Restored in the admin panel, it is just as it was.
@@ -203,7 +203,7 @@ class ShopFlowTest extends TestCase
 
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
             ->where('cart.items.0.status', 'available')
-            ->where('cart.subtotalNetCents', 9900)
+            ->where('cart.subtotalExclVatCents', 9900)
         );
     }
 

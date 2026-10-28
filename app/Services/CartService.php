@@ -23,7 +23,7 @@ use Illuminate\Validation\ValidationException;
  * unique line per product and the quantity cap hold without retry loops.
  *
  * Prices are never an input here: totals are worked out from the products
- * (see Cart::totalGrossCents()).
+ * (see Cart::totalInclVatCents()).
  */
 class CartService
 {

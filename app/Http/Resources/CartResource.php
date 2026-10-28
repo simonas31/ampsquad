@@ -32,10 +32,10 @@ class CartResource extends JsonResource
     {
         return [
             'items' => CartItemResource::collection($this->items),
-            'subtotalNetCents' => $this->subtotalNetCents(),
+            'subtotalExclVatCents' => $this->subtotalExclVatCents(),
             'vatRate' => Product::vatRatePercent(),
             'vatCents' => $this->vatCents(),
-            'totalGrossCents' => $this->totalGrossCents(),
+            'totalInclVatCents' => $this->totalInclVatCents(),
             'totalQuantity' => $this->totalQuantity(),
             'hasReducedItems' => $this->hasLinesWithStatus(CartLineStatus::Reduced),
             'hasUnavailableItems' => $this->hasLinesWithStatus(CartLineStatus::Unavailable),

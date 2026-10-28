@@ -23,18 +23,18 @@ class ProductTest extends TestCase
     {
         $product = Product::query()->create([
             'name' => ['lt' => 'Elektros patikra', 'en' => 'Electrical inspection'],
-            'price_net_cents' => 8900,
+            'price_excl_vat_cents' => 8900,
         ])->fresh();
 
         $this->assertSame('Elektros patikra', $product->getTranslation('name', 'lt'));
         $this->assertSame('Electrical inspection', $product->getTranslation('name', 'en'));
-        $this->assertSame(8900, $product->price_net_cents);
+        $this->assertSame(8900, $product->price_excl_vat_cents);
     }
 
     /**
      * @return array<string, array{int, int}>
      */
-    public static function netAndGrossAt21Percent(): array
+    public static function pricesWithAndWithoutVatAt21Percent(): array
     {
         return [
             'whole euros' => [1000, 1210],
@@ -46,13 +46,13 @@ class ProductTest extends TestCase
         ];
     }
 
-    #[DataProvider('netAndGrossAt21Percent')]
-    public function test_the_price_with_vat_is_the_price_without_it_plus_21_percent_to_the_nearest_cent(int $net, int $expectedGross): void
+    #[DataProvider('pricesWithAndWithoutVatAt21Percent')]
+    public function test_the_price_with_vat_is_the_price_without_it_plus_21_percent_to_the_nearest_cent(int $exclVat, int $expectedInclVat): void
     {
-        $product = Product::factory()->priced($net)->make();
+        $product = Product::factory()->priced($exclVat)->make();
 
-        $this->assertSame($expectedGross, $product->priceGrossCents());
-        $this->assertSame($expectedGross, Product::netToGrossCents($net));
+        $this->assertSame($expectedInclVat, $product->priceInclVatCents());
+        $this->assertSame($expectedInclVat, Product::addVat($exclVat));
     }
 
     public function test_the_vat_rate_comes_from_the_shop_config(): void
@@ -62,17 +62,17 @@ class ProductTest extends TestCase
         config(['shop.vat_rate' => 9]);
 
         $this->assertSame(9, Product::vatRatePercent());
-        $this->assertSame(1090, Product::factory()->priced(1000)->make()->priceGrossCents());
+        $this->assertSame(1090, Product::factory()->priced(1000)->make()->priceInclVatCents());
 
         config(['shop.vat_rate' => 0]);
 
-        $this->assertSame(1000, Product::factory()->priced(1000)->make()->priceGrossCents());
+        $this->assertSame(1000, Product::factory()->priced(1000)->make()->priceInclVatCents());
     }
 
     public function test_the_price_with_vat_is_never_stored(): void
     {
-        $this->assertFalse(Schema::hasColumn('products', 'price_gross_cents'));
-        $this->assertTrue(Schema::hasColumn('products', 'price_net_cents'));
+        $this->assertFalse(Schema::hasColumn('products', 'price_incl_vat_cents'));
+        $this->assertTrue(Schema::hasColumn('products', 'price_excl_vat_cents'));
         $this->assertFalse(Schema::hasColumn('products', 'price_cents'));
     }
 
@@ -80,7 +80,7 @@ class ProductTest extends TestCase
     {
         $product = Product::query()->create([
             'name' => ['lt' => 'Paslauga', 'en' => 'Service'],
-            'price_net_cents' => 1000,
+            'price_excl_vat_cents' => 1000,
         ]);
 
         $this->assertTrue($product->is_active);
@@ -116,7 +116,7 @@ class ProductTest extends TestCase
         $product = Product::query()->create([
             'name' => ['en' => 'Genuine'],
             'slug' => ['en' => 'hacked'],
-            'price_net_cents' => 100,
+            'price_excl_vat_cents' => 100,
         ]);
 
         $this->assertSame('genuine', $product->getTranslation('slug', 'en'));
@@ -184,7 +184,7 @@ class ProductTest extends TestCase
     public function test_factory_states(): void
     {
         $this->assertFalse(Product::factory()->inactive()->create()->is_active);
-        $this->assertSame(1234, Product::factory()->priced(1234)->create()->price_net_cents);
+        $this->assertSame(1234, Product::factory()->priced(1234)->create()->price_excl_vat_cents);
         $this->assertSame(5, Product::factory()->inStock()->create()->stock_quantity);
         $this->assertSame(0, Product::factory()->outOfStock()->create()->stock_quantity);
     }
@@ -205,7 +205,7 @@ class ProductTest extends TestCase
     {
         $product = Product::query()->create([
             'name' => ['lt' => 'Kronšteinas', 'en' => 'Kronšteinas'],
-            'price_net_cents' => 2000,
+            'price_excl_vat_cents' => 2000,
             'sku' => 'KRDS1663ZJ',
             'ean' => '6954273658830',
             'stock_quantity' => 2,

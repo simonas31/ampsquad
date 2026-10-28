@@ -59,8 +59,8 @@ export function ProductCard({ product }: { product: Product }) {
 
       <div className="mt-auto flex items-center justify-between gap-4 pt-5">
         <ProductPrice
-          netCents={product.priceNetCents}
-          grossCents={product.priceGrossCents}
+          exclVatCents={product.priceExclVatCents}
+          inclVatCents={product.priceInclVatCents}
         />
 
         <Button

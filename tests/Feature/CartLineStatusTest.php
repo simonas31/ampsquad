@@ -53,7 +53,7 @@ class CartLineStatusTest extends TestCase
 
         $this->assertSame(CartLineStatus::Available, $line->status());
         $this->assertSame(5, $line->countedQuantity());
-        $this->assertSame(5000, $line->lineNetCents());
+        $this->assertSame(5000, $line->lineExclVatCents());
     }
 
     public function test_a_line_asking_for_more_than_is_in_stock_counts_only_what_is_left(): void
@@ -62,7 +62,7 @@ class CartLineStatusTest extends TestCase
 
         $this->assertSame(CartLineStatus::Reduced, $line->status());
         $this->assertSame(2, $line->countedQuantity());
-        $this->assertSame(2000, $line->lineNetCents());
+        $this->assertSame(2000, $line->lineExclVatCents());
         $this->assertSame(5, $line->quantity);
     }
 
@@ -80,7 +80,7 @@ class CartLineStatusTest extends TestCase
 
             $this->assertSame(CartLineStatus::Unavailable, $line->status());
             $this->assertSame(0, $line->countedQuantity());
-            $this->assertSame(0, $line->lineNetCents());
+            $this->assertSame(0, $line->lineExclVatCents());
         }
     }
 
@@ -99,7 +99,7 @@ class CartLineStatusTest extends TestCase
         CartItem::factory()->for($cart)->for(Product::factory()->inStock(10)->priced(1000)->create())->quantity(3)->create();
         CartItem::factory()->for($cart)->for(Product::factory()->inStock(2)->priced(500)->create())->quantity(9)->create();
 
-        $this->assertSame(3 * 1000 + 2 * 500, $cart->subtotalNetCents());
+        $this->assertSame(3 * 1000 + 2 * 500, $cart->subtotalExclVatCents());
         $this->assertSame(5, $cart->totalQuantity());
         $this->assertTrue($cart->hasLinesWithStatus(CartLineStatus::Reduced));
         $this->assertFalse($cart->hasLinesWithStatus(CartLineStatus::Unavailable));
@@ -127,8 +127,8 @@ class CartLineStatusTest extends TestCase
             ->where('cart.items.0.quantity', 2)
             ->where('cart.items.0.requestedQuantity', 5)
             ->where('cart.items.0.maxQuantity', 2)
-            ->where('cart.items.0.lineTotalNetCents', 2400)
-            ->where('cart.subtotalNetCents', 2400)
+            ->where('cart.items.0.lineTotalExclVatCents', 2400)
+            ->where('cart.subtotalExclVatCents', 2400)
             ->where('cart.totalQuantity', 2)
             ->where('cart.hasReducedItems', true)
             ->where('cart.hasUnavailableItems', false)

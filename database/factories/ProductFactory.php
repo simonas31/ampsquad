@@ -31,7 +31,7 @@ class ProductFactory extends Factory
                 'lt' => fake('lt_LT')->paragraph(4),
                 'en' => fake('en_US')->paragraph(4),
             ],
-            'price_net_cents' => fake()->numberBetween(500, 50000),
+            'price_excl_vat_cents' => fake()->numberBetween(500, 50000),
             'stock_quantity' => 100,
             'is_active' => true,
         ];
@@ -59,12 +59,12 @@ class ProductFactory extends Factory
     }
 
     /**
-     * @param  int  $netCents  The price without VAT.
+     * @param  int  $exclVatCents  The price without VAT.
      */
-    public function priced(int $netCents): static
+    public function priced(int $exclVatCents): static
     {
         return $this->state(fn (array $attributes): array => [
-            'price_net_cents' => $netCents,
+            'price_excl_vat_cents' => $exclVatCents,
         ]);
     }
 }

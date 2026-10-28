@@ -78,17 +78,17 @@ class ProductsTable
                     ->placeholder('—')
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('price_net_cents')
-                    ->label(__('admin.fields.price_net'))
+                TextColumn::make('price_excl_vat_cents')
+                    ->label(__('admin.fields.price_excl_vat'))
                     ->money(Product::CURRENCY, divideBy: 100)
                     ->sortable(),
                 // Worked out from the price without VAT, so it sorts the
                 // same way: the order of the two never differs.
-                TextColumn::make('price_gross')
-                    ->label(__('admin.fields.price_gross'))
-                    ->state(fn (Product $record): int => $record->priceGrossCents())
+                TextColumn::make('price_incl_vat')
+                    ->label(__('admin.fields.price_incl_vat'))
+                    ->state(fn (Product $record): int => $record->priceInclVatCents())
                     ->money(Product::CURRENCY, divideBy: 100)
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('price_net_cents', $direction)),
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('price_excl_vat_cents', $direction)),
                 // Quantity is the shop's to manage, so it is edited right in
                 // the list; a catalog import never touches it.
                 TextInputColumn::make('stock_quantity')

@@ -18,8 +18,8 @@ final readonly class ShopFilters
         public ?string $category = null,
         public ?int $manufacturerId = null,
         public bool $inStockOnly = false,
-        public ?int $minPriceGrossCents = null,
-        public ?int $maxPriceGrossCents = null,
+        public ?int $minPriceInclVatCents = null,
+        public ?int $maxPriceInclVatCents = null,
         public ShopSort $sort = ShopSort::Availability,
     ) {}
 
@@ -33,8 +33,8 @@ final readonly class ShopFilters
             || $this->category !== null
             || $this->manufacturerId !== null
             || $this->inStockOnly
-            || $this->minPriceGrossCents !== null
-            || $this->maxPriceGrossCents !== null
+            || $this->minPriceInclVatCents !== null
+            || $this->maxPriceInclVatCents !== null
             || $this->sort !== ShopSort::Availability;
     }
 
@@ -51,8 +51,8 @@ final readonly class ShopFilters
             'category' => $this->category,
             'manufacturer' => $this->manufacturerId,
             'inStock' => $this->inStockOnly,
-            'minPrice' => $this->euros($this->minPriceGrossCents),
-            'maxPrice' => $this->euros($this->maxPriceGrossCents),
+            'minPrice' => $this->euros($this->minPriceInclVatCents),
+            'maxPrice' => $this->euros($this->maxPriceInclVatCents),
             'sort' => $this->sort->value,
         ];
     }

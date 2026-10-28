@@ -18,7 +18,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->renameColumn('price_cents', 'price_net_cents');
+            $table->renameColumn('price_cents', 'price_excl_vat_cents');
         });
     }
 
@@ -28,7 +28,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->renameColumn('price_net_cents', 'price_cents');
+            $table->renameColumn('price_excl_vat_cents', 'price_cents');
         });
     }
 };

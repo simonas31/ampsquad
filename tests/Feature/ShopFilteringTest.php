@@ -329,9 +329,9 @@ class ShopFilteringTest extends TestCase
 
     public function test_products_can_be_sorted(): void
     {
-        $this->named('Bravo', ['sku' => 'B', 'price_net_cents' => 3000, 'created_at' => now()->subDays(2)]);
-        $this->named('Ąžuolas', ['sku' => 'A', 'price_net_cents' => 1000, 'created_at' => now()->subDay()]);
-        $this->named('Charlie', ['sku' => 'C', 'price_net_cents' => 2000, 'created_at' => now()]);
+        $this->named('Bravo', ['sku' => 'B', 'price_excl_vat_cents' => 3000, 'created_at' => now()->subDays(2)]);
+        $this->named('Ąžuolas', ['sku' => 'A', 'price_excl_vat_cents' => 1000, 'created_at' => now()->subDay()]);
+        $this->named('Charlie', ['sku' => 'C', 'price_excl_vat_cents' => 2000, 'created_at' => now()]);
 
         $this->assertSame(['A', 'C', 'B'], $this->listedSkus('sort=price_asc'));
         $this->assertSame(['B', 'C', 'A'], $this->listedSkus('sort=price_desc'));

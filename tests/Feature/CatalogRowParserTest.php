@@ -54,7 +54,7 @@ class CatalogRowParserTest extends TestCase
         $this->assertSame(['Vaizdo stebėjimo sistemos', 'IP kameros'], $row->categoryPath);
         $this->assertSame('Kronšteinas kamerai', $row->excerpt);
         $this->assertSame("Pirma eilutė\nAntra eilutė", $row->description);
-        $this->assertSame(2000, $row->priceNetCents);
+        $this->assertSame(2000, $row->priceExclVatCents);
         $this->assertSame(2, $row->stock);
         $this->assertSame('http://bkgrupe.lt/media/a.jpg', $row->imageUrl);
         $this->assertSame('Hikvision', $row->manufacturer);
@@ -74,7 +74,7 @@ class CatalogRowParserTest extends TestCase
         $this->assertNull($row->imageUrl);
         $this->assertNull($row->manufacturer);
         $this->assertNull($row->ean);
-        $this->assertSame(99, $row->priceNetCents);
+        $this->assertSame(99, $row->priceExclVatCents);
     }
 
     public function test_explicit_nulls_and_blank_strings_count_as_absent(): void
@@ -158,7 +158,7 @@ class CatalogRowParserTest extends TestCase
     #[DataProvider('validPrices')]
     public function test_price_is_converted_to_cents_exactly(string $price, int $cents): void
     {
-        $this->assertSame($cents, (new CatalogRowParser)->parse($this->row(['price' => $price]))->priceNetCents);
+        $this->assertSame($cents, (new CatalogRowParser)->parse($this->row(['price' => $price]))->priceExclVatCents);
     }
 
     /**

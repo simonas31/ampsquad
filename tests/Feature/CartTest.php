@@ -155,7 +155,7 @@ class CartTest extends TestCase
     {
         $cart = Cart::factory()->create();
 
-        $this->assertSame(0, $cart->subtotalNetCents());
+        $this->assertSame(0, $cart->subtotalExclVatCents());
         $this->assertSame(0, $cart->totalQuantity());
     }
 
@@ -163,7 +163,7 @@ class CartTest extends TestCase
     {
         $cart = $this->cartWith(Product::factory()->priced(1999)->create(), 3);
 
-        $this->assertSame(5997, $cart->items->first()->lineNetCents());
+        $this->assertSame(5997, $cart->items->first()->lineExclVatCents());
     }
 
     public function test_a_line_with_vat_is_the_rounded_unit_price_with_vat_times_the_quantity(): void
@@ -171,20 +171,20 @@ class CartTest extends TestCase
         $cart = $this->cartWith(Product::factory()->priced(1999)->create(), 3);
 
         // 3 x 24.19, not 3 x 19.99 + 21% (72.56): the lines the visitor reads add up.
-        $this->assertSame(7257, $cart->items->first()->lineGrossCents());
-        $this->assertSame(5997, $cart->items->first()->lineNetCents());
+        $this->assertSame(7257, $cart->items->first()->lineInclVatCents());
+        $this->assertSame(5997, $cart->items->first()->lineExclVatCents());
     }
 
-    public function test_the_cart_totals_split_into_net_vat_and_total(): void
+    public function test_the_cart_totals_split_into_subtotal_vat_and_total(): void
     {
         $cart = $this->cartWith(Product::factory()->priced(1999)->create(), 3);
         CartItem::factory()->for($cart)->for(Product::factory()->priced(1000)->create())->quantity(2)->create();
 
         $cart = $cart->fresh();
 
-        $this->assertSame(5997 + 2000, $cart->subtotalNetCents());
-        $this->assertSame(7257 + 2420, $cart->totalGrossCents());
-        $this->assertSame($cart->totalGrossCents() - $cart->subtotalNetCents(), $cart->vatCents());
+        $this->assertSame(5997 + 2000, $cart->subtotalExclVatCents());
+        $this->assertSame(7257 + 2420, $cart->totalInclVatCents());
+        $this->assertSame($cart->totalInclVatCents() - $cart->subtotalExclVatCents(), $cart->vatCents());
         $this->assertSame(1680, $cart->vatCents());
     }
 
@@ -192,7 +192,7 @@ class CartTest extends TestCase
     {
         $cart = Cart::factory()->create();
 
-        $this->assertSame(0, $cart->totalGrossCents());
+        $this->assertSame(0, $cart->totalInclVatCents());
         $this->assertSame(0, $cart->vatCents());
     }
 
@@ -203,7 +203,7 @@ class CartTest extends TestCase
 
         $cart = $cart->fresh();
 
-        $this->assertSame(3000, $cart->subtotalNetCents());
+        $this->assertSame(3000, $cart->subtotalExclVatCents());
         $this->assertSame(6, $cart->totalQuantity());
     }
 
@@ -218,7 +218,7 @@ class CartTest extends TestCase
 
         $cart = $cart->fresh();
 
-        $this->assertSame(1000, $cart->subtotalNetCents());
+        $this->assertSame(1000, $cart->subtotalExclVatCents());
         $this->assertSame(1, $cart->totalQuantity());
     }
 
@@ -227,9 +227,9 @@ class CartTest extends TestCase
         $product = Product::factory()->priced(1000)->create();
         $cart = $this->cartWith($product, 2);
 
-        $product->update(['price_net_cents' => 1500]);
+        $product->update(['price_excl_vat_cents' => 1500]);
 
-        $this->assertSame(3000, $cart->fresh()->subtotalNetCents());
+        $this->assertSame(3000, $cart->fresh()->subtotalExclVatCents());
     }
 
     public function test_totals_load_items_and_products_only_once(): void
@@ -239,9 +239,9 @@ class CartTest extends TestCase
         $cart = $cart->fresh();
 
         DB::enableQueryLog();
-        $cart->subtotalNetCents();
+        $cart->subtotalExclVatCents();
         $cart->totalQuantity();
-        $cart->subtotalNetCents();
+        $cart->subtotalExclVatCents();
 
         $this->assertCount(2, DB::getQueryLog());
     }

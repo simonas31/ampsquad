@@ -50,8 +50,8 @@ export default function Show({ product, breadcrumbs }: ShowProps) {
 
           <Reveal delay={100} className="lg:col-span-4 lg:col-start-9">
             <ProductPrice
-              netCents={product.priceNetCents}
-              grossCents={product.priceGrossCents}
+              exclVatCents={product.priceExclVatCents}
+              inclVatCents={product.priceInclVatCents}
               size="lg"
             />
 

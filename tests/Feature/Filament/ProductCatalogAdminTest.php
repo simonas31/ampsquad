@@ -62,7 +62,7 @@ class ProductCatalogAdminTest extends TestCase
      */
     private function validForm(array $overrides = []): array
     {
-        return array_merge(['name' => 'Cable', 'price_net_cents' => '5.00', 'stock_quantity' => 0], $overrides);
+        return array_merge(['name' => 'Cable', 'price_excl_vat_cents' => '5.00', 'stock_quantity' => 0], $overrides);
     }
 
     public function test_the_list_shows_catalog_details_and_the_suppliers_image(): void

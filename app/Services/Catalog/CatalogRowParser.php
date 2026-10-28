@@ -77,7 +77,7 @@ final class CatalogRowParser
             categoryPath: $data['category'] ?? [],
             excerpt: $this->blankToNull($data['excerpt'] ?? null),
             description: $this->blankToNull($data['description'] ?? null),
-            priceNetCents: self::priceToCents($data['price']),
+            priceExclVatCents: self::priceToCents($data['price']),
             stock: $data['stock'] ?? null,
             imageUrl: $this->blankToNull($data['image_url'] ?? null),
             manufacturer: $this->blankToNull($data['manufacturer'] ?? null),
@@ -122,9 +122,9 @@ final class CatalogRowParser
     {
         $cents = self::priceToCents((string) $value);
 
-        if ($cents < 1 || $cents > Product::MAX_PRICE_NET_CENTS) {
+        if ($cents < 1 || $cents > Product::MAX_PRICE_EXCL_VAT_CENTS) {
             $fail(__('admin.catalog_import.errors.price_range', [
-                'max' => number_format(Product::MAX_PRICE_NET_CENTS / 100, 2, '.', ''),
+                'max' => number_format(Product::MAX_PRICE_EXCL_VAT_CENTS / 100, 2, '.', ''),
             ]));
         }
     }

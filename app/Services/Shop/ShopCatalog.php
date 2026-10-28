@@ -33,7 +33,7 @@ final class ShopCatalog
      * @var list<string>
      */
     private const array LISTING_COLUMNS = [
-        'id', 'name', 'slug', 'excerpt', 'sku', 'price_net_cents', 'stock_quantity',
+        'id', 'name', 'slug', 'excerpt', 'sku', 'price_excl_vat_cents', 'stock_quantity',
         'image_url', 'product_category_id', 'manufacturer_id', 'is_active', 'deleted_at',
     ];
 
@@ -135,7 +135,7 @@ final class ShopCatalog
             $query->inStock();
         }
 
-        return $query->pricedBetween($filters->minPriceGrossCents, $filters->maxPriceGrossCents);
+        return $query->pricedBetween($filters->minPriceInclVatCents, $filters->maxPriceInclVatCents);
     }
 
     /**

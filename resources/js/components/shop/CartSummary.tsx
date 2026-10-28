@@ -58,7 +58,7 @@ export function CartSummary({ cart }: { cart: CartData }) {
         <div className="text-ink-soft flex justify-between gap-4">
           <dt>{t("cart.subtotal")}</dt>
           <dd className="tabular-nums">
-            {formatCents(cart.subtotalNetCents, locale.current)}
+            {formatCents(cart.subtotalExclVatCents, locale.current)}
           </dd>
         </div>
         <div className="text-ink-soft flex justify-between gap-4">
@@ -70,7 +70,7 @@ export function CartSummary({ cart }: { cart: CartData }) {
         <div className="text-ink border-rule flex items-baseline justify-between gap-4 border-t pt-3">
           <dt className="font-semibold">{t("cart.total")}</dt>
           <dd className="display text-3xl tabular-nums">
-            {formatCents(cart.totalGrossCents, locale.current)}
+            {formatCents(cart.totalInclVatCents, locale.current)}
           </dd>
         </div>
       </dl>

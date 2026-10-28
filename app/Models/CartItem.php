@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * One product in a cart, with the quantity the visitor asked for. That
  * quantity is a request, not a promise: status(), countedQuantity() and
- * lineNetCents() and lineGrossCents() say what it is worth at the product's
+ * lineExclVatCents() and lineInclVatCents() say what it is worth at the product's
  * current stock and price, and reading a cart never rewrites the line.
  */
 class CartItem extends Model
@@ -93,20 +93,20 @@ class CartItem extends Model
     }
 
     /**
-     * Net: counted units times the product's current price without VAT, in cents.
+     * Counted units times the product's current price without VAT, in cents.
      */
-    public function lineNetCents(): int
+    public function lineExclVatCents(): int
     {
-        return $this->countedQuantity() * $this->product->price_net_cents;
+        return $this->countedQuantity() * $this->product->price_excl_vat_cents;
     }
 
     /**
-     * Gross: counted units times the product's current price with VAT, in cents.
+     * Counted units times the product's current price with VAT, in cents.
      * The unit price is rounded before it is multiplied, so what the
      * visitor sees per unit times the quantity is exactly what they pay.
      */
-    public function lineGrossCents(): int
+    public function lineInclVatCents(): int
     {
-        return $this->countedQuantity() * $this->product->priceGrossCents();
+        return $this->countedQuantity() * $this->product->priceInclVatCents();
     }
 }

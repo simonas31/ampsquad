@@ -4,8 +4,8 @@ import { formatCents } from "@/lib/shop";
 import { cn } from "@/lib/utils";
 
 interface ProductPriceProps {
-  netCents: number;
-  grossCents: number;
+  exclVatCents: number;
+  inclVatCents: number;
   /** `lg` is the product page's price, `sm` a listing card's. */
   size?: "sm" | "lg";
   className?: string;
@@ -17,8 +17,8 @@ interface ProductPriceProps {
  * works out VAT.
  */
 export function ProductPrice({
-  netCents,
-  grossCents,
+  exclVatCents,
+  inclVatCents,
   size = "sm",
   className,
 }: ProductPriceProps) {
@@ -33,14 +33,14 @@ export function ProductPrice({
           size === "lg" ? "display text-4xl" : "font-semibold",
         )}
       >
-        {formatCents(grossCents, locale.current)}{" "}
+        {formatCents(inclVatCents, locale.current)}{" "}
         <span className="meta text-ink-soft font-normal">
           {t("shop.withVat")}
         </span>
       </p>
       <p className="meta text-ink-soft mt-1 tabular-nums">
         {t("shop.withoutVat", {
-          price: formatCents(netCents, locale.current),
+          price: formatCents(exclVatCents, locale.current),
         })}
       </p>
     </div>
