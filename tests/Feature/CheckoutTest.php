@@ -141,7 +141,7 @@ class CheckoutTest extends TestCase
 
         $this->visitorWith($cart)->get('/checkout')->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
             ->where('rulesUrl', null)
-            ->where('privacyUrl', '/en/privacy-policy')
+            ->where('privacyUrl', route('pages.show', ['slug' => 'privacy-policy'], false))
         );
     }
 
