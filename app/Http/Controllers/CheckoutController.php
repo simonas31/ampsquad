@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\CartLineStatus;
 use App\Enums\CheckoutRefusal;
-use App\Enums\OrderStatus;
 use App\Http\Requests\StoreCheckoutRequest;
 use App\Http\Resources\CartResource;
 use App\Models\Order;
@@ -70,7 +69,7 @@ class CheckoutController extends Controller
             'cart' => new CartResource($cart),
             'shippingMethods' => $this->checkout->shippingOptions($cart->items),
             'submitUrl' => route('checkout.store', absolute: false),
-            'rulesUrl' => $this->pageUrl('buying-and-selling-rules'),
+            'rulesUrl' => $this->pageUrl('buying-and-selling-rules', 'pirkimo-pardavimo-taisyklės', 'buying-and-selling-rules'),
             'privacyUrl' => $this->pageUrl('privacy-policy'),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.checkout'), noindex: true),
@@ -105,25 +104,17 @@ class CheckoutController extends Controller
     /**
      * Where an admin-managed page is, or null if the shop has not made it:
      * the form links to the rules of purchase and sale the buyer must read
-     * and to the privacy policy, and says so in plain words when there is nothing to link to.
+     * and to the privacy policy. The page is found by its key or, as admins
+     * make pages by their title and slug, by any of the slugs it is known by
+     * in either language, so it does not matter which of the two was set.
      */
-    private function pageUrl(string $key): ?string
+    private function pageUrl(string $key, string ...$slugs): ?string
     {
-        $page = Page::query()->where('key', $key)->first();
+        $page = Page::query()
+            ->where('key', $key)
+            ->when($slugs !== [], fn ($query) => $query->orWhereIn('slug_lt', $slugs)->orWhereIn('slug_en', $slugs))
+            ->first();
 
         return $page === null ? null : route('pages.show', ['slug' => $page->slug], absolute: false);
-    }
-
-    /**
-     * The visitor's order that still waits for its payment, if its window is
-     * open; otherwise null (paid, expired, or never placed in this session).
-     */
-    private function waitingOrder(Request $request): ?Order
-    {
-        $uuid = $request->session()->get(self::WAITING_ORDER_KEY);
-
-        $order = is_string($uuid) ? Order::query()->where('uuid', $uuid)->first() : null;
-
-        return $order?->status === OrderStatus::PendingPayment && $order->payment_expires_at->isFuture() ? $order : null;
     }
 }

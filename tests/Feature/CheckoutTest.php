@@ -121,6 +121,24 @@ class CheckoutTest extends TestCase
         );
     }
 
+    public function test_the_rules_page_is_found_by_its_slug_whatever_key_it_was_given(): void
+    {
+        $cart = $this->filledCart();
+        Page::factory()->buyingAndSellingRules()->create(['key' => 'rules-made-in-the-admin']);
+
+        $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('rulesUrl', route('pages.show', ['slug' => 'pirkimo-pardavimo-taisyklės'], false))
+        );
+    }
+
+    public function test_a_page_with_neither_that_key_nor_those_slugs_is_not_taken_for_the_rules(): void
+    {
+        $cart = $this->filledCart();
+        Page::factory()->termsAndConditions()->create();
+
+        $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page->where('rulesUrl', null));
+    }
+
     public function test_the_links_are_left_out_while_the_shop_has_not_made_those_pages(): void
     {
         $cart = $this->filledCart();

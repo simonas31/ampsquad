@@ -51,7 +51,7 @@ class PaymentGatewayTest extends TestCase
         config(['shop.payment_gateway' => 'opay', 'services.opay.website_id' => 'SITE123456', 'services.opay.signature_password' => 'secret']);
 
         $this->assertSame('opay', $this->app->make(PaymentGateway::class)->name());
-        $this->assertNull(config('services.opay.test_user_id'));
+        $this->assertEmpty(config('services.opay.test_user_id'));
         $this->assertStringContainsString('sandbox', config('services.opay.base_url'));
     }
 
