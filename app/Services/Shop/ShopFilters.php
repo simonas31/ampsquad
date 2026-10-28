@@ -8,7 +8,8 @@ use App\Enums\ShopSort;
 
 /**
  * What the visitor asked the shop listing to show, already cleaned: see
- * ShopIndexRequest::filters(). Prices are whole cents.
+ * ShopIndexRequest::filters(). Price bounds are whole cents of the price
+ * with VAT, the one the shop shows first.
  */
 final readonly class ShopFilters
 {
@@ -17,8 +18,8 @@ final readonly class ShopFilters
         public ?string $category = null,
         public ?int $manufacturerId = null,
         public bool $inStockOnly = false,
-        public ?int $minPriceCents = null,
-        public ?int $maxPriceCents = null,
+        public ?int $minPriceGrossCents = null,
+        public ?int $maxPriceGrossCents = null,
         public ShopSort $sort = ShopSort::Availability,
     ) {}
 
@@ -32,8 +33,8 @@ final readonly class ShopFilters
             || $this->category !== null
             || $this->manufacturerId !== null
             || $this->inStockOnly
-            || $this->minPriceCents !== null
-            || $this->maxPriceCents !== null
+            || $this->minPriceGrossCents !== null
+            || $this->maxPriceGrossCents !== null
             || $this->sort !== ShopSort::Availability;
     }
 
@@ -50,8 +51,8 @@ final readonly class ShopFilters
             'category' => $this->category,
             'manufacturer' => $this->manufacturerId,
             'inStock' => $this->inStockOnly,
-            'minPrice' => $this->euros($this->minPriceCents),
-            'maxPrice' => $this->euros($this->maxPriceCents),
+            'minPrice' => $this->euros($this->minPriceGrossCents),
+            'maxPrice' => $this->euros($this->maxPriceGrossCents),
             'sort' => $this->sort->value,
         ];
     }

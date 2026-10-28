@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Validator;
  * Turns one raw product from a catalog file into a CatalogRow, or says
  * everything that is wrong with it. This is the contract in
  * resources/catalog/catalog.template.json: text is plain (no HTML), the price
- * is a decimal string (floats would round), and stock is a whole number.
+ * is a decimal string without VAT (floats would round), and stock is a
+ * whole number.
  * Keys it does not know are ignored.
  *
  * Text must be plain. Converters strip markup before the file is written, and
@@ -76,7 +77,7 @@ final class CatalogRowParser
             categoryPath: $data['category'] ?? [],
             excerpt: $this->blankToNull($data['excerpt'] ?? null),
             description: $this->blankToNull($data['description'] ?? null),
-            priceCents: self::priceToCents($data['price']),
+            priceNetCents: self::priceToCents($data['price']),
             stock: $data['stock'] ?? null,
             imageUrl: $this->blankToNull($data['image_url'] ?? null),
             manufacturer: $this->blankToNull($data['manufacturer'] ?? null),
@@ -87,6 +88,8 @@ final class CatalogRowParser
     /**
      * "19.99" -> 1999 without going through a float. The input has already
      * matched the price pattern: digits, optionally a dot and 1-2 decimals.
+     * Used for both the file's price (without VAT) and a visitor's price
+     * filter (with VAT); the caller knows which.
      */
     public static function priceToCents(string $price): int
     {
@@ -119,9 +122,9 @@ final class CatalogRowParser
     {
         $cents = self::priceToCents((string) $value);
 
-        if ($cents < 1 || $cents > Product::MAX_PRICE_CENTS) {
+        if ($cents < 1 || $cents > Product::MAX_PRICE_NET_CENTS) {
             $fail(__('admin.catalog_import.errors.price_range', [
-                'max' => number_format(Product::MAX_PRICE_CENTS / 100, 2, '.', ''),
+                'max' => number_format(Product::MAX_PRICE_NET_CENTS / 100, 2, '.', ''),
             ]));
         }
     }

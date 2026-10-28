@@ -172,14 +172,18 @@ export interface Project {
   blocks?: ContentBlock[];
 }
 
-/** Prices are whole cents; format them with formatCents(). */
+/**
+ * Prices are whole cents; format them with formatCents(). Net is without
+ * VAT, gross is with VAT (net plus VAT). Show gross first.
+ */
 export interface Product {
   id: number;
   name: string;
   excerpt: string | null;
   /** Only sent to the product page. */
   description?: string | null;
-  priceCents: number;
+  priceNetCents: number;
+  priceGrossCents: number;
   url: string;
   /** An uploaded photograph, or the supplier's image link; null when neither exists. */
   imageUrl: string | null;
@@ -211,7 +215,7 @@ export interface ShopFilters {
   category: string | null;
   manufacturer: number | null;
   inStock: boolean;
-  /** Euros as typed; empty for no limit. */
+  /** Euros with VAT as typed; empty for no limit. */
   minPrice: string;
   maxPrice: string;
   sort: ShopSort;
@@ -249,8 +253,10 @@ export interface CartLine {
   /** What the visitor asked for; more than `quantity` on a reduced line. */
   requestedQuantity: number;
   maxQuantity: number;
-  unitPriceCents: number;
-  lineTotalCents: number;
+  unitPriceNetCents: number;
+  unitPriceGrossCents: number;
+  lineTotalNetCents: number;
+  lineTotalGrossCents: number;
   /** PATCH to set the quantity, DELETE to remove the line. */
   url: string;
   product: {
@@ -265,7 +271,12 @@ export interface CartLine {
 export interface CartData {
   items: CartLine[];
   /** Counts what can be bought (see CartLineStatus). */
-  subtotalCents: number;
+  subtotalNetCents: number;
+  /** The VAT rate in whole percent. */
+  vatRate: number;
+  /** The VAT in the total: gross minus net. */
+  vatCents: number;
+  totalGrossCents: number;
   totalQuantity: number;
   hasReducedItems: boolean;
   hasUnavailableItems: boolean;

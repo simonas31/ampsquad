@@ -22,7 +22,7 @@ class ProductSeeder extends Seeder
                     'lt' => 'Esamos elektros instaliacijos saugos ir būklės įvertinimas.',
                     'en' => 'A safety and condition check of your existing wiring.',
                 ],
-                'price_cents' => 8900,
+                'price_net_cents' => 8900,
                 'stock_quantity' => 50,
             ],
             [
@@ -31,7 +31,7 @@ class ProductSeeder extends Seeder
                     'lt' => 'Pagalba parenkant ir planuojant elektromobilio įkroviklio montavimą.',
                     'en' => 'Help choosing and planning an EV charger installation.',
                 ],
-                'price_cents' => 4900,
+                'price_net_cents' => 4900,
                 'stock_quantity' => 50,
             ],
             [
@@ -40,7 +40,7 @@ class ProductSeeder extends Seeder
                     'lt' => 'Veikiančios saulės elektrinės techninė apžiūra ir našumo patikra.',
                     'en' => 'A technical inspection and performance check of a working solar system.',
                 ],
-                'price_cents' => 12000,
+                'price_net_cents' => 12000,
                 'stock_quantity' => 50,
             ],
         ];

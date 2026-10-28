@@ -28,7 +28,7 @@ use Illuminate\Support\LazyCollection;
  * Built for a catalog of thousands: every page is a few dozen rows, search
  * and filters run in the database, and nothing offers to load "all" at once.
  * There is no manual order; the list is newest first and sortable by the
- * columns that mean something (name, SKU, price, stock).
+ * columns that mean something (name, SKU, prices, stock).
  */
 class ProductsTable
 {
@@ -78,10 +78,17 @@ class ProductsTable
                     ->placeholder('—')
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('price_cents')
-                    ->label(__('admin.fields.price'))
+                TextColumn::make('price_net_cents')
+                    ->label(__('admin.fields.price_net'))
                     ->money(Product::CURRENCY, divideBy: 100)
                     ->sortable(),
+                // Worked out from the price without VAT, so it sorts the
+                // same way: the order of the two never differs.
+                TextColumn::make('price_gross')
+                    ->label(__('admin.fields.price_gross'))
+                    ->state(fn (Product $record): int => $record->priceGrossCents())
+                    ->money(Product::CURRENCY, divideBy: 100)
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('price_net_cents', $direction)),
                 // Quantity is the shop's to manage, so it is edited right in
                 // the list; a catalog import never touches it.
                 TextInputColumn::make('stock_quantity')

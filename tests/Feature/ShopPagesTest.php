@@ -170,7 +170,8 @@ class ShopPagesTest extends TestCase
             ->where('products.data.0.id', $product->id)
             ->where('products.data.0.name', $product->name)
             ->where('products.data.0.excerpt', $product->excerpt)
-            ->where('products.data.0.priceCents', 1999)
+            ->where('products.data.0.priceNetCents', 1999)
+            ->where('products.data.0.priceGrossCents', 2419)
             ->where('products.data.0.url', route('shop.show', $product->slug))
             ->where('products.data.0.imageUrl', null)
             ->missing('products.data.0.description')
@@ -242,7 +243,8 @@ class ShopPagesTest extends TestCase
             ->where('product.id', $product->id)
             ->where('product.name', $product->name)
             ->where('product.description', $product->description)
-            ->where('product.priceCents', 4900)
+            ->where('product.priceNetCents', 4900)
+            ->where('product.priceGrossCents', 5929)
             ->where('product.maxQuantity', 99)
             ->where('product.inStock', true)
             ->where('breadcrumbs.1.url', route('shop.index'))
@@ -309,7 +311,7 @@ class ShopPagesTest extends TestCase
             $schema = collect($page->toArray()['props']['seo']['jsonLd'])->firstWhere('@type', 'Product');
 
             $this->assertSame($product->name, $schema['name']);
-            $this->assertSame('19.99', $schema['offers']['price']);
+            $this->assertSame('24.19', $schema['offers']['price'], 'the offer is the price with VAT');
             $this->assertSame('EUR', $schema['offers']['priceCurrency']);
         });
     }

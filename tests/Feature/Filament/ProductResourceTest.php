@@ -17,6 +17,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Number;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -40,7 +41,7 @@ class ProductResourceTest extends TestCase
             'name' => 'EV charger consultation',
             'excerpt' => 'Help choosing a charger.',
             'description' => 'A longer description of the consultation.',
-            'price_cents' => '19.99',
+            'price_net_cents' => '19.99',
             'stock_quantity' => 4,
             'is_active' => true,
         ], $overrides);
@@ -201,7 +202,7 @@ class ProductResourceTest extends TestCase
         $this->assertSame('EV charger consultation', $product->getTranslation('name', $locale));
         $this->assertSame('Help choosing a charger.', $product->getTranslation('excerpt', $locale));
         $this->assertSame('ev-charger-consultation', $product->getTranslation('slug', $locale));
-        $this->assertSame(1999, $product->price_cents);
+        $this->assertSame(1999, $product->price_net_cents);
         $this->assertSame(4, $product->stock_quantity);
         $this->assertTrue($product->is_active);
     }
@@ -223,9 +224,9 @@ class ProductResourceTest extends TestCase
         $this->signIn();
 
         Livewire::test(CreateProduct::class)
-            ->fillForm($this->validForm(['name' => '', 'price_cents' => null]))
+            ->fillForm($this->validForm(['name' => '', 'price_net_cents' => null]))
             ->call('create')
-            ->assertHasFormErrors(['name' => 'required', 'price_cents' => 'required']);
+            ->assertHasFormErrors(['name' => 'required', 'price_net_cents' => 'required']);
 
         $this->assertSame(0, Product::query()->count());
     }
@@ -236,9 +237,9 @@ class ProductResourceTest extends TestCase
         $this->signIn();
 
         Livewire::test(CreateProduct::class)
-            ->fillForm($this->validForm(['price_cents' => $price]))
+            ->fillForm($this->validForm(['price_net_cents' => $price]))
             ->call('create')
-            ->assertHasFormErrors(['price_cents']);
+            ->assertHasFormErrors(['price_net_cents']);
 
         $this->assertSame(0, Product::query()->count());
     }
@@ -249,11 +250,11 @@ class ProductResourceTest extends TestCase
         $this->signIn();
 
         Livewire::test(CreateProduct::class)
-            ->fillForm($this->validForm(['price_cents' => $price]))
+            ->fillForm($this->validForm(['price_net_cents' => $price]))
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $this->assertSame($expectedCents, Product::query()->firstOrFail()->price_cents);
+        $this->assertSame($expectedCents, Product::query()->firstOrFail()->price_net_cents);
     }
 
     public function test_the_featured_image_is_stored_on_the_public_disk_even_when_the_default_disk_is_private(): void
@@ -283,7 +284,28 @@ class ProductResourceTest extends TestCase
         $product = Product::factory()->priced(1999)->create();
 
         Livewire::test(EditProduct::class, ['record' => $product->id])
-            ->assertFormSet(['price_cents' => '19.99', 'is_active' => true]);
+            ->assertFormSet(['price_net_cents' => '19.99', 'is_active' => true]);
+    }
+
+    public function test_the_price_field_says_it_is_without_vat_and_shows_the_price_with_it(): void
+    {
+        $this->signIn();
+        $product = Product::factory()->priced(1999)->create();
+
+        Livewire::test(EditProduct::class, ['record' => $product->id])
+            ->assertSee(__('admin.fields.price_net'))
+            ->assertSee(Number::currency(24.19, 'EUR', app()->getLocale()));
+    }
+
+    public function test_the_price_hint_follows_what_is_typed(): void
+    {
+        $this->signIn();
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm(['price_net_cents' => '10.00'])
+            ->assertSee(Number::currency(12.10, 'EUR', app()->getLocale()))
+            ->fillForm(['price_net_cents' => 'abc'])
+            ->assertDontSee(Number::currency(12.10, 'EUR', app()->getLocale()));
     }
 
     public function test_editing_a_product_updates_its_price_and_state_but_not_its_live_slug(): void
@@ -293,14 +315,14 @@ class ProductResourceTest extends TestCase
         $slug = $product->getTranslation('slug', app()->getLocale());
 
         Livewire::test(EditProduct::class, ['record' => $product->id])
-            ->fillForm(['name' => 'A new name', 'price_cents' => '25.50', 'is_active' => false])
+            ->fillForm(['name' => 'A new name', 'price_net_cents' => '25.50', 'is_active' => false])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $product->refresh();
 
         $this->assertSame('A new name', $product->getTranslation('name', app()->getLocale()));
-        $this->assertSame(2550, $product->price_cents);
+        $this->assertSame(2550, $product->price_net_cents);
         $this->assertFalse($product->is_active);
         $this->assertSame($slug, $product->getTranslation('slug', app()->getLocale()));
     }

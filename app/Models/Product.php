@@ -23,6 +23,15 @@ use Spatie\Translatable\HasTranslations;
  * Something the public shop sells. Deliberately flat: one price in the
  * shop's single currency (EUR), no variants.
  *
+ * Two prices, named the way accounting names them throughout the code
+ * (columns, methods, JSON keys, translation keys):
+ *  - gross: before VAT is deducted, i.e. with VAT. What the visitor pays and
+ *    what the shop shows first.
+ *  - net: after VAT is deducted, i.e. without VAT. What the catalog import
+ *    supplies and the admin types; the only one stored.
+ * Gross is worked out from net (see priceGrossCents()) and never stored, so
+ * the two cannot disagree. VAT is always gross minus net.
+ *
  * Three kinds of data live here, with different owners. The catalog import
  * owns the descriptive fields and the price (see CatalogImporter). The shop
  * owns `stock_quantity` and `is_active`: an import seeds the quantity when it
@@ -43,10 +52,10 @@ class Product extends Model implements HasMedia
     use SoftDeletes;
 
     /**
-     * €100,000.00 — far above any real price, and far below the column's
-     * unsigned 32-bit limit, so an input slip cannot overflow it.
+     * €100,000.00 without VAT — far above any real price, and far below the
+     * column's unsigned 32-bit limit, so an input slip cannot overflow it.
      */
-    public const int MAX_PRICE_CENTS = 10_000_000;
+    public const int MAX_PRICE_NET_CENTS = 10_000_000;
 
     /**
      * Longest SKU, and the most stock one product can hold: limits of the
@@ -81,7 +90,7 @@ class Product extends Model implements HasMedia
         'name',
         'excerpt',
         'description',
-        'price_cents',
+        'price_net_cents',
         'is_active',
         'sku',
         'ean',
@@ -107,7 +116,7 @@ class Product extends Model implements HasMedia
     protected function casts(): array
     {
         return [
-            'price_cents' => 'integer',
+            'price_net_cents' => 'integer',
             'is_active' => 'boolean',
             'stock_quantity' => 'integer',
         ];
@@ -141,6 +150,32 @@ class Product extends Model implements HasMedia
             ->useDisk('public')
             ->singleFile()
             ->acceptsMimeTypes(self::$imageMimeTypes);
+    }
+
+    /**
+     * The VAT rate in whole percent (config/shop.php).
+     */
+    public static function vatRatePercent(): int
+    {
+        return (int) config('shop.vat_rate');
+    }
+
+    /**
+     * A price without VAT with the VAT added, to the nearest cent (halves
+     * round up). Whole-number arithmetic, so the result is exact.
+     */
+    public static function netToGrossCents(int $netCents): int
+    {
+        return intdiv($netCents * (100 + self::vatRatePercent()) + 50, 100);
+    }
+
+    /**
+     * The price with VAT. Shown for one unit and multiplied by the quantity
+     * for a cart line, so the lines the visitor sees add up to the total.
+     */
+    public function priceGrossCents(): int
+    {
+        return self::netToGrossCents($this->price_net_cents);
     }
 
     public function cartItems(): HasMany
@@ -219,14 +254,22 @@ class Product extends Model implements HasMedia
     }
 
     /**
+     * Products whose price with VAT, in cents, lies within the bounds; a
+     * null bound is open. Compares the same rounded figure
+     * priceGrossCents() gives, so a product is never shown at a price the
+     * filter disagrees with.
+     *
      * @param  Builder<static>  $query
      * @return Builder<static>
      */
-    public function scopePricedBetween(Builder $query, ?int $minCents, ?int $maxCents): Builder
+    public function scopePricedBetween(Builder $query, ?int $minGrossCents, ?int $maxGrossCents): Builder
     {
+        $gross = 'floor(`price_net_cents` * (100 + ?) / 100 + 0.5)';
+        $rate = self::vatRatePercent();
+
         return $query
-            ->when($minCents !== null, fn (Builder $priced) => $priced->where('price_cents', '>=', $minCents))
-            ->when($maxCents !== null, fn (Builder $priced) => $priced->where('price_cents', '<=', $maxCents));
+            ->when($minGrossCents !== null, fn (Builder $priced) => $priced->whereRaw("{$gross} >= ?", [$rate, $minGrossCents]))
+            ->when($maxGrossCents !== null, fn (Builder $priced) => $priced->whereRaw("{$gross} <= ?", [$rate, $maxGrossCents]));
     }
 
     /**
@@ -241,8 +284,8 @@ class Product extends Model implements HasMedia
     {
         match ($sort) {
             ShopSort::Availability => $query->orderByRaw('`stock_quantity` = 0')->orderedByName(),
-            ShopSort::PriceAsc => $query->orderBy('price_cents'),
-            ShopSort::PriceDesc => $query->orderByDesc('price_cents'),
+            ShopSort::PriceAsc => $query->orderBy('price_net_cents'),
+            ShopSort::PriceDesc => $query->orderByDesc('price_net_cents'),
             ShopSort::Name => $query->orderedByName(),
             ShopSort::Newest => $query->orderByDesc('created_at'),
         };

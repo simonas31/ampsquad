@@ -98,7 +98,7 @@ class CatalogImporterTest extends TestCase
         $this->assertEquals(['lt' => 'Hikvision kronšteinas', 'en' => 'Hikvision kronšteinas'], $product->getTranslations('name'));
         $this->assertEquals(['lt' => 'Short text', 'en' => 'Short text'], $product->getTranslations('excerpt'));
         $this->assertEquals(['lt' => "Line one\nLine two", 'en' => "Line one\nLine two"], $product->getTranslations('description'));
-        $this->assertSame(1999, $product->price_cents);
+        $this->assertSame(1999, $product->price_net_cents);
         $this->assertSame(2, $product->stock_quantity);
         $this->assertSame('6954273658830', $product->ean);
         $this->assertSame('http://bkgrupe.lt/media/SKU-1.jpg', $product->image_url);
@@ -222,7 +222,7 @@ class CatalogImporterTest extends TestCase
 
         $this->assertSame($original->id, $product->id);
         $this->assertEquals(['lt' => 'New name', 'en' => 'New name'], $product->getTranslations('name'));
-        $this->assertSame(1250, $product->price_cents);
+        $this->assertSame(1250, $product->price_net_cents);
         $this->assertSame(5, $product->stock_quantity);
         $this->assertSame('Other', $product->category->name);
         $this->assertSame('Acme', $product->manufacturer->name);
@@ -375,7 +375,7 @@ class CatalogImporterTest extends TestCase
         $product = Product::query()->withTrashed()->where('sku', 'A1')->sole();
 
         $this->assertTrue($product->trashed());
-        $this->assertSame(1500, $product->price_cents);
+        $this->assertSame(1500, $product->price_net_cents);
     }
 
     public function test_the_last_row_wins_when_a_sku_repeats(): void

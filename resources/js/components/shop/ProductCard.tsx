@@ -1,10 +1,10 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import { ShoppingBag } from "lucide-react";
 import { ProductImage } from "@/components/shop/ProductImage";
+import { ProductPrice } from "@/components/shop/ProductPrice";
 import { Button } from "@/components/ui/button";
 import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useT } from "@/hooks/use-t";
-import { formatCents } from "@/lib/shop";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
@@ -17,7 +17,6 @@ import type { Product } from "@/types";
  */
 export function ProductCard({ product }: { product: Product }) {
   const t = useT();
-  const { locale } = usePage().props;
   const addToCart = useAddToCart(product.id);
 
   return (
@@ -59,9 +58,10 @@ export function ProductCard({ product }: { product: Product }) {
       )}
 
       <div className="mt-auto flex items-center justify-between gap-4 pt-5">
-        <p className="text-ink font-semibold tabular-nums">
-          {formatCents(product.priceCents, locale.current)}
-        </p>
+        <ProductPrice
+          netCents={product.priceNetCents}
+          grossCents={product.priceGrossCents}
+        />
 
         <Button
           size="sm"

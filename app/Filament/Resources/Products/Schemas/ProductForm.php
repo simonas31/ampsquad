@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Number;
 
 class ProductForm
 {
@@ -77,18 +78,20 @@ class ProductForm
                             ->rows(6)
                             ->maxLength(5000)
                             ->columnSpanFull(),
-                        // Edited in euros, stored as whole cents. The sub-cent
-                        // rule keeps "1.005" from being silently rounded to a
-                        // price the admin never typed.
-                        TextInput::make('price_cents')
-                            ->label(__('admin.fields.price'))
-                            ->helperText(__('admin.products.price_helper'))
+                        // Edited in euros without VAT, stored as whole cents.
+                        // The sub-cent rule keeps "1.005" from being silently
+                        // rounded to a price the admin never typed. The helper
+                        // shows what the shop will charge with VAT.
+                        TextInput::make('price_net_cents')
+                            ->label(__('admin.fields.price_net'))
+                            ->helperText(fn (mixed $state): string => self::priceHelperText($state))
+                            ->live(onBlur: true)
                             ->required()
                             ->numeric()
                             ->prefix('€')
                             ->step(0.01)
                             ->minValue(0.01)
-                            ->maxValue(Product::MAX_PRICE_CENTS / 100)
+                            ->maxValue(Product::MAX_PRICE_NET_CENTS / 100)
                             ->rule('decimal:0,2')
                             ->formatStateUsing(fn (?int $state): ?string => $state === null
                                 ? null
@@ -126,6 +129,27 @@ class ProductForm
                     ->columns(2)
                     ->columnSpanFull(),
             ]);
+    }
+
+    /**
+     * The field's help, followed by the price with VAT once the typed price
+     * is a valid amount. Nothing is added for a half-typed or invalid one:
+     * the field's own validation speaks then.
+     */
+    private static function priceHelperText(mixed $state): string
+    {
+        $helper = __('admin.products.price_helper');
+
+        if (! is_numeric($state) || (float) $state < 0.01 || (float) $state > Product::MAX_PRICE_NET_CENTS / 100) {
+            return $helper;
+        }
+
+        $grossCents = Product::netToGrossCents((int) round((float) $state * 100));
+
+        return $helper.' '.__('admin.products.price_gross_hint', [
+            'rate' => Product::vatRatePercent(),
+            'price' => Number::currency($grossCents / 100, Product::CURRENCY, app()->getLocale()),
+        ]);
     }
 
     /**

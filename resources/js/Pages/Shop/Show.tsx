@@ -4,11 +4,11 @@ import { Reveal } from "@/components/common/Reveal";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ProductImage } from "@/components/shop/ProductImage";
+import { ProductPrice } from "@/components/shop/ProductPrice";
 import { QuantityStepper } from "@/components/shop/QuantityStepper";
 import { Button } from "@/components/ui/button";
 import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useT } from "@/hooks/use-t";
-import { formatCents } from "@/lib/shop";
 import { cn } from "@/lib/utils";
 import type { Breadcrumb, Product } from "@/types";
 
@@ -19,7 +19,7 @@ interface ShowProps {
 
 export default function Show({ product, breadcrumbs }: ShowProps) {
   const t = useT();
-  const { locale, cartSummary } = usePage().props;
+  const { cartSummary } = usePage().props;
   const addToCart = useAddToCart(product.id);
   const backUrl = breadcrumbs[1]?.url;
 
@@ -49,9 +49,11 @@ export default function Show({ product, breadcrumbs }: ShowProps) {
           </Reveal>
 
           <Reveal delay={100} className="lg:col-span-4 lg:col-start-9">
-            <p className="display text-ink text-4xl tabular-nums">
-              {formatCents(product.priceCents, locale.current)}
-            </p>
+            <ProductPrice
+              netCents={product.priceNetCents}
+              grossCents={product.priceGrossCents}
+              size="lg"
+            />
 
             <p
               className={cn(

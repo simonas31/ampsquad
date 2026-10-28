@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Prices go out as whole cents; the client only formats them. `category` is
- * left out unless the product's category was loaded.
+ * Prices go out as whole cents, without and with VAT; the client only
+ * formats them. `category` is left out unless the product's category was
+ * loaded.
  *
  * @mixin Product
  */
@@ -26,7 +27,8 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'excerpt' => $this->excerpt,
             'description' => $this->when($request->routeIs('shop.show'), fn () => $this->description),
-            'priceCents' => $this->price_cents,
+            'priceNetCents' => $this->price_net_cents,
+            'priceGrossCents' => $this->priceGrossCents(),
             'url' => route('shop.show', $this->slug),
             'imageUrl' => $this->featuredImageUrl('large'),
             'imageThumbUrl' => $this->featuredImageUrl('thumbnail'),

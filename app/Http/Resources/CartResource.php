@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use App\Enums\CartLineStatus;
 use App\Models\Cart;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,7 +32,10 @@ class CartResource extends JsonResource
     {
         return [
             'items' => CartItemResource::collection($this->items),
-            'subtotalCents' => $this->subtotalCents(),
+            'subtotalNetCents' => $this->subtotalNetCents(),
+            'vatRate' => Product::vatRatePercent(),
+            'vatCents' => $this->vatCents(),
+            'totalGrossCents' => $this->totalGrossCents(),
             'totalQuantity' => $this->totalQuantity(),
             'hasReducedItems' => $this->hasLinesWithStatus(CartLineStatus::Reduced),
             'hasUnavailableItems' => $this->hasLinesWithStatus(CartLineStatus::Unavailable),

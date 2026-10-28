@@ -259,16 +259,38 @@ class ShopFilteringTest extends TestCase
         $this->assertCount(2, $this->listedSkus('in_stock=0'));
     }
 
-    public function test_the_price_filter_takes_euros(): void
+    /**
+     * The bounds are euros with VAT, the price the shop shows first. At 21%
+     * the three products below cost 6.05, 24.19 and 60.50 with VAT.
+     */
+    public function test_the_price_filter_takes_euros_with_vat(): void
     {
         Product::factory()->priced(500)->create(['sku' => 'CHEAP']);
         Product::factory()->priced(1999)->create(['sku' => 'MID']);
         Product::factory()->priced(5000)->create(['sku' => 'DEAR']);
 
         $this->assertEqualsCanonicalizing(['MID', 'DEAR'], $this->listedSkus('min_price=10'));
-        $this->assertEqualsCanonicalizing(['CHEAP', 'MID'], $this->listedSkus('max_price=19.99'));
-        $this->assertSame(['MID'], $this->listedSkus('min_price=5.01&max_price=49,99'));
-        $this->assertSame([], $this->listedSkus('min_price=60&max_price=10'));
+        $this->assertEqualsCanonicalizing(['CHEAP', 'MID'], $this->listedSkus('max_price=24.19'));
+        $this->assertSame(['MID'], $this->listedSkus('min_price=6.06&max_price=60,49'));
+        $this->assertSame([], $this->listedSkus('min_price=70&max_price=10'));
+    }
+
+    public function test_the_price_filter_includes_a_product_priced_exactly_on_the_bound(): void
+    {
+        Product::factory()->priced(1999)->create(['sku' => 'MID']);
+
+        $this->assertSame(['MID'], $this->listedSkus('min_price=24.19&max_price=24.19'));
+        $this->assertSame([], $this->listedSkus('min_price=24.20'));
+        $this->assertSame([], $this->listedSkus('max_price=24.18'));
+    }
+
+    public function test_the_price_filter_follows_the_configured_vat_rate(): void
+    {
+        config(['shop.vat_rate' => 9]);
+        Product::factory()->priced(1999)->create(['sku' => 'MID']);
+
+        $this->assertSame(['MID'], $this->listedSkus('min_price=21.79&max_price=21.79'));
+        $this->assertSame([], $this->listedSkus('max_price=21.78'));
     }
 
     #[DataProvider('unusablePrices')]
@@ -307,9 +329,9 @@ class ShopFilteringTest extends TestCase
 
     public function test_products_can_be_sorted(): void
     {
-        $this->named('Bravo', ['sku' => 'B', 'price_cents' => 3000, 'created_at' => now()->subDays(2)]);
-        $this->named('Ąžuolas', ['sku' => 'A', 'price_cents' => 1000, 'created_at' => now()->subDay()]);
-        $this->named('Charlie', ['sku' => 'C', 'price_cents' => 2000, 'created_at' => now()]);
+        $this->named('Bravo', ['sku' => 'B', 'price_net_cents' => 3000, 'created_at' => now()->subDays(2)]);
+        $this->named('Ąžuolas', ['sku' => 'A', 'price_net_cents' => 1000, 'created_at' => now()->subDay()]);
+        $this->named('Charlie', ['sku' => 'C', 'price_net_cents' => 2000, 'created_at' => now()]);
 
         $this->assertSame(['A', 'C', 'B'], $this->listedSkus('sort=price_asc'));
         $this->assertSame(['B', 'C', 'A'], $this->listedSkus('sort=price_desc'));

@@ -55,10 +55,22 @@ export function CartSummary({ cart }: { cart: CartData }) {
           <dt>{t("cart.items")}</dt>
           <dd className="tabular-nums">{cart.totalQuantity}</dd>
         </div>
-        <div className="text-ink flex items-baseline justify-between gap-4">
+        <div className="text-ink-soft flex justify-between gap-4">
+          <dt>{t("cart.subtotal")}</dt>
+          <dd className="tabular-nums">
+            {formatCents(cart.subtotalNetCents, locale.current)}
+          </dd>
+        </div>
+        <div className="text-ink-soft flex justify-between gap-4">
+          <dt>{t("cart.vat", { rate: cart.vatRate })}</dt>
+          <dd className="tabular-nums">
+            {formatCents(cart.vatCents, locale.current)}
+          </dd>
+        </div>
+        <div className="text-ink border-rule flex items-baseline justify-between gap-4 border-t pt-3">
           <dt className="font-semibold">{t("cart.total")}</dt>
           <dd className="display text-3xl tabular-nums">
-            {formatCents(cart.subtotalCents, locale.current)}
+            {formatCents(cart.totalGrossCents, locale.current)}
           </dd>
         </div>
       </dl>

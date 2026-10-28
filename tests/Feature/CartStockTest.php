@@ -202,7 +202,7 @@ class CartStockTest extends TestCase
         $soldOut->update(['stock_quantity' => 0]);
 
         $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('cart.subtotalCents', 2000)
+            ->where('cart.subtotalNetCents', 2000)
             ->where('cart.totalQuantity', 2)
             ->where('cart.hasUnavailableItems', true)
             ->where('cart.items.0.status', 'available')

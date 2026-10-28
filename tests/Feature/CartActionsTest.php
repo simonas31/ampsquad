@@ -84,7 +84,7 @@ class CartActionsTest extends TestCase
         $this->assertCount(1, $cart->items);
         $this->assertSame($product->id, $cart->items->first()->product_id);
         $this->assertSame(2, $cart->items->first()->quantity);
-        $this->assertSame(3000, $cart->subtotalCents());
+        $this->assertSame(3000, $cart->subtotalNetCents());
     }
 
     public function test_the_cart_cookie_is_http_only_lax_and_holds_the_cart_token(): void
@@ -127,7 +127,7 @@ class CartActionsTest extends TestCase
         $cart->refresh();
 
         $this->assertSame(2, $cart->items()->count());
-        $this->assertSame(2000, $cart->subtotalCents());
+        $this->assertSame(2000, $cart->subtotalNetCents());
         $this->assertSame(5, $cart->totalQuantity());
     }
 
@@ -207,12 +207,12 @@ class CartActionsTest extends TestCase
         $this->post(route('cart.items.store'), [
             'product_id' => $product->id,
             'quantity' => 2,
-            'price_cents' => 1,
+            'price_net_cents' => 1,
             'unit_price' => 0,
             'price' => 0.01,
         ])->assertSessionHasNoErrors();
 
-        $this->assertSame(4000, Cart::query()->sole()->subtotalCents());
+        $this->assertSame(4000, Cart::query()->sole()->subtotalNetCents());
     }
 
     public function test_a_malformed_or_unknown_cookie_just_starts_a_new_cart(): void

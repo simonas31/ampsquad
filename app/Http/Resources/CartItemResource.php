@@ -36,8 +36,10 @@ class CartItemResource extends JsonResource
             'quantity' => $this->countedQuantity(),
             'requestedQuantity' => $this->quantity,
             'maxQuantity' => $this->product->maxPurchasableQuantity(),
-            'unitPriceCents' => $this->product->price_cents,
-            'lineTotalCents' => $this->lineTotalCents(),
+            'unitPriceNetCents' => $this->product->price_net_cents,
+            'unitPriceGrossCents' => $this->product->priceGrossCents(),
+            'lineTotalNetCents' => $this->lineNetCents(),
+            'lineTotalGrossCents' => $this->lineGrossCents(),
             'url' => route('cart.items.update', $this->resource, false),
             'product' => [
                 'id' => $this->product->id,

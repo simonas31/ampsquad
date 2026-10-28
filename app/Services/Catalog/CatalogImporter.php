@@ -188,7 +188,7 @@ final class CatalogImporter
             'sku' => $row->sku,
             'ean' => $row->ean,
             'image_url' => $row->imageUrl,
-            'price_cents' => $row->priceCents,
+            'price_net_cents' => $row->priceNetCents,
             'product_category_id' => $this->taxonomy->categoryId($row->categoryPath),
             'manufacturer_id' => $this->taxonomy->manufacturerId($row->manufacturer),
         ]);

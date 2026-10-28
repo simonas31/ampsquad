@@ -70,11 +70,28 @@ class Cart extends Model
     }
 
     /**
-     * Sum of the counted lines, in cents.
+     * Net: sum of the counted lines without VAT, in cents.
      */
-    public function subtotalCents(): int
+    public function subtotalNetCents(): int
     {
-        return $this->lines()->sum(fn (CartItem $item): int => $item->lineTotalCents());
+        return $this->lines()->sum(fn (CartItem $item): int => $item->lineNetCents());
+    }
+
+    /**
+     * Gross: sum of the counted lines with VAT, in cents. What the visitor pays.
+     */
+    public function totalGrossCents(): int
+    {
+        return $this->lines()->sum(fn (CartItem $item): int => $item->lineGrossCents());
+    }
+
+    /**
+     * The VAT in the total, in cents: the difference between the two sums,
+     * so the net subtotal and the VAT always add up to the total.
+     */
+    public function vatCents(): int
+    {
+        return $this->totalGrossCents() - $this->subtotalNetCents();
     }
 
     /**

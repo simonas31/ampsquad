@@ -13,6 +13,7 @@ use App\Models\User;
 use Filament\Actions\Testing\TestAction;
 use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Number;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -137,9 +138,32 @@ class ProductListManagementTest extends TestCase
         $dear = Product::factory()->priced(9000)->inStock(2)->create();
 
         Livewire::test(ListProducts::class)
-            ->sortTable('price_cents')
+            ->sortTable('price_net_cents')
             ->assertCanSeeTableRecords([$cheap, $dear], inOrder: true)
             ->sortTable('stock_quantity')
+            ->assertCanSeeTableRecords([$dear, $cheap], inOrder: true);
+    }
+
+    public function test_the_list_shows_the_price_without_and_with_vat(): void
+    {
+        $product = Product::factory()->priced(1999)->create();
+
+        Livewire::test(ListProducts::class)
+            ->assertTableColumnStateSet('price_net_cents', 1999, $product)
+            ->assertTableColumnStateSet('price_gross', 2419, $product)
+            ->assertTableColumnFormattedStateSet('price_net_cents', Number::currency(19.99, 'EUR', app()->getLocale()), $product)
+            ->assertTableColumnFormattedStateSet('price_gross', Number::currency(24.19, 'EUR', app()->getLocale()), $product);
+    }
+
+    public function test_the_price_with_vat_sorts_in_the_same_order_as_the_price_without_it(): void
+    {
+        $cheap = Product::factory()->priced(100)->create();
+        $dear = Product::factory()->priced(9000)->create();
+
+        Livewire::test(ListProducts::class)
+            ->sortTable('price_gross')
+            ->assertCanSeeTableRecords([$cheap, $dear], inOrder: true)
+            ->sortTable('price_gross', 'desc')
             ->assertCanSeeTableRecords([$dear, $cheap], inOrder: true);
     }
 
