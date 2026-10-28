@@ -47,6 +47,20 @@ class CartPageTest extends TestCase
         );
     }
 
+    public function test_the_way_into_checkout_is_only_there_once_online_checkout_is_switched_on(): void
+    {
+        $cart = Cart::factory()->create();
+        CartItem::factory()->for($cart)->quantity(1)->create();
+
+        $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page->where('cart.checkoutUrl', null));
+
+        $settings = app(ShopSettings::class);
+        $settings->checkoutEnabled = true;
+        $settings->save();
+
+        $this->visitorWith($cart)->get('/cart')->assertInertia(fn (AssertableInertia $page) => $page->where('cart.checkoutUrl', '/checkout'));
+    }
+
     public function test_a_visitor_without_a_cart_sees_an_empty_one(): void
     {
         $this->get('/cart')->assertOk()->assertInertia(fn (AssertableInertia $page) => $page

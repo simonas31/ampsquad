@@ -1,5 +1,5 @@
 import { formatPrice } from "@/lib/utils";
-import type { Locale, ShopFilters } from "@/types";
+import type { CartData, Locale, OrderStatus, ShopFilters } from "@/types";
 
 /**
  * The props a cart change can alter: the cart page's own `cart` and the
@@ -76,4 +76,70 @@ export function shopUrl(base: string, filters: Partial<ShopFilters>): string {
 /** Whether the listing differs from the plain shop in any way, sort included. */
 export function hasActiveFilters(filters: ShopFilters): boolean {
   return shopUrl("", filters) !== "";
+}
+
+/**
+ * Whether the cart can go to checkout as it is: something to order, and no
+ * line that is cut short or gone, since checkout refuses those rather than
+ * charge for something else. The server decides again; this only stops the
+ * button offering a way in that is closed.
+ */
+export function canCheckout(cart: CartData): boolean {
+  return (
+    cart.items.length > 0 &&
+    cart.totalQuantity > 0 &&
+    !cart.hasReducedItems &&
+    !cart.hasUnavailableItems
+  );
+}
+
+/** How often an order that waits for its payment is asked about, and how many times. */
+export const ORDER_POLL_INTERVAL_MS = 5000;
+export const ORDER_POLL_LIMIT = 60;
+
+/**
+ * Where an order stands as the customer needs to hear it. Coming back from
+ * the bank proves nothing: only the server saying paid does.
+ */
+export type OrderStage = "paid" | "waiting" | "closed" | "refunded";
+
+export function orderStage(status: OrderStatus): OrderStage {
+  switch (status) {
+    case "paid":
+    case "shipped":
+      return "paid";
+    case "pending_payment":
+      return "waiting";
+    case "refunded":
+      return "refunded";
+    case "cancelled":
+    case "expired":
+      return "closed";
+  }
+}
+
+/**
+ * Whether to ask the server about the order again: only while it waits for
+ * its payment, and not for ever. After the limit the page stops and says
+ * the confirmation will come by email.
+ */
+export function shouldPollOrder(
+  status: OrderStatus,
+  attempts: number,
+): boolean {
+  return status === "pending_payment" && attempts < ORDER_POLL_LIMIT;
+}
+
+/** The time of day of an ISO 8601 moment ("14:35"), in the visitor's time zone unless one is given. */
+export function formatClock(
+  iso: string,
+  locale: Locale,
+  timeZone?: string,
+): string {
+  return new Intl.DateTimeFormat(locale === "lt" ? "lt-LT" : "en-IE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone,
+  }).format(new Date(iso));
 }

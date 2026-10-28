@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
-import type { ShopFilters } from "@/types";
-import { clampQuantity, formatCents, hasActiveFilters, shopUrl } from "./shop";
+import type { CartData, OrderStatus, ShopFilters } from "@/types";
+import {
+  canCheckout,
+  clampQuantity,
+  formatCents,
+  formatClock,
+  hasActiveFilters,
+  ORDER_POLL_LIMIT,
+  orderStage,
+  shopUrl,
+  shouldPollOrder,
+} from "./shop";
 
 /** Intl separates the number and symbol with a (narrow) no-break space. */
 const plain = (text: string) => text.replace(/\s/g, " ");
@@ -113,5 +123,96 @@ describe("hasActiveFilters", () => {
     expect(hasActiveFilters({ ...noFilters, inStock: true })).toBe(true);
     expect(hasActiveFilters({ ...noFilters, maxPrice: "5" })).toBe(true);
     expect(hasActiveFilters({ ...noFilters, sort: "name" })).toBe(true);
+  });
+});
+
+const cartWith = (changes: Partial<CartData> = {}): CartData => ({
+  items: [{} as CartData["items"][number]],
+  subtotalExclVatCents: 1000,
+  vatRate: 21,
+  vatCents: 210,
+  totalInclVatCents: 1210,
+  totalQuantity: 1,
+  hasReducedItems: false,
+  hasUnavailableItems: false,
+  clearUrl: "/cart",
+  checkoutUrl: "/checkout",
+  ...changes,
+});
+
+describe("canCheckout", () => {
+  it("lets a cart with something to order go on", () => {
+    expect(canCheckout(cartWith())).toBe(true);
+  });
+
+  it("stops an empty cart", () => {
+    expect(canCheckout(cartWith({ items: [], totalQuantity: 0 }))).toBe(false);
+  });
+
+  it("stops a cart whose only lines count for nothing", () => {
+    expect(canCheckout(cartWith({ totalQuantity: 0 }))).toBe(false);
+  });
+
+  it("stops a cart with a line that is cut short or gone, since checkout would refuse it", () => {
+    expect(canCheckout(cartWith({ hasReducedItems: true }))).toBe(false);
+    expect(canCheckout(cartWith({ hasUnavailableItems: true }))).toBe(false);
+  });
+});
+
+describe("orderStage", () => {
+  it("calls an order paid from the moment the server says so, shipped or not", () => {
+    expect(orderStage("paid")).toBe("paid");
+    expect(orderStage("shipped")).toBe("paid");
+  });
+
+  it("calls an order that waits for its payment waiting", () => {
+    expect(orderStage("pending_payment")).toBe("waiting");
+  });
+
+  it("calls an order that expired or was cancelled closed", () => {
+    expect(orderStage("expired")).toBe("closed");
+    expect(orderStage("cancelled")).toBe("closed");
+  });
+
+  it("keeps a refund apart from an order that was never paid", () => {
+    expect(orderStage("refunded")).toBe("refunded");
+  });
+
+  it("has a stage for every status", () => {
+    const statuses: OrderStatus[] = ["pending_payment", "paid", "shipped", "cancelled", "expired", "refunded"];
+
+    expect(statuses.map(orderStage).every(Boolean)).toBe(true);
+  });
+});
+
+describe("shouldPollOrder", () => {
+  it("asks again while the order waits, up to the limit", () => {
+    expect(shouldPollOrder("pending_payment", 0)).toBe(true);
+    expect(shouldPollOrder("pending_payment", ORDER_POLL_LIMIT - 1)).toBe(true);
+  });
+
+  it("gives up at the limit", () => {
+    expect(shouldPollOrder("pending_payment", ORDER_POLL_LIMIT)).toBe(false);
+  });
+
+  it("never asks about an order that is not waiting", () => {
+    for (const status of ["paid", "shipped", "cancelled", "expired", "refunded"] as const) {
+      expect(shouldPollOrder(status, 0)).toBe(false);
+    }
+  });
+});
+
+describe("formatClock", () => {
+  it("shows the time of day on a 24 hour clock", () => {
+    expect(formatClock("2026-10-28T14:35:00Z", "en", "UTC")).toBe("14:35");
+    expect(formatClock("2026-10-28T14:35:00Z", "lt", "UTC")).toBe("14:35");
+  });
+
+  it("pads the hour", () => {
+    expect(formatClock("2026-10-28T07:05:00Z", "en", "UTC")).toBe("07:05");
+  });
+
+  it("follows the time zone", () => {
+    expect(formatClock("2026-10-28T14:35:00Z", "en", "Europe/Vilnius")).toBe("16:35");
   });
 });

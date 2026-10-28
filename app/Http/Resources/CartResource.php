@@ -7,6 +7,7 @@ namespace App\Http\Resources;
 use App\Enums\CartLineStatus;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Settings\ShopSettings;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,6 +21,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * `clearUrl` is where DELETE empties the cart. It lives here, not in the
  * shared `cartSummary` prop, because this page's own `cart` prop and the
  * shared one must never be mistaken for each other.
+ *
+ * `checkoutUrl` is where the way into checkout is, or null while online
+ * checkout is switched off, when the cart still ends in "Contact us".
  *
  * @mixin Cart
  */
@@ -40,6 +44,7 @@ class CartResource extends JsonResource
             'hasReducedItems' => $this->hasLinesWithStatus(CartLineStatus::Reduced),
             'hasUnavailableItems' => $this->hasLinesWithStatus(CartLineStatus::Unavailable),
             'clearUrl' => route('cart.destroy', absolute: false),
+            'checkoutUrl' => app(ShopSettings::class)->checkoutEnabled ? route('checkout.show', absolute: false) : null,
         ];
     }
 }

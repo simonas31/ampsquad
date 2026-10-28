@@ -72,6 +72,7 @@ class OrdersTable
             ->defaultSort('created_at', 'desc')
             ->paginated([10, 25, 50, 100])
             ->defaultPaginationPageOption(25)
+            ->filtersFormColumns(['default' => 1, 'sm' => 2, 'xl' => 4])
             ->filters([
                 SelectFilter::make('status')
                     ->label(__('admin.fields.status'))
@@ -80,10 +81,11 @@ class OrdersTable
                 Filter::make('created_at')
                     ->label(__('admin.orders.filters.created_at'))
                     ->schema([
-                        DatePicker::make('from')->label(__('admin.orders.filters.from')),
-                        DatePicker::make('until')->label(__('admin.orders.filters.until')),
+                        self::dateInput('from'),
+                        self::dateInput('until'),
                     ])
                     ->columns(2)
+                    ->columnSpan(['default' => 1, 'sm' => 2])
                     ->query(fn (Builder $query, array $data): Builder => $query
                         ->when($data['from'] ?? null, fn (Builder $query, string $from): Builder => $query->where('created_at', '>=', Carbon::parse($from)->startOfDay()))
                         ->when($data['until'] ?? null, fn (Builder $query, string $until): Builder => $query->where('created_at', '<=', Carbon::parse($until)->endOfDay())))
@@ -107,5 +109,21 @@ class OrdersTable
             ->recordActions([
                 ViewAction::make(),
             ]);
+    }
+
+    /**
+     * A day, written and shown as 2026-03-10 whatever the browser's own
+     * date format is, in a picker of its own (the browser's is narrow, and
+     * its format is not ours to choose).
+     */
+    private static function dateInput(string $name): DatePicker
+    {
+        return DatePicker::make($name)
+            ->label(__("admin.orders.filters.{$name}"))
+            ->native(false)
+            ->displayFormat('Y-m-d')
+            ->format('Y-m-d')
+            ->placeholder('YYYY-MM-DD')
+            ->closeOnDateSelection();
     }
 }

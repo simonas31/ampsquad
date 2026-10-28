@@ -142,6 +142,28 @@ class OrderResourceTest extends TestCase
             ->assertCanNotSeeTableRecords([$before, $first]);
     }
 
+    public function test_the_date_filter_reads_and_shows_days_as_year_month_day_in_a_picker_of_its_own(): void
+    {
+        $filter = Livewire::test(ListOrders::class)->instance()->getTable()->getFilter('created_at');
+
+        $pickers = collect($filter->getSchemaComponents())->keyBy(fn ($component): string => $component->getName());
+
+        $this->assertSame(['from', 'until'], $pickers->keys()->all());
+        foreach ($pickers as $picker) {
+            $this->assertSame('Y-m-d', $picker->getDisplayFormat());
+            $this->assertSame('Y-m-d', $picker->getFormat());
+            $this->assertFalse($picker->isNative(), 'the browser\'s own picker would show the browser\'s date format');
+        }
+    }
+
+    public function test_the_filters_have_room_to_be_read(): void
+    {
+        $table = Livewire::test(ListOrders::class)->instance()->getTable();
+
+        $this->assertSame(['default' => 1, 'sm' => 2, 'xl' => 4], $table->getFiltersFormColumns());
+        $this->assertSame(['default' => 1, 'sm' => 2], $table->getFilter('created_at')->getColumnSpan());
+    }
+
     public function test_orders_are_filtered_by_payment_state(): void
     {
         $succeeded = Order::factory()->paid()->create();

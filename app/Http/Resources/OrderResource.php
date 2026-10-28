@@ -12,7 +12,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * An order as its own page shows it, to anyone who has its uuid. So no
  * contact details and no address: what was bought, what it cost, how it is
- * delivered and where it stands. Needs `lines` loaded.
+ * delivered and where it stands. Needs `lines.product.media` loaded. The photo
+ * is the product's current one (the order keeps no copy of it), or none.
  *
  * @mixin Order
  */
@@ -32,6 +33,7 @@ class OrderResource extends JsonResource
             'lines' => $this->lines->map(fn (OrderLine $line): array => [
                 'name' => $line->product_name,
                 'sku' => $line->sku,
+                'imageThumbUrl' => $line->product?->featuredImageUrl('thumbnail'),
                 'quantity' => $line->quantity,
                 'unitPriceInclVatCents' => $line->unit_price_incl_vat_cents,
                 'lineTotalInclVatCents' => $line->line_total_incl_vat_cents,

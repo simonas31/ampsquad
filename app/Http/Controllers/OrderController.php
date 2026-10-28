@@ -29,7 +29,7 @@ class OrderController extends Controller
         ]);
 
         return Inertia::render('Orders/Show', [
-            'order' => new OrderResource($order->load('lines')),
+            'order' => new OrderResource($order->load('lines.product.media')),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.order').' '.$order->number, noindex: true),
         ])

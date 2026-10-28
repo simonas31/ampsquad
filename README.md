@@ -166,13 +166,13 @@ Every email is bilingual: the text is in `lang/{lt,en}/mail.php` and the views i
 
 ## Orders and stock
 
-The data and rules checkout is built on, and the backend of checkout itself (below). There is no checkout *page* yet, so online checkout stays switched off: the cart still ends in "Contact us".
+The data and rules checkout is built on, and checkout itself (below). Online checkout stays switched off until an admin turns it on: until then the cart still ends in "Contact us".
 
 ### Tables
 
 | Table | Purpose |
 |---|---|
-| `shipping_methods` | The ways to get an order, managed in the admin panel (Shop → Shipping methods): translatable name and description, a price without VAT, whether it is pickup at the shop (no address asked for), and whether it is active. No code knows which exist. |
+| `shipping_methods` | The ways to get an order, managed in the admin panel (Shop → Shipping methods): translatable name and description, a price without VAT, whether it is pickup at the shop (no address asked for), and whether it is active. No code knows which exist. A migration creates a pickup point (free) and LP Express, DPD, Omniva and Lietuvos paštas at 3.00 EUR with VAT each, as a starting point: set the real prices in the panel. |
 | `orders` | A guest's order: a public `uuid` (page URLs) and a random `number` such as `AS-7K3M9QXD` (what the customer and the payment provider are given; it says nothing about how many orders exist), the status, the customer's details, the shipping method as it was (name, details, price, pickup or not; the method itself may be edited or deleted later), the amounts, the language ordered in, and when the payment window closes. Never deleted. |
 | `order_lines` | What was sold, copied from the product when the order is placed: name (in the customer's language), SKU, quantity, unit price and line total, each with and without VAT. One line per product. |
 | `payments` | A payment started with a provider for an order. Nothing in it belongs to one provider. |
@@ -213,6 +213,7 @@ Online checkout is off until **Shop → Shop settings → Online checkout enable
 - **Unpaid orders expire.** `app:expire-unpaid-orders` runs every minute (the scheduler): an order still unpaid 15 minutes plus 5 minutes' grace after it was placed is given up and its stock returned, once. Before giving up it asks the provider whether the money came after all. An expired order that is paid late is paid again if the stock can be taken again.
 - **Emails** (queued, so the worker must run): the customer gets a confirmation in the language they ordered in; recipients with **Paid order to review** ticked (Communication → Recipients) get the order, and the same people get a warning when a payment needs a person.
 - **Personal data.** `app:anonymize-stale-orders` (daily) wipes the name, email, phone and address of orders that were never paid after 30 days. Orders that were paid are accounting records and are kept.
+- **The pages** (`resources/js/Pages/Checkout.tsx`, `Orders/Show.tsx`): the form has labels, an error summary that takes focus and links to each field, a live status line while it sends, and a delivery group that adds the address field only for methods that need one; the totals beside it are the server's, for the delivery chosen, with each product's photo. The cart's "Checkout" button replaces "Contact us" once online checkout is on, and is disabled while a line is cut short or gone. The order page asks the server again every 4 seconds (the `order` prop only) while the order waits for its payment, for about 2 minutes, then says the confirmation will come by email. Terms and privacy are linked from the admin-managed pages with those keys (`terms-and-conditions`, `privacy-policy`).
 - **The order page** (`/orders/{uuid}`) is where the provider sends the customer back to. It only reads: coming back never marks anything paid. It shows what was bought and where it stands, and no contact details.
 - **Setup:** `OPAY_*` and `PAYMENT_GATEWAY` in `.env` (see [deploy/README.md](deploy/README.md)). The provider's server must be able to reach `https://<site>/payments/opay/callback`.
 

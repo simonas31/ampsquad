@@ -282,6 +282,68 @@ export interface CartData {
   hasUnavailableItems: boolean;
   /** DELETE here empties the cart. */
   clearUrl: string;
+  /** The way into checkout; null while online checkout is switched off. */
+  checkoutUrl: string | null;
+}
+
+/**
+ * A way to get the order, with what the whole order would cost if chosen.
+ * The server worked all of it out, including the fingerprint that signs what
+ * the visitor was shown; the form only sends the fingerprint back.
+ */
+export interface ShippingMethodOption {
+  id: number;
+  name: string;
+  description: string | null;
+  /** Collected at the shop: no address is asked for. */
+  isPickup: boolean;
+  priceExclVatCents: number;
+  priceInclVatCents: number;
+  /** The VAT in the whole order with this delivery. */
+  vatCents: number;
+  totalInclVatCents: number;
+  fingerprint: string;
+}
+
+export type OrderStatus =
+  | "pending_payment"
+  | "paid"
+  | "shipped"
+  | "cancelled"
+  | "expired"
+  | "refunded";
+
+export interface OrderLineData {
+  name: string;
+  sku: string | null;
+  /** The product's photograph as it is now; null when it has none. */
+  imageThumbUrl: string | null;
+  quantity: number;
+  unitPriceInclVatCents: number;
+  lineTotalInclVatCents: number;
+}
+
+/** An order as its own page shows it: no contact details, no address. */
+export interface OrderData {
+  number: string;
+  status: OrderStatus;
+  placedAt: string;
+  /** When the time to pay runs out (ISO 8601). */
+  paymentExpiresAt: string;
+  /** Where the customer can still pay; null once they cannot. */
+  payUrl: string | null;
+  lines: OrderLineData[];
+  shipping: {
+    label: string;
+    details: string | null;
+    isPickup: boolean;
+    priceInclVatCents: number;
+  };
+  subtotalExclVatCents: number;
+  shippingExclVatCents: number;
+  vatRate: number;
+  vatCents: number;
+  totalInclVatCents: number;
 }
 
 export interface Video {

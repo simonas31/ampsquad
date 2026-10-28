@@ -56,6 +56,28 @@ class OrderPageTest extends TestCase
             );
     }
 
+    public function test_each_line_carries_its_products_photo_or_none(): void
+    {
+        $withPhoto = Product::factory()->create(['image_url' => 'https://supplier.test/router.jpg']);
+        $without = Product::factory()->create(['image_url' => null]);
+        $order = Order::factory()->withLine($withPhoto)->withLine($without)->create();
+
+        $this->get(route('orders.show', ['order' => $order->uuid]))
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('order.lines', fn ($lines): bool => collect($lines)->pluck('imageThumbUrl')->sort()->values()->all() === [null, 'https://supplier.test/router.jpg'])
+            );
+    }
+
+    public function test_a_line_whose_product_was_deleted_still_shows(): void
+    {
+        $product = Product::factory()->create(['image_url' => 'https://supplier.test/gone.jpg']);
+        $order = Order::factory()->withLine($product)->create();
+        $product->delete();
+
+        $this->get(route('orders.show', ['order' => $order->uuid]))->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page->where('order.lines.0.imageThumbUrl', 'https://supplier.test/gone.jpg'));
+    }
+
     public function test_the_page_does_not_hand_out_the_customers_details(): void
     {
         $order = $this->placedOrder();

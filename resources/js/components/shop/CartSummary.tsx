@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import { useT } from "@/hooks/use-t";
-import { CART_PROPS, formatCents } from "@/lib/shop";
+import { CART_PROPS, canCheckout, formatCents } from "@/lib/shop";
 import type { CartData } from "@/types";
 
 /**
- * The cart's total and what to do next. There is no checkout yet, so the
- * next step is to get in touch; when checkout exists this button becomes
- * the way into it.
+ * The cart's total and what to do next: checkout, once the shop has switched
+ * online checkout on and nothing in the cart is cut short or gone, otherwise
+ * (or while it is off) to get in touch.
  *
  * Everything here comes from the `cart` the page was given, including where
  * to empty it (`clearUrl`). The shared header summary is a different prop
@@ -75,13 +75,42 @@ export function CartSummary({ cart }: { cart: CartData }) {
         </div>
       </dl>
 
-      <p className="text-ink-soft mt-6 text-sm text-pretty">
-        {t("cart.checkoutSoon")}
-      </p>
+      {cart.checkoutUrl ? (
+        canCheckout(cart) ? (
+          <Button asChild variant="accent" size="lg" className="mt-6 w-full">
+            <Link href={cart.checkoutUrl}>{t("cart.checkout")}</Link>
+          </Button>
+        ) : (
+          <>
+            <p
+              id="checkout-blocked"
+              className="text-ink-soft mt-6 text-sm text-pretty"
+            >
+              {t("cart.checkoutBlocked")}
+            </p>
+            <Button
+              type="button"
+              variant="accent"
+              size="lg"
+              className="mt-4 w-full"
+              disabled
+              aria-describedby="checkout-blocked"
+            >
+              {t("cart.checkout")}
+            </Button>
+          </>
+        )
+      ) : (
+        <>
+          <p className="text-ink-soft mt-6 text-sm text-pretty">
+            {t("cart.checkoutSoon")}
+          </p>
 
-      <Button asChild variant="accent" size="lg" className="mt-6 w-full">
-        <Link href={contactUrl}>{t("cart.contactToOrder")}</Link>
-      </Button>
+          <Button asChild variant="accent" size="lg" className="mt-6 w-full">
+            <Link href={contactUrl}>{t("cart.contactToOrder")}</Link>
+          </Button>
+        </>
+      )}
 
       {/* One click on a link this close to the order button must not empty
           the cart, so it asks first. Cancel is focused: Enter does no harm. */}

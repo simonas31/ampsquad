@@ -8,6 +8,7 @@ use App\Enums\CartLineStatus;
 use App\Enums\CheckoutRefusal;
 use App\Http\Requests\StoreCheckoutRequest;
 use App\Http\Resources\CartResource;
+use App\Models\Page;
 use App\Services\CartService;
 use App\Services\Checkout\CheckoutRefused;
 use App\Services\Checkout\CheckoutService;
@@ -55,6 +56,9 @@ class CheckoutController extends Controller
         return Inertia::render('Checkout', [
             'cart' => new CartResource($cart),
             'shippingMethods' => $this->checkout->shippingOptions($cart->items),
+            'submitUrl' => route('checkout.store', absolute: false),
+            'termsUrl' => $this->pageUrl('terms-and-conditions'),
+            'privacyUrl' => $this->pageUrl('privacy-policy'),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.checkout'), noindex: true),
         ]);
@@ -81,5 +85,17 @@ class CheckoutController extends Controller
         }
 
         return Inertia::location($payment->redirect_url);
+    }
+
+    /**
+     * Where an admin-managed page is, or null if the shop has not made it:
+     * the form links to the terms and the privacy policy the customer
+     * accepts, and says so in plain words when there is nothing to link to.
+     */
+    private function pageUrl(string $key): ?string
+    {
+        $page = Page::query()->where('key', $key)->first();
+
+        return $page === null ? null : route('pages.show', ['slug' => $page->slug], absolute: false);
     }
 }

@@ -8,18 +8,22 @@ use App\Models\ShippingMethod;
 use Illuminate\Database\Seeder;
 
 /**
- * Demo shipping methods and made-up prices so checkout has something to
- * offer locally; the real ones, with the real prices, are managed in the
- * admin panel.
+ * Shipping methods for a database that has none: the same set, at the same
+ * prices, as the migration that creates them on a real one (which does not
+ * run in tests). The real ones are managed in the admin panel.
  */
 class ShippingMethodSeeder extends Seeder
 {
     public function run(): void
     {
+        if (ShippingMethod::query()->exists()) {
+            return;
+        }
+
         ShippingMethod::factory()->pickup()->create();
 
-        foreach ([['LP Express', 399], ['DPD', 450], ['Omniva', 349]] as [$name, $priceExclVatCents]) {
-            ShippingMethod::factory()->named($name)->priced($priceExclVatCents)->create([
+        foreach (['LP Express', 'DPD', 'Omniva'] as $name) {
+            ShippingMethod::factory()->named($name)->priced(248)->create([
                 'description' => [
                     'lt' => 'Pristatome į nurodytą adresą arba paštomatą per 2-3 darbo dienas nuo apmokėjimo.',
                     'en' => 'Delivered to the address or parcel locker you give, within 2-3 business days of payment.',
@@ -30,7 +34,7 @@ class ShippingMethodSeeder extends Seeder
         ShippingMethod::factory()
             ->create([
                 'name' => ['lt' => 'Lietuvos paštas', 'en' => 'Lithuania Post'],
-                'price_excl_vat_cents' => 299,
+                'price_excl_vat_cents' => 248,
             ]);
     }
 }

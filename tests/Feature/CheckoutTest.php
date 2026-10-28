@@ -10,6 +10,7 @@ use App\Enums\PaymentStatus;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderLine;
+use App\Models\Page;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ShippingMethod;
@@ -102,6 +103,29 @@ class CheckoutTest extends TestCase
         );
 
         $this->assertNotContains($inactive->id, collect($response->viewData('page')['props']['shippingMethods'])->pluck('id')->all());
+    }
+
+    public function test_the_checkout_page_says_where_to_post_and_links_the_terms_and_the_privacy_policy(): void
+    {
+        $cart = $this->filledCart();
+        Page::factory()->termsAndConditions()->create();
+        Page::factory()->privacyPolicy()->create();
+
+        $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('submitUrl', '/checkout')
+            ->where('termsUrl', '/taisykles-ir-salygos')
+            ->where('privacyUrl', '/privatumo-politika')
+        );
+    }
+
+    public function test_the_links_are_left_out_while_the_shop_has_not_made_those_pages(): void
+    {
+        $cart = $this->filledCart();
+
+        $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('termsUrl', null)
+            ->where('privacyUrl', null)
+        );
     }
 
     public function test_the_checkout_page_sends_a_cart_that_cannot_be_ordered_back_to_the_cart(): void
