@@ -260,6 +260,20 @@ return [
             'completed' => 'Completed',
             'failed' => 'Failed',
         ],
+        'order_status' => [
+            'pending_payment' => 'Awaiting payment',
+            'paid' => 'Paid',
+            'shipped' => 'Shipped',
+            'cancelled' => 'Cancelled',
+            'expired' => 'Expired',
+            'refunded' => 'Refunded',
+        ],
+        'payment_status' => [
+            'pending' => 'Pending',
+            'succeeded' => 'Succeeded',
+            'failed' => 'Failed',
+            'refunded' => 'Refunded',
+        ],
         'notification_type' => [
             'contact_form_submitted' => 'Contact form submitted',
             'new_project_published' => 'New project published',

@@ -10,4 +10,11 @@ return [
     'not_enough_stock' => 'Sandėlyje liko tik :count vnt.',
     'not_enough_stock_with_cart' => 'Sandėlyje liko tik :count vnt., o jūsų krepšelyje jau yra :held vnt.',
     'all_in_cart' => 'Visi sandėlyje esantys :count vnt. jau yra jūsų krepšelyje.',
+    'shipping' => [
+        'pickup' => 'Atsiėmimas parduotuvėje',
+        'lp_express' => 'LP Express',
+        'dpd' => 'DPD',
+        'omniva' => 'Omniva',
+        'lietuvos_pastas' => 'Lietuvos paštas',
+    ],
 ];

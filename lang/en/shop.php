@@ -10,4 +10,11 @@ return [
     'not_enough_stock' => 'Only :count in stock.',
     'not_enough_stock_with_cart' => 'Only :count in stock, and you already have :held in your cart.',
     'all_in_cart' => 'You already have all :count that are in stock in your cart.',
+    'shipping' => [
+        'pickup' => 'Pickup at the store',
+        'lp_express' => 'LP Express',
+        'dpd' => 'DPD',
+        'omniva' => 'Omniva',
+        'lietuvos_pastas' => 'Lithuania Post',
+    ],
 ];

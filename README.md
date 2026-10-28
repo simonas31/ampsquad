@@ -40,7 +40,7 @@ vendor/bin/sail npm run dev
 - Admin panel: http://localhost/admin, signing in as `admin@ampsquad.test` with password `password`.
   `AdminUserSeeder` uses fixed credentials for local development only; never run it in production.
 - Queued work (contact-form mail, image conversions, catalog imports) needs a worker locally: run `vendor/bin/sail artisan queue:work`.
-- `migrate --seed` also fills the shop with about 5,000 demo products (local environment only, about a minute), made by running a catalog file through the importer. Afterwards it plays the admin (restocks, sells out and switches off some products), imports a changed file and checks that none of that was undone. Re-seed from scratch with `vendor/bin/sail artisan migrate:fresh --seed`.
+- `migrate --seed` also fills the shop with about 5,000 demo products (local environment only, about a minute), made by running a catalog file through the importer. Afterwards it plays the admin (restocks, sells out and switches off some products), imports a changed file and checks that none of that was undone. Re-seed from scratch with `vendor/bin/sail artisan migrate:fresh --seed`. It also seeds a few orders, one in each status, with the stock of their products adjusted to match (`OrderSeeder`).
 
 ## Product catalog import
 
@@ -155,6 +155,28 @@ Whatever produces the file (a script, a spreadsheet macro, a person) should foll
 
 - A queue worker must be running. In production it is the Supervisor program in [deploy/README.md](deploy/README.md), which also explains why `DB_QUEUE_RETRY_AFTER` must be `1900` (the import job's timeout is 1800 seconds).
 - The upload goes through PHP, so `upload_max_filesize` and `post_max_size` must be at least 50M on the server. Sail already allows 100M; the production default of 2M does not.
+
+## Orders and stock
+
+The data and rules checkout is built on. There is no checkout page or payment yet: nothing creates an order except the seeder and the tests.
+
+### Tables
+
+| Table | Purpose |
+|---|---|
+| `orders` | A guest's order: a public `uuid` (page URLs) and a random `number` such as `AS-7K3M9QXD` (what the customer and the payment provider are given; it says nothing about how many orders exist), the status, the customer's details and delivery, the amounts, the language ordered in, and when the payment window closes. Never deleted. |
+| `order_lines` | What was sold, copied from the product when the order is placed: name (in the customer's language), SKU, quantity, unit price and line total, each with and without VAT. One line per product. |
+| `payments` | A payment started with a provider for an order. Nothing in it belongs to one provider. |
+| `payment_events` | Every message a provider sends, kept once: a repeated message hits the unique `(provider, event_key)` and is recognised as a repeat. Holds only the fields needed, never the customer's bank account or name. |
+
+### Rules
+
+- **An order never changes after the fact.** Lines and amounts are copies, and the order keeps the VAT rate it was sold at. Repricing, renaming or deleting a product, changing `SHOP_VAT_RATE`, or running a catalog import leaves existing orders as they were. A product that has been sold cannot be force deleted, and neither can an order.
+- **Money is whole cents.** A line is the unit price with VAT (rounded once, as the shop shows it) times the quantity; the order is the sum of its lines plus shipping, and the VAT is the difference, so subtotal, shipping and VAT always add up to the total. The database checks it (`orders_total_adds_up`, `order_lines_totals_add_up`). `OrderTotals` works the amounts out.
+- **Stock cannot be oversold.** `Product::takeStock()` is one `UPDATE` that only matches a product that is on sale with enough left, so of two buyers of the last unit exactly one gets it and the count never goes below zero. `Product::returnStock()` gives units back, and must only be called by the one request that made an order leave its status (see below). Neither touches `updated_at`, so a sale does not move the sitemap's `lastmod`. An import still never changes stock; once orders exist it moves only through orders and the admin panel.
+- **An order moves along fixed steps, once.** `OrderStatus::allowedTransitions()` lists them: awaiting payment, then paid, expired or cancelled; paid, then shipped or cancelled; shipped, then refunded; expired can still become paid (a bank confirming late). `Order::transitionTo()` makes the move with one guarded `UPDATE`, so of two requests racing for the same move exactly one gets `true`, and only that one may give stock back or send mail.
+- **The payment window** is `Order::PAYMENT_WINDOW_MINUTES` (15), with `Order::EXPIRY_GRACE_MINUTES` (5) more before an unpaid order is given up.
+- **Delivery** is pickup, LP Express, DPD, Omniva or Lietuvos paštas (`ShippingMethod`). An order keeps the method, its name and its price as they were; a courier needs an address or parcel locker, pickup does not.
 
 ## Tests
 

@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
         if (app()->isLocal()) {
             $this->call(CatalogDemoSeeder::class);
         }
+
+        $this->call(OrderSeeder::class);
     }
 }

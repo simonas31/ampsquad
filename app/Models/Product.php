@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
@@ -35,9 +36,10 @@ use Spatie\Translatable\HasTranslations;
  * Three kinds of data live here, with different owners. The catalog import
  * owns the descriptive fields and the price (see CatalogImporter). The shop
  * owns `stock_quantity` and `is_active`: an import seeds the quantity when it
- * creates a product and never changes it afterwards. Soft deleted rather than
- * removed, so a product that is in a cart (or, later, on an order) never
- * leaves a dangling reference.
+ * creates a product and never changes it afterwards. After that the stock
+ * only moves through the admin panel and through orders (takeStock() and
+ * returnStock()). Soft deleted rather than removed, so a product that is in a
+ * cart or on an order never leaves a dangling reference.
  */
 class Product extends Model implements HasMedia
 {
@@ -181,6 +183,62 @@ class Product extends Model implements HasMedia
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function orderLines(): HasMany
+    {
+        return $this->hasMany(OrderLine::class);
+    }
+
+    /**
+     * Takes $quantity units out of stock for an order, or none at all.
+     * Returns whether it did.
+     *
+     * One UPDATE decides: it only matches a product that is on sale and has
+     * at least $quantity left, so of two buyers of the last unit exactly one
+     * gets true, and the stock can never go below zero, whatever the callers
+     * read a moment before. The count is never read first and written back.
+     * The caller runs it inside the order's transaction and rolls back when
+     * it returns false.
+     *
+     * The product's updated_at is left alone: a sale is not a change to the
+     * page, and the sitemap's lastmod follows updated_at.
+     */
+    public static function takeStock(int $productId, int $quantity): bool
+    {
+        self::assertWholeUnits($quantity);
+
+        return static::query()
+            ->whereKey($productId)
+            ->where('is_active', true)
+            ->where('stock_quantity', '>=', $quantity)
+            ->toBase()
+            ->decrement('stock_quantity', $quantity) === 1;
+    }
+
+    /**
+     * Puts units taken by takeStock() back, for an order that is not going
+     * ahead. A product taken off sale or deleted since still gets its stock
+     * back. Returns whether the product was found.
+     *
+     * Not safe to call twice for one order: the caller makes sure it is, by
+     * doing it only for the call of Order::transitionTo() that returned true.
+     */
+    public static function returnStock(int $productId, int $quantity): bool
+    {
+        self::assertWholeUnits($quantity);
+
+        return static::withTrashed()
+            ->whereKey($productId)
+            ->toBase()
+            ->increment('stock_quantity', $quantity) === 1;
+    }
+
+    private static function assertWholeUnits(int $quantity): void
+    {
+        if ($quantity < 1) {
+            throw new InvalidArgumentException("Stock moves in whole units of at least 1, got {$quantity}.");
+        }
     }
 
     public function category(): BelongsTo

@@ -260,6 +260,20 @@ return [
             'completed' => 'Baigta',
             'failed' => 'Nepavyko',
         ],
+        'order_status' => [
+            'pending_payment' => 'Laukiama apmokėjimo',
+            'paid' => 'Apmokėtas',
+            'shipped' => 'Išsiųstas',
+            'cancelled' => 'Atšauktas',
+            'expired' => 'Pasibaigęs',
+            'refunded' => 'Grąžinti pinigai',
+        ],
+        'payment_status' => [
+            'pending' => 'Laukiama',
+            'succeeded' => 'Sėkmingas',
+            'failed' => 'Nepavyko',
+            'refunded' => 'Grąžintas',
+        ],
         'notification_type' => [
             'contact_form_submitted' => 'Gauta užklausa iš kontaktų formos',
             'new_project_published' => 'Paskelbtas naujas projektas',
