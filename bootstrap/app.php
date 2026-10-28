@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\EnsureCheckoutEnabled;
 use App\Http\Middleware\EnsureShopEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Support\Seo\SeoData;
@@ -28,8 +29,13 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
 
+        // The payment provider's server posts here with no session and no
+        // token; the message is authenticated by its signature instead.
+        $middleware->preventRequestForgery(except: ['payments/*/callback']);
+
         $middleware->alias([
             'shop.enabled' => EnsureShopEnabled::class,
+            'checkout.enabled' => EnsureCheckoutEnabled::class,
             'localize' => LaravelLocalizationRoutes::class,
             'localizationRedirect' => LaravelLocalizationRedirectFilter::class,
             'localeSessionRedirect' => LocaleSessionRedirect::class,

@@ -44,7 +44,7 @@ class OrderSeederTest extends TestCase
 
         $this->assertSame(1, Order::query()
             ->where('status', OrderStatus::PendingPayment)
-            ->where('payment_expires_at', '<', now()->subMinutes(Order::PAYMENT_WINDOW_MINUTES + Order::EXPIRY_GRACE_MINUTES))
+            ->where('payment_expires_at', '<', now()->subMinutes(Order::EXPIRY_GRACE_MINUTES))
             ->count());
     }
 

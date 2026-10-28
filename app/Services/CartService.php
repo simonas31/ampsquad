@@ -193,7 +193,11 @@ class CartService
         return is_string($token) && Str::isUuid($token) ? $token : null;
     }
 
-    private function lock(int $cartId): void
+    /**
+     * Holds the cart's row until the surrounding transaction ends, so nothing
+     * else changes the cart (or checks it out) meanwhile.
+     */
+    public function lock(int $cartId): void
     {
         Cart::query()->whereKey($cartId)->lockForUpdate()->firstOrFail();
     }

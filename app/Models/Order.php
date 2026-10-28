@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrderStatus;
-use App\Enums\ShippingMethod;
+use App\Enums\PaymentStatus;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /**
  * What a guest bought, as it was sold. Everything an order shows is copied
@@ -40,6 +42,12 @@ class Order extends Model
      */
     public const int EXPIRY_GRACE_MINUTES = 5;
 
+    /**
+     * How long an order that was never paid keeps its customer's details.
+     * Paid orders are accounting records and keep them.
+     */
+    public const int UNPAID_RETENTION_DAYS = 30;
+
     public const string NUMBER_PREFIX = 'AS-';
 
     /**
@@ -58,6 +66,7 @@ class Order extends Model
         'currency' => Product::CURRENCY,
         'shipping_excl_vat_cents' => 0,
         'shipping_incl_vat_cents' => 0,
+        'shipping_is_pickup' => false,
     ];
 
     /**
@@ -75,8 +84,10 @@ class Order extends Model
         'shipping_incl_vat_cents',
         'vat_cents',
         'total_incl_vat_cents',
-        'shipping_method',
+        'shipping_method_id',
         'shipping_label',
+        'shipping_details',
+        'shipping_is_pickup',
         'delivery_address',
         'customer_name',
         'customer_email',
@@ -94,13 +105,14 @@ class Order extends Model
     {
         return [
             'status' => OrderStatus::class,
-            'shipping_method' => ShippingMethod::class,
             'vat_rate_percent' => 'integer',
             'subtotal_excl_vat_cents' => 'integer',
             'shipping_excl_vat_cents' => 'integer',
             'shipping_incl_vat_cents' => 'integer',
             'vat_cents' => 'integer',
             'total_incl_vat_cents' => 'integer',
+            'shipping_is_pickup' => 'boolean',
+            'anonymized_at' => 'datetime',
             'terms_accepted_at' => 'datetime',
             'payment_expires_at' => 'datetime',
             'paid_at' => 'datetime',
@@ -137,6 +149,41 @@ class Order extends Model
         } while (self::query()->where('number', $number)->exists());
 
         return $number;
+    }
+
+    /**
+     * The order's page in the language it was placed in, for emails: they are
+     * built by the queue worker, which has no visitor and so no language.
+     */
+    public function publicUrl(): string
+    {
+        return LaravelLocalization::getLocalizedURL($this->locale, route('orders.show', ['order' => $this->uuid]), [], true);
+    }
+
+    /**
+     * Where the customer can still pay, while the order waits for it and its
+     * window is open; otherwise null.
+     */
+    public function openPaymentUrl(): ?string
+    {
+        if ($this->status !== OrderStatus::PendingPayment || $this->payment_expires_at->isPast()) {
+            return null;
+        }
+
+        return $this->payments()
+            ->where('status', PaymentStatus::Pending)
+            ->whereNotNull('redirect_url')
+            ->latest('id')
+            ->value('redirect_url');
+    }
+
+    /**
+     * The method the order was placed with, if it still exists. Only for the
+     * admin to follow: the order has its own copy of what it needs of it.
+     */
+    public function shippingMethod(): BelongsTo
+    {
+        return $this->belongsTo(ShippingMethod::class);
     }
 
     public function lines(): HasMany

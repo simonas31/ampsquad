@@ -106,6 +106,16 @@ return [
         'plural_label' => 'Užklausos',
     ],
 
+    'shipping_methods' => [
+        'label' => 'Pristatymo būdas',
+        'plural_label' => 'Pristatymo būdai',
+        'description_helper' => 'Rodoma pirkėjui užsakymo metu ir patvirtinime: pristatymo laikas arba kur ir kaip atsiimti užsakymą.',
+        'price_helper' => 'Kiek tai kainuoja pirkėjui, be PVM. Nulis reiškia nemokamai.',
+        'is_pickup' => 'Atsiėmimas parduotuvėje',
+        'is_pickup_helper' => 'Pirkėjas pats atsiima užsakymą, todėl pristatymo adreso neprašoma.',
+        'is_active_helper' => 'Pirkėjui siūlomi tik aktyvūs būdai. Jau pateikti užsakymai išsaugo naudotą būdą.',
+    ],
+
     'recipients' => [
         'label' => 'Gavėjas',
         'plural_label' => 'Gavėjai',
@@ -199,6 +209,8 @@ return [
         'nav_label' => 'Parduotuvės nustatymai',
         'enabled' => 'Parduotuvė įjungta',
         'enabled_helper' => 'Išjungus, parduotuvės ir krepšelio puslapiai lankytojams nepasiekiami, o nuoroda į parduotuvę paslėpta. Prekes čia vis tiek galima valdyti.',
+        'checkout_enabled' => 'Užsakymas internetu įjungtas',
+        'checkout_enabled_helper' => 'Kai įjungta, lankytojai gali užsisakyti ir apmokėti internetu. Reikia, kad parduotuvė būtų įjungta, o mokėjimų teikėjas ir pristatymo būdai sukonfigūruoti. Kai išjungta, krepšelis veikia, bet užsakyti čia negalima.',
     ],
 
     'capabilities' => [
@@ -277,6 +289,7 @@ return [
         'notification_type' => [
             'contact_form_submitted' => 'Gauta užklausa iš kontaktų formos',
             'new_project_published' => 'Paskelbtas naujas projektas',
+            'order_paid' => 'Apmokėtas užsakymas, kurį reikia peržiūrėti',
         ],
         'video_type' => [
             'instagram_embed' => 'Instagram įrašas',

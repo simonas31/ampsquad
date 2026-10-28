@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\OrderStatus;
-use App\Enums\ShippingMethod;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\Product;
+use App\Models\ShippingMethod;
 use App\Services\Checkout\OrderTotals;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -34,8 +34,8 @@ class OrderFactory extends Factory
             'subtotal_excl_vat_cents' => 0,
             'vat_cents' => 0,
             'total_incl_vat_cents' => 0,
-            'shipping_method' => ShippingMethod::Pickup,
-            'shipping_label' => ShippingMethod::Pickup->labelIn('lt'),
+            'shipping_label' => 'Atsiėmimas parduotuvėje',
+            'shipping_is_pickup' => true,
             'customer_name' => fake()->name(),
             'customer_email' => fake()->unique()->safeEmail(),
             'customer_phone' => '+3706'.fake()->numerify('#######'),
@@ -68,28 +68,34 @@ class OrderFactory extends Factory
     }
 
     /**
-     * @param  int  $priceExclVatCents  What delivery costs without VAT.
+     * Placed with the method: its name and details in the order's language
+     * (so call inLocale() first), its price, and whether it needs an address.
      */
-    public function shippedBy(ShippingMethod $method, int $priceExclVatCents = 0): static
+    public function shippedBy(ShippingMethod $method): static
     {
-        $totals = OrderTotals::forLines([], $priceExclVatCents);
+        $totals = OrderTotals::forLines([], $method->price_excl_vat_cents);
 
         // Shipping alone makes a whole order as far as the database can tell
         // (it checks the amounts add up when the row is inserted); the lines
         // are added to it afterwards.
         return $this->state(fn (array $attributes): array => [
-            'shipping_method' => $method,
-            'shipping_label' => $method->labelIn($attributes['locale']),
+            'shipping_method_id' => $method->getKey(),
+            'shipping_label' => $method->getTranslation('name', $attributes['locale']),
+            'shipping_details' => $method->getTranslation('description', $attributes['locale']) ?: null,
+            'shipping_is_pickup' => $method->is_pickup,
             'delivery_address' => $method->needsDeliveryAddress() ? fake()->address() : null,
             ...$totals->toAttributes(),
         ]);
     }
 
+    /**
+     * The language the customer ordered in. Before shippedBy(), which names
+     * the method in it.
+     */
     public function inLocale(string $locale): static
     {
         return $this->state(fn (array $attributes): array => [
             'locale' => $locale,
-            'shipping_label' => $attributes['shipping_method']->labelIn($locale),
         ]);
     }
 
@@ -129,7 +135,7 @@ class OrderFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'status' => OrderStatus::Expired,
-            'payment_expires_at' => now()->subMinutes(Order::PAYMENT_WINDOW_MINUTES + Order::EXPIRY_GRACE_MINUTES + 1),
+            'payment_expires_at' => now()->subMinutes(Order::EXPIRY_GRACE_MINUTES + 1),
             'expired_at' => now(),
         ]);
     }
@@ -145,14 +151,14 @@ class OrderFactory extends Factory
     }
 
     /**
-     * Still unpaid, with its payment window (and the grace after it) over:
-     * what the sweeper looks for.
+     * Still unpaid, with its payment window and the grace after it over: what
+     * the expiry command looks for.
      */
     public function pastItsWindow(): static
     {
         return $this->state(fn (array $attributes): array => [
             'status' => OrderStatus::PendingPayment,
-            'payment_expires_at' => now()->subMinutes(Order::PAYMENT_WINDOW_MINUTES + Order::EXPIRY_GRACE_MINUTES + 1),
+            'payment_expires_at' => now()->subMinutes(Order::EXPIRY_GRACE_MINUTES + 1),
         ]);
     }
 }

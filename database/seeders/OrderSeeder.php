@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\ShippingMethod;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentEvent;
 use App\Models\Product;
+use App\Models\ShippingMethod;
 use Database\Factories\OrderFactory;
 use Database\Factories\PaymentFactory;
 use Illuminate\Database\Seeder;
@@ -47,15 +47,23 @@ class OrderSeeder extends Seeder
 
         [$a, $b, $c, $d, $e] = $products->all();
 
+        if (! ShippingMethod::query()->exists()) {
+            $this->call(ShippingMethodSeeder::class);
+        }
+
+        $methods = ShippingMethod::query()->get();
+        $method = fn (string $name): ShippingMethod => $methods->first(fn (ShippingMethod $method): bool => $method->getTranslation('name', 'lt') === $name)
+            ?? throw new RuntimeException("No shipping method called {$name}.");
+
         $awaiting = $this->place(
-            Order::factory()->awaitingPayment()->state(['created_at' => now()->subMinutes(4)]),
+            Order::factory()->awaitingPayment()->shippedBy($methods->firstWhere('is_pickup', true))->state(['created_at' => now()->subMinutes(4)]),
             [[$a, 2]],
             holdsStock: true,
             payment: Payment::factory(),
         );
 
         $paid = $this->place(
-            Order::factory()->paid()->shippedBy(ShippingMethod::LpExpress, 399)->state([
+            Order::factory()->paid()->shippedBy($method('LP Express'))->state([
                 'created_at' => now()->subHours(3),
                 'customer_note' => 'Please call before delivering.',
             ]),
@@ -65,7 +73,7 @@ class OrderSeeder extends Seeder
         );
 
         $this->place(
-            Order::factory()->shipped()->shippedBy(ShippingMethod::Dpd, 450)->state(['created_at' => now()->subDays(2)]),
+            Order::factory()->shipped()->shippedBy($method('DPD'))->state(['created_at' => now()->subDays(2)]),
             [[$b, 1], [$c, 2]],
             holdsStock: true,
             payment: Payment::factory()->succeeded(),
@@ -79,14 +87,14 @@ class OrderSeeder extends Seeder
         );
 
         $this->place(
-            Order::factory()->expired()->shippedBy(ShippingMethod::LietuvosPastas, 299)->state(['created_at' => now()->subDay()]),
+            Order::factory()->expired()->shippedBy($method('Lietuvos paštas'))->state(['created_at' => now()->subDay()]),
             [[$e, 1]],
             holdsStock: false,
             payment: Payment::factory()->failed(),
         );
 
         $this->place(
-            Order::factory()->refunded()->shippedBy(ShippingMethod::Omniva, 349)->inLocale('en')->state(['created_at' => now()->subDays(9)]),
+            Order::factory()->refunded()->inLocale('en')->shippedBy($method('Omniva'))->state(['created_at' => now()->subDays(9)]),
             [[$c, 1], [$d, 1]],
             holdsStock: false,
             payment: Payment::factory()->refunded(),
@@ -94,7 +102,7 @@ class OrderSeeder extends Seeder
 
         // Past its window and unpaid: what the expiry sweeper picks up.
         $this->place(
-            Order::factory()->pastItsWindow()->shippedBy(ShippingMethod::Omniva, 349)->inLocale('en')->state(['created_at' => now()->subMinutes(40)]),
+            Order::factory()->pastItsWindow()->inLocale('en')->shippedBy($method('Omniva'))->state(['created_at' => now()->subMinutes(40)]),
             [[$e, 1]],
             holdsStock: true,
             payment: Payment::factory(),

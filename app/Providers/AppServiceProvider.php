@@ -6,13 +6,20 @@ namespace App\Providers;
 
 use App\Models\CartItem;
 use App\Services\CartService;
+use App\Services\Payment\FakeGateway;
+use App\Services\Payment\OpayGateway;
+use App\Services\Payment\PaymentGateway;
 use Closure;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,7 +28,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(PaymentGateway::class, fn (): PaymentGateway => match (config('shop.payment_gateway')) {
+            OpayGateway::NAME => new OpayGateway((array) config('services.opay')),
+            FakeGateway::NAME => $this->app->isProduction()
+                ? throw new RuntimeException('The fake payment gateway cannot run in production. Set PAYMENT_GATEWAY=opay.')
+                : new FakeGateway,
+            default => throw new RuntimeException('Unknown payment gateway: '.config('shop.payment_gateway')),
+        });
     }
 
     /**
@@ -32,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerLocalizedRouteMacro();
         $this->registerCartItemBinding();
         $this->configureAdminTables();
+        $this->configureRateLimiting();
 
         // Inertia props are consumed directly by React components, not by an
         // external JSON:API client, so the extra {"data": {...}} envelope
@@ -40,6 +54,20 @@ class AppServiceProvider extends ServiceProvider
         // the component. Paginated collections are unaffected — they keep
         // their data/links/meta shape, which Paginated<T> already expects.
         JsonResource::withoutWrapping();
+    }
+
+    /**
+     * Named limiters for the checkout routes. A plain `throttle:10,1` is keyed
+     * by the visitor's IP alone, not by route, so it would share one allowance
+     * with every other plain throttle (the cart's 60 a minute, the contact
+     * form's 5): ten cart edits would leave nothing for checkout. A named
+     * limiter has its own.
+     */
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('checkout', fn (Request $request): Limit => Limit::perMinute(10)->by($request->ip()));
+        RateLimiter::for('order-page', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
+        RateLimiter::for('payment-callback', fn (Request $request): Limit => Limit::perMinute(120)->by($request->ip()));
     }
 
     /**

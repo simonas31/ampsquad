@@ -18,6 +18,17 @@ class ShopSettingsTest extends TestCase
         $this->assertFalse(app(ShopSettings::class)->enabled);
     }
 
+    public function test_online_checkout_is_off_until_an_admin_switches_it_on(): void
+    {
+        $this->assertFalse(app(ShopSettings::class)->checkoutEnabled);
+
+        $settings = app(ShopSettings::class);
+        $settings->checkoutEnabled = true;
+        $settings->save();
+
+        $this->assertTrue(app(ShopSettings::class)->checkoutEnabled);
+    }
+
     public function test_enabling_the_shop_is_persisted(): void
     {
         $settings = app(ShopSettings::class);

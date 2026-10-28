@@ -39,6 +39,9 @@ class ManageShopSettings extends SettingsPage
                 Toggle::make('enabled')
                     ->label(__('admin.shop_settings.enabled'))
                     ->helperText(__('admin.shop_settings.enabled_helper')),
+                Toggle::make('checkoutEnabled')
+                    ->label(__('admin.shop_settings.checkout_enabled'))
+                    ->helperText(__('admin.shop_settings.checkout_enabled_helper')),
             ]);
     }
 }

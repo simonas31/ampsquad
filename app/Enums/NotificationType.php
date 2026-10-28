@@ -17,6 +17,9 @@ enum NotificationType: string implements HasLabel
     case ContactFormSubmitted = 'contact_form_submitted';
     case NewProjectPublished = 'new_project_published';
 
+    /** A paid order to look at, and any payment that needs a person (see PaymentOutcome). */
+    case OrderPaid = 'order_paid';
+
     public function getLabel(): string
     {
         return __('admin.enums.notification_type.'.$this->value);

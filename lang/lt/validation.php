@@ -76,5 +76,10 @@ return [
         'category_id' => 'kategorija',
         'status' => 'būsena',
         'order' => 'eilė',
+        'shipping_method_id' => 'pristatymo būdas',
+        'delivery_address' => 'pristatymo adresas',
+        'note' => 'pastaba',
+        'accept_terms' => 'sąlygos',
+        'fingerprint' => 'krepšelio būsena',
     ],
 ];

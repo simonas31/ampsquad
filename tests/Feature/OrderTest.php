@@ -6,12 +6,12 @@ namespace Tests\Feature;
 
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
-use App\Enums\ShippingMethod;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\Payment;
 use App\Models\PaymentEvent;
 use App\Models\Product;
+use App\Models\ShippingMethod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -52,7 +52,6 @@ class OrderTest extends TestCase
             'subtotal_excl_vat_cents' => 1000,
             'vat_cents' => 210,
             'total_incl_vat_cents' => 1210,
-            'shipping_method' => ShippingMethod::Pickup,
             'shipping_label' => 'Atsiėmimas parduotuvėje',
             'customer_name' => 'Jonas Jonaitis',
             'customer_email' => 'jonas@example.test',
@@ -80,7 +79,6 @@ class OrderTest extends TestCase
             'subtotal_excl_vat_cents' => 0,
             'vat_cents' => 0,
             'total_incl_vat_cents' => 0,
-            'shipping_method' => ShippingMethod::Pickup,
             'shipping_label' => 'x',
             'customer_name' => 'x',
             'customer_email' => 'x@example.test',
@@ -115,7 +113,7 @@ class OrderTest extends TestCase
         $dear = Product::factory()->priced(12_345)->create();
 
         $order = Order::factory()
-            ->shippedBy(ShippingMethod::Dpd, 450)
+            ->shippedBy(ShippingMethod::factory()->priced(450)->create())
             ->withLine($cheap, 3)
             ->withLine($dear, 2)
             ->create()
@@ -143,27 +141,32 @@ class OrderTest extends TestCase
         $this->assertGreaterThan(0, $order->total_incl_vat_cents);
     }
 
-    public function test_lines_are_named_in_the_orders_language(): void
+    public function test_lines_and_shipping_are_named_in_the_orders_language(): void
     {
         $product = Product::factory()->create(['name' => ['lt' => 'Maršrutizatorius', 'en' => 'Router']]);
+        $pickup = ShippingMethod::factory()->pickup()->create();
 
-        $lithuanian = Order::factory()->withLine($product)->create();
-        $english = Order::factory()->inLocale('en')->withLine($product)->create();
+        $lithuanian = Order::factory()->shippedBy($pickup)->withLine($product)->create();
+        $english = Order::factory()->inLocale('en')->shippedBy($pickup)->withLine($product)->create();
 
         $this->assertSame('Maršrutizatorius', $lithuanian->lines()->sole()->product_name);
         $this->assertSame('Router', $english->lines()->sole()->product_name);
+        $this->assertSame('Atsiėmimas parduotuvėje', $lithuanian->shipping_label);
         $this->assertSame('Pickup at the store', $english->shipping_label);
+        $this->assertStringContainsString('Rudmenos g. 5-7', $english->shipping_details);
     }
 
-    public function test_only_a_courier_needs_a_delivery_address(): void
+    public function test_only_a_method_that_is_not_pickup_needs_a_delivery_address(): void
     {
-        $pickup = Order::factory()->shippedBy(ShippingMethod::Pickup)->create();
-        $courier = Order::factory()->shippedBy(ShippingMethod::Omniva, 349)->create();
+        $pickup = Order::factory()->shippedBy(ShippingMethod::factory()->pickup()->create())->create();
+        $courier = Order::factory()->shippedBy(ShippingMethod::factory()->named('Omniva')->priced(349)->create())->create();
 
         $this->assertNull($pickup->delivery_address);
+        $this->assertTrue($pickup->shipping_is_pickup);
         $this->assertNotEmpty($courier->delivery_address);
-        $this->assertSame(ShippingMethod::Omniva, $courier->shipping_method);
+        $this->assertFalse($courier->shipping_is_pickup);
         $this->assertSame('Omniva', $courier->shipping_label);
+        $this->assertTrue($courier->shippingMethod->is(ShippingMethod::query()->where('is_pickup', false)->sole()));
     }
 
     /**
@@ -199,7 +202,7 @@ class OrderTest extends TestCase
         $expired = Order::factory()->expired()->create();
         $stale = Order::factory()->pastItsWindow()->create();
 
-        $limit = now()->subMinutes(Order::PAYMENT_WINDOW_MINUTES + Order::EXPIRY_GRACE_MINUTES);
+        $limit = now()->subMinutes(Order::EXPIRY_GRACE_MINUTES);
 
         $this->assertTrue($expired->payment_expires_at->lessThan($limit));
         $this->assertTrue($stale->payment_expires_at->lessThan($limit));

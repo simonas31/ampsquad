@@ -10,11 +10,14 @@ return [
     'not_enough_stock' => 'Sandėlyje liko tik :count vnt.',
     'not_enough_stock_with_cart' => 'Sandėlyje liko tik :count vnt., o jūsų krepšelyje jau yra :held vnt.',
     'all_in_cart' => 'Visi sandėlyje esantys :count vnt. jau yra jūsų krepšelyje.',
-    'shipping' => [
-        'pickup' => 'Atsiėmimas parduotuvėje',
-        'lp_express' => 'LP Express',
-        'dpd' => 'DPD',
-        'omniva' => 'Omniva',
-        'lietuvos_pastas' => 'Lietuvos paštas',
+    'checkout' => [
+        'refused' => [
+            'empty_cart' => 'Jūsų krepšelis tuščias. Jei ką tik užsakėte, patikrinkite el. paštą: ten laukia patvirtinimas.',
+            'lines_unavailable' => 'Kai kurių krepšelio prekių nebėra pasirinktu kiekiu. Peržiūrėkite krepšelį ir bandykite dar kartą.',
+            'stale_cart' => 'Kainos, kiekiai ar pristatymo kaina pasikeitė nuo tada, kai paskutinį kartą žiūrėjote. Prieš mokėdami peržiūrėkite krepšelį ir naują sumą.',
+            'stock_short' => 'Paskutinius vieneto kiekius prekės iš jūsų krepšelio ką tik nupirko kitas pirkėjas. Peržiūrėkite krepšelį ir bandykite dar kartą.',
+            'shipping_unavailable' => 'Šis pristatymo būdas nebepasiekiamas. Pasirinkite kitą.',
+            'payment_unavailable' => 'Nepavyko pradėti mokėjimo. Pinigai nenurašyti. Bandykite dar kartą po kelių minučių.',
+        ],
     ],
 ];

@@ -46,9 +46,13 @@ return new class extends Migration
             // What the customer pays, and what the payment provider is asked for.
             $table->unsignedInteger('total_incl_vat_cents');
 
-            // Method and name as they were when the order was placed.
-            $table->string('shipping_method', 20);
+            // The method is only a pointer for the admin to follow: it can be
+            // edited or deleted later, so everything the order needs of it is
+            // copied here as it was when the order was placed.
+            $table->foreignId('shipping_method_id')->nullable()->constrained()->nullOnDelete();
             $table->string('shipping_label', 100);
+            $table->string('shipping_details', 500)->nullable();
+            $table->boolean('shipping_is_pickup')->default(false);
             // An address, or the parcel locker. Empty for pickup.
             $table->string('delivery_address', 500)->nullable();
 
@@ -60,6 +64,10 @@ return new class extends Migration
             $table->string('customer_note', 500)->nullable();
             // The shop's own notes; never shown to the customer.
             $table->text('internal_notes')->nullable();
+
+            // Set when the customer's details were wiped (see
+            // AnonymizeStaleOrders); the order itself stays.
+            $table->timestamp('anonymized_at')->nullable();
 
             $table->timestamp('terms_accepted_at');
             // When the stock held for an order is given up if it is still

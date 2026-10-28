@@ -9,5 +9,7 @@ return [
     'price_calculator' => 'Price calculator',
     'shop' => 'Shop',
     'cart' => 'Cart',
+    'checkout' => 'Checkout',
+    'order' => 'Order',
     'contact' => 'Contact',
 ];

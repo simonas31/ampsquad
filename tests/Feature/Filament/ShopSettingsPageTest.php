@@ -56,4 +56,28 @@ class ShopSettingsPageTest extends TestCase
 
         $this->assertSame('false', $this->storedPayload());
     }
+
+    public function test_online_checkout_is_off_by_default_and_has_its_own_switch(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test(ManageShopSettings::class)
+            ->assertFormSet(['checkoutEnabled' => false])
+            ->fillForm(['enabled' => true, 'checkoutEnabled' => true])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $stored = fn (string $name): string => (string) DB::table('settings')->where('group', 'shop')->where('name', $name)->value('payload');
+
+        $this->assertSame('true', $stored('checkoutEnabled'));
+        $this->assertSame('true', $stored('enabled'));
+
+        Livewire::test(ManageShopSettings::class)
+            ->assertFormSet(['checkoutEnabled' => true])
+            ->fillForm(['checkoutEnabled' => false])
+            ->call('save');
+
+        $this->assertSame('false', $stored('checkoutEnabled'));
+        $this->assertSame('true', $stored('enabled'));
+    }
 }

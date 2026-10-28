@@ -106,6 +106,16 @@ return [
         'plural_label' => 'Contact requests',
     ],
 
+    'shipping_methods' => [
+        'label' => 'Shipping method',
+        'plural_label' => 'Shipping methods',
+        'description_helper' => 'Shown to the customer at checkout and in their confirmation: the delivery time, or where and how to collect the order.',
+        'price_helper' => 'What it costs the customer, without VAT. Zero is free.',
+        'is_pickup' => 'Pickup at the shop',
+        'is_pickup_helper' => 'The customer collects the order, so no delivery address is asked for.',
+        'is_active_helper' => 'Only active methods are offered at checkout. Orders already placed keep the method they used.',
+    ],
+
     'recipients' => [
         'label' => 'Recipient',
         'plural_label' => 'Recipients',
@@ -199,6 +209,8 @@ return [
         'nav_label' => 'Shop Settings',
         'enabled' => 'Shop enabled',
         'enabled_helper' => 'When off, the shop and cart pages are not available to visitors and the shop link is hidden. Products can still be managed here.',
+        'checkout_enabled' => 'Online checkout enabled',
+        'checkout_enabled_helper' => 'When on, visitors can check out and pay online. Needs the shop to be enabled, and the payment provider and shipping methods to be set up. When off, the cart still works but visitors cannot order here.',
     ],
 
     'capabilities' => [
@@ -277,6 +289,7 @@ return [
         'notification_type' => [
             'contact_form_submitted' => 'Contact form submitted',
             'new_project_published' => 'New project published',
+            'order_paid' => 'Paid order to review',
         ],
         'video_type' => [
             'instagram_embed' => 'Instagram embed',

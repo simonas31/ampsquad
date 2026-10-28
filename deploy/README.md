@@ -58,11 +58,11 @@ Commands and files below contain placeholders in capital letters. Replace them w
 `deploy/supervisor-worker.conf` defines two programs. Supervisor replaces the CloudPanel cron job, so do **not**
 also add a `schedule:run` cron entry (the scheduler would run twice).
 
-- `ampsquad-worker`: `queue:work`. Contact-form mail, image conversions and catalog imports never happen without it.
+- `ampsquad-worker`: `queue:work`. Contact-form mail, order confirmation mail, image conversions and catalog imports never happen without it.
   Each deploy runs `queue:restart`; the worker finishes its job, exits, and Supervisor starts it on the new code.
   Set `DB_QUEUE_RETRY_AFTER=1900` in `.env`: a catalog import can run for minutes, and with the default of 90 seconds
   the queue would hand the running job to a second worker.
-- `ampsquad-scheduler`: `schedule:work`, which runs `schedule:run` every minute (daily sitemap).
+- `ampsquad-scheduler`: `schedule:work`, which runs `schedule:run` every minute (daily sitemap, and every minute the expiry of unpaid orders, which puts their stock back).
   No restart needed on deploy; every run is a fresh PHP process.
 
 The `deploy/` folder is not rsynced to the server, so copy the file over yourself. Run once, after the first deploy.
@@ -102,6 +102,27 @@ tail -f /var/log/supervisor/ampsquad-scheduler.log
 
 After editing `/etc/supervisor/conf.d/ampsquad.conf` run `supervisorctl reread && supervisorctl update`.
 Verify the scheduler as the site user: `cd ~/htdocs/ampsquad.lt && php8.5 artisan schedule:list`.
+
+## Payments (OPAY)
+
+Online checkout takes payments through OPAY (<https://opay.dev/docs/v1>) on its hosted payment page. The shop signs every request to OPAY and every message from OPAY with a shared password (md5), so there is no key file to keep.
+
+**Before switching checkout on**
+
+1. Ask OPAY (<https://opay.eu/en/contacts>) for sandbox access: a *website id*, a *signing password* and a *test user id*. Production gets its own website id and password after OPAY approves the shop.
+2. Put them in the server `.env` (`OPAY_WEBSITE_ID`, `OPAY_SIGNATURE_PASSWORD`, `OPAY_TEST_USER_ID`; `OPAY_BASE_URL` stays on the sandbox), then `php8.5 artisan optimize --except=routes`.
+3. OPAY's servers must reach `https://ampsquad.lt/payments/opay/callback` over HTTPS with a POST: no login, no firewall or bot rule in front of it, and the site's TLS certificate valid. OPAY waits 3 seconds for the answer `OK` and retries 4 more times (after 1 second, 1 minute, 5 minutes, 1 hour). Check the CloudPanel firewall and any Cloudflare-style protection.
+4. In the admin panel create the shipping methods (**Shop → Shipping methods**, pickup included) and tick **Paid order to review** on the recipients who should handle orders (**Communication → Recipients**).
+5. Make sure the Supervisor **worker** (emails) and **scheduler** (`app:expire-unpaid-orders` every minute) are running.
+6. Switch on **Shop → Shop settings → Online checkout enabled**, place a test order in the sandbox, and watch the order go from awaiting payment to paid and the emails arrive.
+
+**Going live:** set the production `OPAY_WEBSITE_ID` and `OPAY_SIGNATURE_PASSWORD`, `OPAY_BASE_URL=https://gateway.opay.lt`, and **empty `OPAY_TEST_USER_ID`** (when it is set, every payment is a test payment). Refresh the config cache as above. Refunds are made by hand in OPAY's portal.
+
+**Watching it**
+
+- A payment that needs a person (paid after the order expired or was cancelled, paid twice, wrong amount) emails everyone with **Paid order to review**. Each email says what to do.
+- `storage/logs/laravel.log` records `A payment message was refused` (a message that failed its signature check: a wrong password, or someone probing the URL) and `OPAY did not start the payment` with OPAY's error codes, never the password.
+- Unpaid orders older than 20 minutes that are still "awaiting payment" mean the scheduler is not running: `supervisorctl status`.
 
 ## Rollback
 

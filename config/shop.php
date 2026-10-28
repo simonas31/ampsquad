@@ -11,4 +11,11 @@ return [
      */
     'vat_rate' => (int) env('SHOP_VAT_RATE', 21),
 
+    /*
+     * Which payment provider takes the money: `opay` (see config/services.php
+     * for its settings) or `fake`, which only exists for local work and tests
+     * and refuses to run in production.
+     */
+    'payment_gateway' => env('PAYMENT_GATEWAY', 'opay'),
+
 ];

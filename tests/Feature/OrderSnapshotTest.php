@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Enums\ShippingMethod;
 use App\Models\CatalogImport;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\Product;
+use App\Models\ShippingMethod;
 use App\Services\Catalog\CatalogImporter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -78,7 +78,7 @@ class OrderSnapshotTest extends TestCase
     public function test_an_order_does_not_change_when_the_vat_rate_does(): void
     {
         $product = Product::factory()->priced(1000)->create();
-        $order = Order::factory()->shippedBy(ShippingMethod::Dpd, 450)->withLine($product, 2)->create();
+        $order = Order::factory()->shippedBy(ShippingMethod::factory()->priced(450)->create())->withLine($product, 2)->create();
         $line = $order->lines()->sole();
 
         $this->assertSame(21, $order->vat_rate_percent);

@@ -15,5 +15,7 @@ return [
     'price_calculator' => 'Kainos skaičiuoklė',
     'shop' => 'Parduotuvė',
     'cart' => 'Krepšelis',
+    'checkout' => 'Užsakymo pateikimas',
+    'order' => 'Užsakymas',
     'contact' => 'Kontaktai',
 ];
