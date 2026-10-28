@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\CartLineStatus;
 use App\Enums\CheckoutRefusal;
+use App\Enums\OrderStatus;
 use App\Http\Requests\StoreCheckoutRequest;
 use App\Http\Resources\CartResource;
 use App\Models\Order;
@@ -116,5 +117,18 @@ class CheckoutController extends Controller
             ->first();
 
         return $page === null ? null : route('pages.show', ['slug' => $page->slug], absolute: false);
+    }
+
+    /**
+     * The visitor's order that still waits for its payment, if its window is
+     * open; otherwise null (paid, expired, or never placed in this session).
+     */
+    private function waitingOrder(Request $request): ?Order
+    {
+        $uuid = $request->session()->get(self::WAITING_ORDER_KEY);
+
+        $order = is_string($uuid) ? Order::query()->where('uuid', $uuid)->first() : null;
+
+        return $order?->status === OrderStatus::PendingPayment && $order->payment_expires_at->isFuture() ? $order : null;
     }
 }
