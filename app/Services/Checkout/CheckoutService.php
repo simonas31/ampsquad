@@ -96,6 +96,13 @@ class CheckoutService
                 throw new CheckoutRefused(CheckoutRefusal::LinesUnavailable);
             }
 
+            // The products' row locks come first, in a fixed order. Inserting
+            // the order's lines would otherwise take a shared lock on each
+            // product (the foreign key check), and two orders for the same
+            // product would each hold one while waiting for the other's to
+            // take the stock: a deadlock, found by two real parallel requests.
+            Product::query()->whereKey($items->pluck('product_id'))->orderBy('id')->lockForUpdate()->get(['id']);
+
             $method = ShippingMethod::query()->active()->find($data->shippingMethodId)
                 ?? throw new CheckoutRefused(CheckoutRefusal::ShippingUnavailable);
 

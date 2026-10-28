@@ -79,7 +79,7 @@ return [
         'shipping_method_id' => 'pristatymo būdas',
         'delivery_address' => 'pristatymo adresas',
         'note' => 'pastaba',
-        'accept_terms' => 'sąlygos',
+        'accept_terms' => 'patvirtinimas',
         'fingerprint' => 'krepšelio būsena',
     ],
 ];

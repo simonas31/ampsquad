@@ -189,6 +189,35 @@ class UnpaidOrderExpiryTest extends TestCase
         $this->assertNotNull($event);
         $this->assertSame('* * * * *', $event->expression);
         $this->assertTrue($event->withoutOverlapping);
+        $this->assertSame(10, $event->expiresAt, 'a run that died must not hold the lock for a day');
+    }
+
+    public function test_one_order_that_cannot_be_given_up_does_not_stop_the_others(): void
+    {
+        $broken = $this->heldOrder(30);
+        $fine = $this->heldOrder(30);
+        $later = $this->heldOrder(30);
+        $this->app->instance(OrderStock::class, new class($broken->id) extends OrderStock
+        {
+            public function __construct(private readonly int $brokenOrderId) {}
+
+            public function release(Order $order): void
+            {
+                if ($order->id === $this->brokenOrderId) {
+                    throw new \RuntimeException('Cannot release this one.');
+                }
+
+                parent::release($order);
+            }
+        });
+        Exceptions::fake();
+
+        $this->artisan('app:expire-unpaid-orders')->expectsOutputToContain('Gave up 2')->assertSuccessful();
+
+        $this->assertSame(OrderStatus::PendingPayment, $broken->fresh()->status, 'rolled back whole, to be tried again');
+        $this->assertSame(OrderStatus::Expired, $fine->fresh()->status);
+        $this->assertSame(OrderStatus::Expired, $later->fresh()->status);
+        Exceptions::assertReported(\RuntimeException::class);
     }
 
     public function test_stale_unpaid_orders_are_anonymized_daily(): void

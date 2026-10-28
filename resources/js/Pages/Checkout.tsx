@@ -15,7 +15,7 @@ interface CheckoutProps {
   cart: CartData;
   shippingMethods: ShippingMethodOption[];
   submitUrl: string;
-  termsUrl: string | null;
+  rulesUrl: string | null;
   privacyUrl: string | null;
   breadcrumbs: Breadcrumb[];
 }
@@ -43,7 +43,7 @@ export default function Checkout({
   cart,
   shippingMethods,
   submitUrl,
-  termsUrl,
+  rulesUrl,
   privacyUrl,
   breadcrumbs,
 }: CheckoutProps) {
@@ -80,6 +80,22 @@ export default function Checkout({
       summaryRef.current?.focus();
     }
   }, [errorKeys, failure]);
+
+  // The Back button from the payment page can restore this page exactly as it
+  // was when it left, with the button stuck on "taking you to the payment
+  // page". Ask the server again instead: it sends the visitor to their
+  // waiting order, or back to the cart.
+  useEffect(() => {
+    const restored = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener("pageshow", restored);
+
+    return () => window.removeEventListener("pageshow", restored);
+  }, []);
 
   function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -323,7 +339,7 @@ export default function Checkout({
                     className="accent-ink size-5 shrink-0"
                   />
                   <label htmlFor="accept_terms" className="text-ink text-sm">
-                    <TermsLabel termsUrl={termsUrl} privacyUrl={privacyUrl} />
+                    <ConsentLabel rulesUrl={rulesUrl} privacyUrl={privacyUrl} />
                     <span className="text-ink ml-1" aria-hidden="true">
                       *
                     </span>
@@ -399,21 +415,21 @@ export default function Checkout({
 }
 
 /**
- * "I accept the terms and conditions and the privacy policy", with each
- * named document a link to it, in a new tab so the form is not lost. When the
- * shop has not made a page, its name is plain text.
+ * What the buyer must read before ordering, with each named document a link
+ * to its page, in a new tab so the form is not lost. When the shop has not
+ * made a page, its name is plain text.
  */
-function TermsLabel({
-  termsUrl,
+function ConsentLabel({
+  rulesUrl,
   privacyUrl,
 }: {
-  termsUrl: string | null;
+  rulesUrl: string | null;
   privacyUrl: string | null;
 }) {
   const t = useT();
 
-  if (!termsUrl && !privacyUrl) {
-    return <>{t("checkout.termsPlain")}</>;
+  if (!rulesUrl && !privacyUrl) {
+    return <>{t("checkout.consentPlain")}</>;
   }
 
   const link = (url: string | null, text: string) =>
@@ -431,15 +447,15 @@ function TermsLabel({
     );
 
   // The sentence has the two names in the middle of it, so split it there.
-  const [before, between, after] = t("checkout.terms", {
-    terms: "\u0000",
+  const [before, between, after] = t("checkout.consent", {
+    rules: "\u0000",
     privacy: "\u0001",
   }).split(/\u0000|\u0001/);
 
   return (
     <>
       {before}
-      {link(termsUrl, t("checkout.termsLink"))}
+      {link(rulesUrl, t("checkout.rulesLink"))}
       {between}
       {link(privacyUrl, t("checkout.privacyLink"))}
       {after}

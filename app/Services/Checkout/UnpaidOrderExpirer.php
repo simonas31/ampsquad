@@ -45,8 +45,14 @@ class UnpaidOrderExpirer
             ->where('payment_expires_at', '<', now()->subMinutes(Order::EXPIRY_GRACE_MINUTES))
             ->chunkById(self::CHUNK, function ($orders) use (&$expired): void {
                 foreach ($orders as $order) {
-                    if ($this->expireOne($order)) {
-                        $expired++;
+                    // One order that cannot be given up must not stop the rest,
+                    // or it would block every other order every minute.
+                    try {
+                        if ($this->expireOne($order)) {
+                            $expired++;
+                        }
+                    } catch (Throwable $exception) {
+                        report($exception);
                     }
                 }
             });

@@ -6,8 +6,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\CartLineStatus;
 use App\Enums\CheckoutRefusal;
+use App\Enums\OrderStatus;
 use App\Http\Requests\StoreCheckoutRequest;
 use App\Http\Resources\CartResource;
+use App\Models\Order;
 use App\Models\Page;
 use App\Services\CartService;
 use App\Services\Checkout\CheckoutRefused;
@@ -22,6 +24,13 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class CheckoutController extends Controller
 {
+    /**
+     * The order a visitor just placed, in their session, so that coming back
+     * to checkout from the payment page (the browser's Back button) leads to
+     * that order and its "pay now" and not to an empty cart.
+     */
+    private const string WAITING_ORDER_KEY = 'waiting_order';
+
     public function __construct(
         private readonly CartService $carts,
         private readonly CheckoutService $checkout,
@@ -36,6 +45,10 @@ class CheckoutController extends Controller
     public function show(Request $request): Response|RedirectResponse
     {
         $cart = $this->carts->forDisplay($request);
+
+        if ($cart->items->isEmpty() && ($waiting = $this->waitingOrder($request)) !== null) {
+            return redirect()->route('orders.show', ['order' => $waiting->uuid]);
+        }
 
         $refusal = match (true) {
             $cart->items->isEmpty() => CheckoutRefusal::EmptyCart,
@@ -57,7 +70,7 @@ class CheckoutController extends Controller
             'cart' => new CartResource($cart),
             'shippingMethods' => $this->checkout->shippingOptions($cart->items),
             'submitUrl' => route('checkout.store', absolute: false),
-            'termsUrl' => $this->pageUrl('terms-and-conditions'),
+            'rulesUrl' => $this->pageUrl('buying-and-selling-rules'),
             'privacyUrl' => $this->pageUrl('privacy-policy'),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.checkout'), noindex: true),
@@ -84,18 +97,33 @@ class CheckoutController extends Controller
             return $back->withErrors(['checkout' => $refused->getMessage()]);
         }
 
+        $request->session()->put(self::WAITING_ORDER_KEY, $payment->order->uuid);
+
         return Inertia::location($payment->redirect_url);
     }
 
     /**
      * Where an admin-managed page is, or null if the shop has not made it:
-     * the form links to the terms and the privacy policy the customer
-     * accepts, and says so in plain words when there is nothing to link to.
+     * the form links to the rules of purchase and sale the buyer must read
+     * and to the privacy policy, and says so in plain words when there is nothing to link to.
      */
     private function pageUrl(string $key): ?string
     {
         $page = Page::query()->where('key', $key)->first();
 
         return $page === null ? null : route('pages.show', ['slug' => $page->slug], absolute: false);
+    }
+
+    /**
+     * The visitor's order that still waits for its payment, if its window is
+     * open; otherwise null (paid, expired, or never placed in this session).
+     */
+    private function waitingOrder(Request $request): ?Order
+    {
+        $uuid = $request->session()->get(self::WAITING_ORDER_KEY);
+
+        $order = is_string($uuid) ? Order::query()->where('uuid', $uuid)->first() : null;
+
+        return $order?->status === OrderStatus::PendingPayment && $order->payment_expires_at->isFuture() ? $order : null;
     }
 }

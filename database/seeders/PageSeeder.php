@@ -14,5 +14,6 @@ class PageSeeder extends Seeder
         Page::factory()->about()->create();
         Page::factory()->privacyPolicy()->create();
         Page::factory()->termsAndConditions()->create();
+        Page::factory()->buyingAndSellingRules()->create();
     }
 }

@@ -105,16 +105,19 @@ class CheckoutTest extends TestCase
         $this->assertNotContains($inactive->id, collect($response->viewData('page')['props']['shippingMethods'])->pluck('id')->all());
     }
 
-    public function test_the_checkout_page_says_where_to_post_and_links_the_terms_and_the_privacy_policy(): void
+    public function test_the_checkout_page_says_where_to_post_and_links_the_rules_of_purchase_and_sale_and_the_privacy_policy(): void
     {
         $cart = $this->filledCart();
-        Page::factory()->termsAndConditions()->create();
+        Page::factory()->buyingAndSellingRules()->create();
         Page::factory()->privacyPolicy()->create();
+        // The old terms page is not what checkout links to any more.
+        Page::factory()->termsAndConditions()->create();
 
         $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
             ->where('submitUrl', '/checkout')
-            ->where('termsUrl', '/taisykles-ir-salygos')
+            ->where('rulesUrl', route('pages.show', ['slug' => 'pirkimo-pardavimo-taisyklės'], false))
             ->where('privacyUrl', '/privatumo-politika')
+            ->missing('termsUrl')
         );
     }
 
@@ -123,7 +126,7 @@ class CheckoutTest extends TestCase
         $cart = $this->filledCart();
 
         $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('termsUrl', null)
+            ->where('rulesUrl', null)
             ->where('privacyUrl', null)
         );
     }
@@ -496,6 +499,41 @@ class CheckoutTest extends TestCase
         $this->assertSame(1, Payment::query()->count());
         $this->assertSame(8, $this->router->fresh()->stock_quantity);
         $this->assertSame(4, $this->cable->fresh()->stock_quantity);
+    }
+
+    public function test_coming_back_to_checkout_from_the_payment_page_leads_to_the_order_that_waits(): void
+    {
+        $cart = $this->filledCart();
+        $this->visitorWith($cart)->post('/checkout', $this->checkoutForm($cart, $this->pickup))->assertSessionHasNoErrors();
+        $order = Order::query()->sole();
+
+        // The browser's Back button: the cart is empty now, but the order can still be paid.
+        $this->visitorWith($cart)->get('/checkout')->assertRedirect(route('orders.show', ['order' => $order->uuid]));
+    }
+
+    public function test_it_leads_nowhere_once_that_order_is_paid_or_its_window_closed(): void
+    {
+        $cart = $this->filledCart();
+        $this->visitorWith($cart)->post('/checkout', $this->checkoutForm($cart, $this->pickup));
+        $order = Order::query()->sole();
+
+        $order->update(['payment_expires_at' => now()->subMinute()]);
+        $this->visitorWith($cart)->get('/checkout')->assertRedirect(route('cart.show'));
+
+        $order->update(['payment_expires_at' => now()->addMinutes(5)]);
+        $order->transitionTo(OrderStatus::Paid);
+        $this->visitorWith($cart)->get('/checkout')->assertRedirect(route('cart.show'))
+            ->assertSessionHasErrors(['checkout' => CheckoutRefusal::EmptyCart->message()]);
+    }
+
+    public function test_someone_elses_order_is_never_offered(): void
+    {
+        $cart = $this->filledCart();
+        $this->visitorWith($cart)->post('/checkout', $this->checkoutForm($cart, $this->pickup));
+        $this->flushSession();
+
+        // A different visitor with an empty cart, who never placed that order.
+        $this->visitorWith(Cart::factory()->create())->get('/checkout')->assertRedirect(route('cart.show'));
     }
 
     public function test_checkout_is_not_there_until_it_is_switched_on(): void

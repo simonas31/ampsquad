@@ -23,15 +23,15 @@ class OrderController extends Controller
      */
     public function show(Request $request, Order $order): Response
     {
-        $breadcrumbs = Breadcrumbs::make([
-            ['label' => __('nav.home'), 'url' => route('home')],
-            ['label' => __('nav.order').' '.$order->number, 'url' => null],
-        ]);
-
+        // The page asks for `order` alone while it waits for the payment, every
+        // few seconds, so the rest is only built when it is asked for.
         return Inertia::render('Orders/Show', [
-            'order' => new OrderResource($order->load('lines.product.media')),
-            'breadcrumbs' => $breadcrumbs->toArray(),
-            'seo' => SeoData::make(pageTitle: __('nav.order').' '.$order->number, noindex: true),
+            'order' => fn () => new OrderResource($order->load('lines.product.media')),
+            'breadcrumbs' => fn () => Breadcrumbs::make([
+                ['label' => __('nav.home'), 'url' => route('home')],
+                ['label' => __('nav.order').' '.$order->number, 'url' => null],
+            ])->toArray(),
+            'seo' => fn () => SeoData::make(pageTitle: __('nav.order').' '.$order->number, noindex: true),
         ])
             ->toResponse($request)
             ->header('Cache-Control', 'no-store, private');

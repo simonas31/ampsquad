@@ -145,8 +145,8 @@ export default function OrderShow({ order, breadcrumbs }: OrderShowProps) {
           <aside className="lg:col-span-5">
             <AmountsSummary
               heading={t("order.summary")}
-              lines={order.lines.map((line) => ({
-                key: line.name,
+              lines={order.lines.map((line, index) => ({
+                key: `${index}-${line.sku ?? line.name}`,
                 name: line.name,
                 quantity: line.quantity,
                 totalInclVatCents: line.lineTotalInclVatCents,

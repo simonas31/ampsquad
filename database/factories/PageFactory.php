@@ -116,4 +116,27 @@ class PageFactory extends Factory
             ],
         ]);
     }
+
+    /**
+     * The page checkout links to: what the buyer must read before ordering.
+     */
+    public function buyingAndSellingRules(): static
+    {
+        return $this->state(fn () => [
+            'key' => 'buying-and-selling-rules',
+            'title' => ['lt' => 'Pirkimo-pardavimo taisyklės', 'en' => 'Rules of Purchase and Sale'],
+            'slug' => ['lt' => 'pirkimo-pardavimo-taisyklės', 'en' => 'buying-and-selling-rules'],
+            'blocks' => [
+                [
+                    'type' => 'rich_text',
+                    'data' => [
+                        'content' => [
+                            'lt' => '<p>'.fake('lt_LT')->paragraph(12).'</p>',
+                            'en' => '<p>'.fake('en_US')->paragraph(12).'</p>',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+    }
 }
