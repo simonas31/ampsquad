@@ -17,10 +17,15 @@ use Illuminate\Support\Str;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /**
- * What a guest bought, as it was sold. Everything an order shows is copied
+ * What a customer bought, as it was sold. Everything an order shows is copied
  * onto it when it is placed (the lines carry the products' names and prices,
  * the order its VAT rate, shipping and customer), so nothing that changes
  * afterwards in the shop can change an order.
+ *
+ * Most orders are a guest's. An order placed by a logged-in, verified
+ * customer, or linked to one afterwards on their request, also points at
+ * their account (customer_id) so they can find it again; it still carries its
+ * own copy of their details and never reads them back from the account.
  *
  * An order holds its stock from the moment it exists, and only moves along
  * OrderStatus::allowedTransitions(), through transitionTo(). Orders are never
@@ -78,6 +83,7 @@ class Order extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'customer_id',
         'locale',
         'currency',
         'vat_rate_percent',
@@ -205,6 +211,15 @@ class Order extends Model
             ->whereNotNull('redirect_url')
             ->latest('id')
             ->value('redirect_url');
+    }
+
+    /**
+     * The account the order belongs to, if it has one. Includes a deleted
+     * account, whose data is kept for a while after it is closed.
+     */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class)->withTrashed();
     }
 
     /**

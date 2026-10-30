@@ -27,6 +27,12 @@ class DatabaseSeeder extends Seeder
             $this->call(CatalogDemoSeeder::class);
         }
 
+        // Fixed credentials: for signing in to the shop while developing,
+        // never for a server.
+        if (app()->isLocal()) {
+            $this->call(CustomerSeeder::class);
+        }
+
         $this->call([
             ShippingMethodSeeder::class,
             OrderSeeder::class,
