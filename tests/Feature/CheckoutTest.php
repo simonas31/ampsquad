@@ -131,6 +131,16 @@ class CheckoutTest extends TestCase
         );
     }
 
+    public function test_the_privacy_policy_page_is_found_by_its_slug_whatever_key_it_was_given(): void
+    {
+        $cart = $this->filledCart();
+        Page::factory()->privacyPolicy()->create(['key' => 'privacy-made-in-the-admin']);
+
+        $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('privacyUrl', '/privatumo-politika')
+        );
+    }
+
     public function test_a_page_with_no_slug_in_the_current_locale_is_not_linked(): void
     {
         $cart = $this->filledCart();

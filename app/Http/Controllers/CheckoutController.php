@@ -71,7 +71,7 @@ class CheckoutController extends Controller
             'shippingMethods' => $this->checkout->shippingOptions($cart->items),
             'submitUrl' => route('checkout.store', absolute: false),
             'rulesUrl' => $this->pageUrl('buying-and-selling-rules', 'pirkimo-pardavimo-taisyklės', 'buying-and-selling-rules'),
-            'privacyUrl' => $this->pageUrl('privacy-policy'),
+            'privacyUrl' => $this->pageUrl('privacy-policy', 'privatumo-politika', 'privacy-policy'),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.checkout'), noindex: true),
         ]);

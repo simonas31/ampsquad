@@ -25,6 +25,7 @@ class ProjectController extends Controller
 
         $projects = Project::query()
             ->published()
+            ->withSlugInCurrentLocale()
             ->with(['category', 'tags'])
             ->when($categoryId, fn ($query) => $query->where('category_id', $categoryId))
             ->when($tagId, fn ($query) => $query->whereHas(

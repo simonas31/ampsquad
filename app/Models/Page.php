@@ -9,7 +9,6 @@ use App\Models\Concerns\HasSeo;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasTranslatableBlocks;
 use Database\Factories\PageFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -120,19 +119,6 @@ class Page extends Model implements HasMedia
     protected function slugIsLocked(): bool
     {
         return true;
-    }
-
-    /**
-     * Pages that have a slug in the current locale, so they have a URL to
-     * link to. A page written in one language only has none in the other.
-     *
-     * @param  Builder<Page>  $query
-     */
-    public function scopeWithSlugInCurrentLocale(Builder $query): void
-    {
-        $column = 'slug_'.app()->getLocale();
-
-        $query->whereNotNull($column)->where($column, '!=', '');
     }
 
     public function isAlwaysInMenus(): bool

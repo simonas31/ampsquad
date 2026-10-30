@@ -70,6 +70,19 @@ trait HasSlug
     }
 
     /**
+     * Records that have a slug in the current locale, so they have a URL to
+     * link to. A record written in one language only has none in the other.
+     *
+     * @param  Builder<static>  $query
+     */
+    public function scopeWithSlugInCurrentLocale(Builder $query): void
+    {
+        $column = 'slug_'.app()->getLocale();
+
+        $query->whereNotNull($column)->where($column, '!=', '');
+    }
+
+    /**
      * Rebuilds the slug for one locale from the saved source text, keeping
      * the old slug as a redirect when the record is locked. Returns whether
      * the slug changed.

@@ -22,6 +22,7 @@ class HomeController extends Controller
     {
         $featuredProjects = Project::query()
             ->published()
+            ->withSlugInCurrentLocale()
             ->featured()
             ->with('category')
             ->orderByDesc('published_at')

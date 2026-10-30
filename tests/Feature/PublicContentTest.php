@@ -60,6 +60,39 @@ class PublicContentTest extends TestCase
         );
     }
 
+    public function test_projects_index_leaves_out_projects_with_no_slug_in_the_current_locale(): void
+    {
+        Project::factory()->create();
+        Project::factory()->create([
+            'title' => ['lt' => 'Tik lietuviškai'],
+            'slug' => ['lt' => 'tik-lietuviskai'],
+        ]);
+
+        app()->setLocale('en');
+
+        $this->get('/projects')->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Projects/Index')
+            ->has('projects.data', 1)
+            ->where('projects.data.0.url', fn (string $url) => str_ends_with($url, '/projects/'.Project::query()->published()->withSlugInCurrentLocale()->first()->slug))
+        );
+    }
+
+    public function test_home_featured_projects_leave_out_projects_with_no_slug_in_the_current_locale(): void
+    {
+        Project::factory()->featured()->create();
+        Project::factory()->featured()->create([
+            'title' => ['lt' => 'Tik lietuviškai'],
+            'slug' => ['lt' => 'tik-lietuviskai'],
+        ]);
+
+        app()->setLocale('en');
+
+        $this->get('/')->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Home')
+            ->has('featuredProjects', 1)
+        );
+    }
+
     public function test_draft_project_is_not_publicly_reachable(): void
     {
         $project = Project::factory()->draft()->create();
