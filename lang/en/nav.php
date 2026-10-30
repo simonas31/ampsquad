@@ -20,6 +20,7 @@ return [
     'reset_password' => 'Choose a new password',
     'security' => 'Email and password',
     'profile' => 'Profile',
+    'orders' => 'Orders',
     'addresses' => 'Addresses',
     'new_address' => 'New address',
     'edit_address' => 'Edit address',

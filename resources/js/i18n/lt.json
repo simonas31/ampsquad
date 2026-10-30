@@ -382,6 +382,7 @@
     "nav": {
       "label": "Paskyros skyriai",
       "overview": "Apžvalga",
+      "orders": "Užsakymai",
       "profile": "Profilis",
       "security": "El. paštas ir slaptažodis",
       "addresses": "Adresai"
@@ -393,7 +394,10 @@
       "phone": "Telefonas",
       "notGiven": "Nenurodyta",
       "language": "Mūsų laiškų kalba",
-      "editProfile": "Redaguoti profilį"
+      "editProfile": "Redaguoti profilį",
+      "recentOrders": "Naujausi užsakymai",
+      "allOrders": "Visi užsakymai",
+      "noOrders": "Užsakymų dar nesate pateikę."
     },
     "profile": {
       "title": "Profilis",
@@ -451,6 +455,51 @@
       "saving": "Saugoma…",
       "cancel": "Atšaukti",
       "lithuania": "Lietuva"
+    },
+    "orders": {
+      "title": "Užsakymai",
+      "intro": "Jūsų užsakymai ir jų būsena.",
+      "empty": "Užsakymų dar nesate pateikę.",
+      "emptyHint": "Kai užsakysite prisijungę, užsakymas atsiras čia.",
+      "browseShop": "Eiti į parduotuvę",
+      "placed": "Pateikta {date}",
+      "items": "Prekių: {count}",
+      "view": "Peržiūrėti užsakymą",
+      "back": "Atgal į užsakymus",
+      "status": {
+        "pending_payment": "Laukiama apmokėjimo",
+        "paid": "Apmokėta",
+        "shipped": "Išsiųsta",
+        "cancelled": "Atšaukta",
+        "expired": "Pasibaigė",
+        "refunded": "Pinigai grąžinti"
+      },
+      "stageText": {
+        "paid": "Jūsų mokėjimą gavome ir dėl pristatymo susisieksime.",
+        "shipped": "Jūsų užsakymas išsiųstas arba atiduotas. Jei turite klausimų, susisiekite su mumis.",
+        "waiting": "Šis užsakymas laukia apmokėjimo. Jei ką tik sumokėjote, jis čia gali atsirasti po kelių minučių.",
+        "closed": "Pasibaigė laikas sumokėti arba užsakymas buvo atšauktas. Už jį nieko nenurašyta. Jei vis dėlto sumokėjote, susisiekite su mumis ir viską sutvarkysime.",
+        "refunded": "Pinigai grąžinti. Jie sąskaitoje gali atsirasti per kelias dienas."
+      },
+      "timelineTitle": "Kas įvyko",
+      "timeline": {
+        "placed": "Užsakymas pateiktas",
+        "paid": "Mokėjimas gautas",
+        "shipped": "Išsiųsta",
+        "cancelled": "Atšaukta",
+        "expired": "Pasibaigė laikas sumokėti",
+        "refunded": "Pinigai grąžinti"
+      },
+      "deliveryTitle": "Pristatymas",
+      "deliveryAddress": "Pristatymo adresas",
+      "pickup": "Šį užsakymą atsiimate patys, todėl pristatymo adreso nėra.",
+      "note": "Jūsų pastaba",
+      "linkTitle": "Trūksta užsakymo?",
+      "linkText": "Radome ankstesnių užsakymų, pateiktų su {email}: {count}. Pridėkite juos prie paskyros, kad matytumėte čia.",
+      "linkButton": "Pridėti prie mano paskyros",
+      "linking": "Pridedama…",
+      "linked": "Prie paskyros pridėta užsakymų: {count}.",
+      "linkedNone": "Pridėti nebuvo ko."
     }
   },
   "errors": {

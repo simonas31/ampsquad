@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\User;
 
@@ -24,6 +25,16 @@ class OrderPolicy
     public function view(User $user, Order $order): bool
     {
         return true;
+    }
+
+    /**
+     * A customer sees the orders that belong to their account, and no
+     * others. Named apart from view(): that one is for the admin panel's
+     * User, and a policy method only answers to the kind of user it names.
+     */
+    public function viewOwn(Customer $customer, Order $order): bool
+    {
+        return $order->customer_id === $customer->getKey();
     }
 
     public function create(User $user): bool

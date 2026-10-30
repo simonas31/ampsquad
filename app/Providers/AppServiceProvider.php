@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Models\CartItem;
 use App\Models\CustomerAddress;
+use App\Models\Order;
 use App\Services\CartService;
 use App\Services\Payment\FakeGateway;
 use App\Services\Payment\OpayGateway;
@@ -47,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerLocalizedRouteMacro();
         $this->registerCartItemBinding();
         $this->registerCustomerAddressBinding();
+        $this->registerCustomerOrderBinding();
         $this->configureAdminTables();
         $this->configureRateLimiting();
 
@@ -135,6 +137,23 @@ class AppServiceProvider extends ServiceProvider
             abort_if($customer === null, 404);
 
             return $customer->addresses()->whereKey($value)->firstOrFail();
+        });
+    }
+
+    /**
+     * {customerOrder} (an order's number) only ever resolves an order of the
+     * signed-in customer's own account, so a number belonging to anyone else,
+     * or to a guest, is a plain 404 (no existence leak). The policy is asked
+     * as well before the order is shown.
+     */
+    private function registerCustomerOrderBinding(): void
+    {
+        Route::bind('customerOrder', function (string $value): Order {
+            $customer = request()->user('customer');
+
+            abort_if($customer === null, 404);
+
+            return $customer->orders()->where('number', $value)->firstOrFail();
         });
     }
 

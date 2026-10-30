@@ -18,6 +18,7 @@ export function AccountNav() {
 
   const items = [
     { href: account.dashboardUrl, label: t("account.nav.overview") },
+    { href: account.ordersUrl, label: t("account.nav.orders") },
     { href: account.profileUrl, label: t("account.nav.profile") },
     { href: account.addressesUrl, label: t("account.nav.addresses") },
     { href: account.securityUrl, label: t("account.nav.security") },

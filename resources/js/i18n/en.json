@@ -382,6 +382,7 @@
     "nav": {
       "label": "Account sections",
       "overview": "Overview",
+      "orders": "Orders",
       "profile": "Profile",
       "security": "Email and password",
       "addresses": "Addresses"
@@ -393,7 +394,10 @@
       "phone": "Phone",
       "notGiven": "Not given",
       "language": "Language of our emails",
-      "editProfile": "Edit profile"
+      "editProfile": "Edit profile",
+      "recentOrders": "Recent orders",
+      "allOrders": "All orders",
+      "noOrders": "You have not placed any orders yet."
     },
     "profile": {
       "title": "Profile",
@@ -451,6 +455,51 @@
       "saving": "Saving…",
       "cancel": "Cancel",
       "lithuania": "Lithuania"
+    },
+    "orders": {
+      "title": "Orders",
+      "intro": "Your orders and where they stand.",
+      "empty": "You have not placed any orders yet.",
+      "emptyHint": "When you order while logged in, it shows up here.",
+      "browseShop": "Browse the shop",
+      "placed": "Placed {date}",
+      "items": "{count} items",
+      "view": "View order",
+      "back": "Back to orders",
+      "status": {
+        "pending_payment": "Waiting for payment",
+        "paid": "Paid",
+        "shipped": "Shipped",
+        "cancelled": "Cancelled",
+        "expired": "Expired",
+        "refunded": "Refunded"
+      },
+      "stageText": {
+        "paid": "We have your payment and will contact you about delivery.",
+        "shipped": "Your order was sent, or handed over. If you have any questions, contact us.",
+        "waiting": "This order is waiting for its payment. If you have just paid, it can take a few minutes to show here.",
+        "closed": "The time to pay ran out, or the order was cancelled. Nothing was charged for it. If you did pay, contact us and we will sort it out.",
+        "refunded": "The money was paid back. It can take a few days to show on your account."
+      },
+      "timelineTitle": "What happened",
+      "timeline": {
+        "placed": "Order placed",
+        "paid": "Payment received",
+        "shipped": "Sent",
+        "cancelled": "Cancelled",
+        "expired": "Time to pay ran out",
+        "refunded": "Refunded"
+      },
+      "deliveryTitle": "Delivery",
+      "deliveryAddress": "Delivery address",
+      "pickup": "You collect this order yourself, so it has no delivery address.",
+      "note": "Your note",
+      "linkTitle": "Missing an order?",
+      "linkText": "We found {count} earlier orders placed with {email}. Add them to your account to see them here.",
+      "linkButton": "Add them to my account",
+      "linking": "Adding…",
+      "linked": "{count} orders were added to your account.",
+      "linkedNone": "No orders were found to add."
     }
   },
   "errors": {

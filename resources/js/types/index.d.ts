@@ -91,6 +91,7 @@ export interface AccountSummary {
   loginUrl: string;
   registerUrl: string;
   dashboardUrl: string;
+  ordersUrl: string;
   profileUrl: string;
   addressesUrl: string;
   securityUrl: string;
@@ -391,6 +392,34 @@ export interface CustomerAddress {
   defaultUrl: string;
 }
 
+/** An order as a row in the customer's list of orders. */
+export interface AccountOrderSummary {
+  number: string;
+  status: OrderStatus;
+  placedAt: string;
+  /** The units on it. */
+  itemCount: number;
+  totalInclVatCents: number;
+  /** The order's page in the account. */
+  url: string;
+  /** Where the customer can still pay; null once they cannot. */
+  payUrl: string | null;
+}
+
+/** A moment in an order's life, taken from its own timestamps. */
+export interface AccountOrderMoment {
+  key: "placed" | "paid" | "shipped" | "cancelled" | "expired" | "refunded";
+  at: string;
+}
+
+/** An order as its owner sees it in their account: its page for anyone, plus where it goes and what happened. */
+export interface AccountOrderData extends OrderData {
+  /** Null for a pickup. */
+  deliveryAddress: string | null;
+  customerNote: string | null;
+  timeline: AccountOrderMoment[];
+}
+
 export interface Video {
   id: number;
   title: string | null;
@@ -460,7 +489,10 @@ declare module "@inertiajs/core" {
         | "account-deleted"
         | "address-saved"
         | "address-deleted"
-        | "address-default-set";
+        | "address-default-set"
+        | "orders-linked";
+      /** How many guest orders "orders-linked" brought into the account. */
+      linkedOrders?: number;
     };
   }
 }

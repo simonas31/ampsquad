@@ -10,6 +10,8 @@ use Illuminate\Database\Seeder;
 
 class CustomerSeeder extends Seeder
 {
+    public const string EMAIL = 'customer@ampsquad.test';
+
     /**
      * Local-dev-only fixed credentials, to sign in to the shop's account
      * area while developing. DatabaseSeeder only calls this locally.
@@ -17,7 +19,7 @@ class CustomerSeeder extends Seeder
     public function run(): void
     {
         $customer = Customer::unguarded(fn () => Customer::query()->firstOrCreate(
-            ['email' => 'customer@ampsquad.test'],
+            ['email' => self::EMAIL],
             [
                 'full_name' => 'Demo Customer',
                 'password' => 'password',

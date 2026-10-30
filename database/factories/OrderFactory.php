@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\OrderStatus;
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\Product;
@@ -96,6 +97,21 @@ class OrderFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'locale' => $locale,
+        ]);
+    }
+
+    /**
+     * Placed by a customer who was signed in: linked to their account, with
+     * their details copied onto the order as checkout does.
+     */
+    public function placedBy(Customer $customer): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'customer_id' => $customer->getKey(),
+            'customer_name' => $customer->full_name,
+            'customer_email' => $customer->email,
+            'customer_phone' => $customer->phone ?? $attributes['customer_phone'],
+            'locale' => $customer->locale,
         ]);
     }
 

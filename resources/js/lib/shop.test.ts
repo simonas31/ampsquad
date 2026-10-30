@@ -6,6 +6,8 @@ import {
   clampQuantity,
   formatCents,
   formatClock,
+  formatDate,
+  formatDateTime,
   hasActiveFilters,
   ORDER_POLL_LIMIT,
   orderStage,
@@ -215,6 +217,25 @@ describe("formatClock", () => {
 
   it("follows the time zone", () => {
     expect(formatClock("2026-10-28T14:35:00Z", "en", "Europe/Vilnius")).toBe("16:35");
+  });
+});
+
+describe("formatDate", () => {
+  it("writes the date the way the language does", () => {
+    expect(formatDate("2026-10-28T14:35:00Z", "en", "UTC")).toBe("28 Oct 2026");
+    expect(formatDate("2026-10-28T14:35:00Z", "lt", "UTC")).toBe("2026-10-28");
+  });
+
+  it("follows the time zone, so an evening order is not dated a day early", () => {
+    expect(formatDate("2026-10-28T22:30:00Z", "en", "UTC")).toBe("28 Oct 2026");
+    expect(formatDate("2026-10-28T22:30:00Z", "en", "Europe/Vilnius")).toBe("29 Oct 2026");
+  });
+});
+
+describe("formatDateTime", () => {
+  it("puts the time of day after the date", () => {
+    expect(formatDateTime("2026-10-28T14:35:00Z", "en", "UTC")).toBe("28 Oct 2026, 14:35");
+    expect(formatDateTime("2026-10-28T14:35:00Z", "lt", "UTC")).toBe("2026-10-28, 14:35");
   });
 });
 

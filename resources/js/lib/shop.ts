@@ -177,3 +177,24 @@ export function formatClock(
     timeZone,
   }).format(new Date(iso));
 }
+
+/** The date of an ISO 8601 moment ("2026 m. spalio 30 d." / "30 Oct 2026"), in the visitor's time zone unless one is given. */
+export function formatDate(
+  iso: string,
+  locale: Locale,
+  timeZone?: string,
+): string {
+  return new Intl.DateTimeFormat(locale === "lt" ? "lt-LT" : "en-IE", {
+    dateStyle: "medium",
+    timeZone,
+  }).format(new Date(iso));
+}
+
+/** The date and the time of day of an ISO 8601 moment. */
+export function formatDateTime(
+  iso: string,
+  locale: Locale,
+  timeZone?: string,
+): string {
+  return `${formatDate(iso, locale, timeZone)}, ${formatClock(iso, locale, timeZone)}`;
+}

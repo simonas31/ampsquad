@@ -1,8 +1,9 @@
 import { Link, usePage } from "@inertiajs/react";
 import { AccountPage } from "@/components/account/AccountPage";
+import { OrderRow } from "@/components/account/OrderRow";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/use-t";
-import type { Breadcrumb } from "@/types";
+import type { AccountOrderSummary, Breadcrumb } from "@/types";
 
 interface DashboardProps {
   profile: {
@@ -11,15 +12,20 @@ interface DashboardProps {
     phone: string | null;
     locale: string;
   };
+  /** The latest few, newest first. */
+  recentOrders: AccountOrderSummary[];
   breadcrumbs: Breadcrumb[];
 }
 
 /**
- * The customer's account at a glance: who they are to us. The sections of the
- * account area are beside it, and the things that happen in the shop (their
- * orders) are added here as they are built.
+ * The customer's account at a glance: their latest orders, and who they are
+ * to us. The sections of the account area are beside it.
  */
-export default function Dashboard({ profile, breadcrumbs }: DashboardProps) {
+export default function Dashboard({
+  profile,
+  recentOrders,
+  breadcrumbs,
+}: DashboardProps) {
   const t = useT();
   const { props } = usePage();
   const { account, locale } = props;
@@ -46,31 +52,58 @@ export default function Dashboard({ profile, breadcrumbs }: DashboardProps) {
       breadcrumbs={breadcrumbs}
       title={t("account.greeting", { name: profile.fullName })}
     >
-      <section aria-labelledby="details-heading" className="space-y-6">
-        <h2 id="details-heading" className="display text-ink text-2xl">
-          {t("account.dashboard.details")}
-        </h2>
+      <div className="space-y-14">
+        <section aria-labelledby="orders-heading" className="space-y-6">
+          <h2 id="orders-heading" className="display text-ink text-2xl">
+            {t("account.dashboard.recentOrders")}
+          </h2>
 
-        <dl className="border-rule divide-rule divide-y border-y">
-          {details.map((detail) => (
-            <div
-              key={detail.label}
-              className="grid gap-1 py-4 sm:grid-cols-3 sm:gap-6"
-            >
-              <dt className="meta text-ink-soft">{detail.label}</dt>
-              <dd className="text-ink break-words sm:col-span-2">
-                {detail.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+          {recentOrders.length === 0 ? (
+            <p className="text-ink-soft">{t("account.dashboard.noOrders")}</p>
+          ) : (
+            <>
+              <ul className="space-y-4">
+                {recentOrders.map((order) => (
+                  <li key={order.number}>
+                    <OrderRow order={order} localeCode={locale.current} />
+                  </li>
+                ))}
+              </ul>
+              <Button asChild variant="outline">
+                <Link href={account.ordersUrl}>
+                  {t("account.dashboard.allOrders")}
+                </Link>
+              </Button>
+            </>
+          )}
+        </section>
 
-        <Button asChild variant="outline">
-          <Link href={account.profileUrl}>
-            {t("account.dashboard.editProfile")}
-          </Link>
-        </Button>
-      </section>
+        <section aria-labelledby="details-heading" className="space-y-6">
+          <h2 id="details-heading" className="display text-ink text-2xl">
+            {t("account.dashboard.details")}
+          </h2>
+
+          <dl className="border-rule divide-rule divide-y border-y">
+            {details.map((detail) => (
+              <div
+                key={detail.label}
+                className="grid gap-1 py-4 sm:grid-cols-3 sm:gap-6"
+              >
+                <dt className="meta text-ink-soft">{detail.label}</dt>
+                <dd className="text-ink break-words sm:col-span-2">
+                  {detail.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <Button asChild variant="outline">
+            <Link href={account.profileUrl}>
+              {t("account.dashboard.editProfile")}
+            </Link>
+          </Button>
+        </section>
+      </div>
     </AccountPage>
   );
 }

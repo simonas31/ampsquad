@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentEvent;
@@ -50,6 +51,8 @@ class OrderSeeder extends Seeder
         if (! ShippingMethod::query()->exists()) {
             $this->call(ShippingMethodSeeder::class);
         }
+
+        $lastOrderId = (int) Order::query()->max('id');
 
         $methods = ShippingMethod::query()->get();
         $method = fn (string $name): ShippingMethod => $methods->first(fn (ShippingMethod $method): bool => $method->getTranslation('name', 'lt') === $name)
@@ -107,6 +110,14 @@ class OrderSeeder extends Seeder
             holdsStock: true,
             payment: Payment::factory(),
         );
+
+        // So the demo customer (see CustomerSeeder) has orders in every status
+        // to look at in their account. A server has no such customer.
+        $demoCustomer = Customer::query()->where('email', CustomerSeeder::EMAIL)->first();
+
+        if ($demoCustomer !== null) {
+            Order::query()->where('id', '>', $lastOrderId)->toBase()->update(['customer_id' => $demoCustomer->getKey()]);
+        }
 
         PaymentEvent::factory()->processed('paid')->create([
             'order_id' => $paid->getKey(),

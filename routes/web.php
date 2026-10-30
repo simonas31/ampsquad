@@ -7,6 +7,8 @@ use App\Http\Controllers\Account\DashboardController;
 use App\Http\Controllers\Account\DefaultAddressController;
 use App\Http\Controllers\Account\DeleteAccountController;
 use App\Http\Controllers\Account\EmailController;
+use App\Http\Controllers\Account\LinkOrdersController;
+use App\Http\Controllers\Account\OrderController as AccountOrderController;
 use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SecurityController;
@@ -28,6 +30,7 @@ use App\Http\Controllers\PriceCalculatorController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\ShopController;
+use App\Models\Order;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -137,6 +140,14 @@ Route::localized(function (): void {
 
                 Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
                 Route::patch('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
+
+                Route::get('/account/orders', [AccountOrderController::class, 'index'])->name('account.orders.index');
+                Route::post('/account/orders/link', LinkOrdersController::class)
+                    ->middleware('throttle:customer-account')
+                    ->name('account.orders.link');
+                Route::get('/account/orders/{customerOrder}', [AccountOrderController::class, 'show'])
+                    ->where('customerOrder', Order::NUMBER_PREFIX.'[0-9A-Z]+')
+                    ->name('account.orders.show');
 
                 Route::middleware('throttle:customer-addresses')->whereNumber('customerAddress')->group(function (): void {
                     Route::get('/account/addresses', [AddressController::class, 'index'])->name('account.addresses.index');
