@@ -81,6 +81,20 @@ return [
         'applies_to_helper' => 'Optional hint for which content type this category is shown for.',
     ],
 
+    'product_categories' => [
+        'label' => 'Product category',
+        'plural_label' => 'Product categories',
+        'top_level' => 'Top level',
+        'products_count' => 'Products',
+        'children_count' => 'Sub-categories',
+        'has_products' => 'Has products',
+        'parent_helper' => 'Leave empty for a top-level category. The shop menu follows this tree.',
+        'name_helper' => 'A catalog import finds a category by its Lithuanian name and the names above it. If you rename or move one here, the next import creates the old one again and files its products there.',
+        'parent_in_own_branch' => 'A category cannot be placed under itself or under one of its own sub-categories.',
+        'name_taken' => 'Another category under the same parent already has this name.',
+        'delete_blocked' => 'Move or delete its products and sub-categories first.',
+    ],
+
     'tags' => [
         'label' => 'Tag',
         'plural_label' => 'Tags',

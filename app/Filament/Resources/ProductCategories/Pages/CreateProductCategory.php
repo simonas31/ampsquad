@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Resources\ProductCategories\Pages;
+
+use App\Filament\Concerns\CreatesBilingualRecord;
+use App\Filament\Resources\ProductCategories\ProductCategoryResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateProductCategory extends CreateRecord
+{
+    use CreatesBilingualRecord;
+
+    protected static string $resource = ProductCategoryResource::class;
+}

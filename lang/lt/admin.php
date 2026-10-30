@@ -81,6 +81,20 @@ return [
         'applies_to_helper' => 'Neprivalomas patarimas, kuriam turinio tipui rodyti šią kategoriją.',
     ],
 
+    'product_categories' => [
+        'label' => 'Prekių kategorija',
+        'plural_label' => 'Prekių kategorijos',
+        'top_level' => 'Aukščiausio lygio',
+        'products_count' => 'Prekių',
+        'children_count' => 'Subkategorijų',
+        'has_products' => 'Turi prekių',
+        'parent_helper' => 'Palikite tuščią, jei tai aukščiausio lygio kategorija. Parduotuvės meniu seka šį medį.',
+        'name_helper' => 'Katalogo importas randa kategoriją pagal jos pavadinimą lietuvių kalba ir aukštesnių kategorijų pavadinimus. Jei čia pervadinsite ar perkelsite kategoriją, kitas importas vėl sukurs senąją ir sudės į ją jos prekes.',
+        'parent_in_own_branch' => 'Kategorijos negalima perkelti po ja pačia ar po jos subkategorija.',
+        'name_taken' => 'Kita tos pačios aukštesnės kategorijos kategorija jau turi šį pavadinimą.',
+        'delete_blocked' => 'Pirmiausia perkelkite arba ištrinkite jos prekes ir subkategorijas.',
+    ],
+
     'tags' => [
         'label' => 'Žyma',
         'plural_label' => 'Žymos',

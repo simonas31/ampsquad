@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -99,17 +100,71 @@ class ProductCategory extends Model
     }
 
     /**
-     * Alphabetically by the current language's name, ignoring case and
-     * accents.
+     * Alphabetically by the name in $locale (the current language when none
+     * is given), ignoring case and accents.
      *
      * @param  Builder<static>  $query
      * @return Builder<static>
      */
-    public function scopeOrderedByName(Builder $query): Builder
+    public function scopeOrderedByName(Builder $query, string $direction = 'asc', ?string $locale = null): Builder
     {
         return $query
-            ->orderByRaw('json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci', ['$."'.app()->getLocale().'"'])
+            ->orderByRaw(
+                'json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci '.(strtolower($direction) === 'desc' ? 'desc' : 'asc'),
+                [$this->localePath($locale)],
+            )
             ->orderBy('id');
+    }
+
+    /**
+     * Categories whose name, in $locale (the current language when none is
+     * given), contains every word of $text, ignoring case and accents.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeSearch(Builder $query, string $text, ?string $locale = null): Builder
+    {
+        foreach (array_filter(explode(' ', Str::squish($text))) as $word) {
+            $query->whereRaw(
+                'json_unquote(json_extract(`name`, ?)) collate utf8mb4_unicode_ci like ?',
+                [$this->localePath($locale), '%'.addcslashes($word, '%_\\').'%'],
+            );
+        }
+
+        return $query;
+    }
+
+    /**
+     * Whether the category still holds anything: products (soft deleted ones
+     * too, since they can be restored) or sub-categories. Deleting such a
+     * category would leave its products with no category and lift its
+     * sub-categories to the top level, so the admin panel refuses.
+     *
+     * Uses the counts when the query loaded them (`products_count` counting
+     * trashed products, and `children_count`), so a list of categories does
+     * not ask the database once per row.
+     */
+    public function isInUse(): bool
+    {
+        $products = array_key_exists('products_count', $this->attributes)
+            ? (int) $this->attributes['products_count']
+            : $this->products()->withTrashed()->count();
+
+        $children = array_key_exists('children_count', $this->attributes)
+            ? (int) $this->attributes['children_count']
+            : $this->children()->count();
+
+        return $products > 0 || $children > 0;
+    }
+
+    /**
+     * Path of a language ($locale, or the current one) inside a translatable
+     * JSON column.
+     */
+    private function localePath(?string $locale = null): string
+    {
+        return '$."'.($locale ?? app()->getLocale()).'"';
     }
 
     public function parent(): BelongsTo
