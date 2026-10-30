@@ -1,7 +1,9 @@
-import { Link, useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
+import { Loader2 } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
+import { useLogout } from "@/hooks/use-logout";
 import { useT } from "@/hooks/use-t";
 import type { Breadcrumb } from "@/types";
 
@@ -22,6 +24,7 @@ export default function VerifyEmail({
   const { props, flash } = usePage();
   const { account } = props;
   const form = useForm({});
+  const { logout, processing: loggingOut } = useLogout();
 
   return (
     <>
@@ -59,10 +62,17 @@ export default function VerifyEmail({
               ? t("auth.verify.sending")
               : t("auth.verify.resend")}
           </Button>
-          <Button asChild variant="outline">
-            <Link href={account.logoutUrl} method="post" as="button">
-              {t("auth.verify.logOut")}
-            </Link>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={loggingOut}
+            aria-busy={loggingOut || undefined}
+            onClick={logout}
+          >
+            {loggingOut && (
+              <Loader2 className="animate-spin" aria-hidden="true" />
+            )}
+            {t("auth.verify.logOut")}
           </Button>
         </div>
       </Container>

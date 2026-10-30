@@ -1,9 +1,10 @@
 import { Link, usePage } from "@inertiajs/react";
-import { Menu, X } from "lucide-react";
+import { Loader2, Menu, X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useActiveLink } from "@/hooks/use-active-link";
+import { useLogout } from "@/hooks/use-logout";
 import { useMenuLinks } from "@/hooks/use-menu-links";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import { useT } from "@/hooks/use-t";
@@ -25,6 +26,8 @@ export function MobileNav() {
   const getCurrent = useActiveLink();
   const contactUrl = useNavUrl("nav.contact", "/contact");
   const close = () => setOpen(false);
+  // The menu stays open, saying it is working, until the request is over.
+  const { logout, processing: loggingOut } = useLogout(close);
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -100,15 +103,17 @@ export function MobileNav() {
                     {t("common.myAccount")}
                   </Link>
                 </Button>
-                <Button asChild variant="inverse">
-                  <Link
-                    href={account.logoutUrl}
-                    method="post"
-                    as="button"
-                    onClick={close}
-                  >
-                    {t("common.logOut")}
-                  </Link>
+                <Button
+                  type="button"
+                  variant="inverse"
+                  disabled={loggingOut}
+                  aria-busy={loggingOut || undefined}
+                  onClick={logout}
+                >
+                  {loggingOut && (
+                    <Loader2 className="animate-spin" aria-hidden="true" />
+                  )}
+                  {t("common.logOut")}
                 </Button>
               </>
             ) : (

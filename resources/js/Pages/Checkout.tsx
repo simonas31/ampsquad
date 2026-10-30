@@ -2,6 +2,10 @@ import { Link, useForm, usePage } from "@inertiajs/react";
 import { useEffect, useRef, useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
+import {
+  AddressChoice,
+  type AddressChoiceKind,
+} from "@/components/shop/AddressChoice";
 import { AmountsSummary } from "@/components/shop/AmountsSummary";
 import { ShippingOptions } from "@/components/shop/ShippingOptions";
 import { Button } from "@/components/ui/button";
@@ -9,9 +13,18 @@ import { Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
 import { useT } from "@/hooks/use-t";
 import { formatCents } from "@/lib/shop";
-import type { Breadcrumb, CartData, ShippingMethodOption } from "@/types";
+import type {
+  Breadcrumb,
+  CartData,
+  CustomerAddress,
+  ShippingMethodOption,
+} from "@/types";
 
 interface CheckoutProps {
+  /** The customer signed in with a verified address; null for a guest. */
+  customer: { fullName: string; email: string; phone: string | null } | null;
+  /** Their saved addresses, the default first; none for a guest. */
+  savedAddresses: CustomerAddress[];
   cart: CartData;
   shippingMethods: ShippingMethodOption[];
   submitUrl: string;
@@ -26,6 +39,10 @@ const fieldOrder = [
   "email",
   "phone",
   "shipping_method_id",
+  "address_id",
+  "new_street",
+  "new_city",
+  "new_postal_code",
   "delivery_address",
   "note",
   "accept_terms",
@@ -40,6 +57,8 @@ const fieldOrder = [
  * them back to the cart rather than charge something else.
  */
 export default function Checkout({
+  customer,
+  savedAddresses,
   cart,
   shippingMethods,
   submitUrl,
@@ -48,17 +67,28 @@ export default function Checkout({
   breadcrumbs,
 }: CheckoutProps) {
   const t = useT();
-  const { locale, cartSummary } = usePage().props;
+  const { locale, cartSummary, account } = usePage().props;
   const cartUrl = cartSummary?.url ?? "/cart";
   const summaryRef = useRef<HTMLDivElement>(null);
   const [failure, setFailure] = useState<string>();
 
+  // A customer's details start filled in, and their default address chosen.
+  // What the server does with the choice is for it to decide: a guest's is
+  // ignored, and a saved address is only ever named by id.
   const form = useForm({
-    name: "",
-    email: "",
-    phone: "",
+    name: customer?.fullName ?? "",
+    email: customer?.email ?? "",
+    phone: customer?.phone ?? "",
     shipping_method_id: (shippingMethods[0]?.id ?? null) as number | null,
     delivery_address: "",
+    address_choice: (savedAddresses.length > 0
+      ? "saved"
+      : "new") as AddressChoiceKind,
+    address_id: (savedAddresses[0]?.id ?? null) as number | null,
+    new_street: "",
+    new_city: "",
+    new_postal_code: "",
+    save_address: false,
     note: "",
     accept_terms: false,
   });
@@ -203,6 +233,22 @@ export default function Checkout({
                   {t("checkout.contactSection")}
                 </h2>
 
+                {customer ? (
+                  <p className="text-ink-soft text-sm">
+                    {t("checkout.loggedInAs", { email: customer.email })}
+                  </p>
+                ) : (
+                  <p className="text-ink-soft text-sm">
+                    {t("checkout.haveAccount")}{" "}
+                    <Link
+                      href={`${account.loginUrl}?return=checkout`}
+                      className="text-ink underline underline-offset-4"
+                    >
+                      {t("checkout.logInToFill")}
+                    </Link>
+                  </p>
+                )}
+
                 <Field
                   id="name"
                   label={t("checkout.name")}
@@ -270,7 +316,33 @@ export default function Checkout({
                 error={form.errors.shipping_method_id}
               />
 
-              {needsAddress ? (
+              {needsAddress && customer ? (
+                <AddressChoice
+                  addresses={savedAddresses}
+                  value={{
+                    choice: form.data.address_choice,
+                    addressId: form.data.address_id,
+                    street: form.data.new_street,
+                    city: form.data.new_city,
+                    postalCode: form.data.new_postal_code,
+                    text: form.data.delivery_address,
+                    save: form.data.save_address,
+                  }}
+                  onChange={(next) =>
+                    form.setData((data) => ({
+                      ...data,
+                      address_choice: next.choice,
+                      address_id: next.addressId,
+                      new_street: next.street,
+                      new_city: next.city,
+                      new_postal_code: next.postalCode,
+                      delivery_address: next.text,
+                      save_address: next.save,
+                    }))
+                  }
+                  errors={errors}
+                />
+              ) : needsAddress ? (
                 <div className="space-y-2">
                   <Field
                     id="delivery_address"

@@ -10,13 +10,23 @@ use App\Http\Requests\LoginCustomerRequest;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\SeoData;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class LoginController extends Controller
 {
-    public function show(): Response
+    /**
+     * Where checkout sends a guest who has an account, so they come back to
+     * it after logging in. Only checkout is a place to come back to: the
+     * address to return to is never taken from the request.
+     */
+    public function show(Request $request): Response
     {
+        if ($request->query('return') === 'checkout') {
+            redirect()->setIntendedUrl(route('checkout.show'));
+        }
+
         $breadcrumbs = Breadcrumbs::make([
             ['label' => __('nav.home'), 'url' => route('home')],
             ['label' => __('nav.login'), 'url' => null],

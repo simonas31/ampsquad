@@ -31,13 +31,8 @@ class AddressController extends Controller
     {
         $customer = $request->user('customer');
 
-        // The default first, then in the order they were saved.
-        $addresses = $customer->addresses()->orderBy('id')->get()
-            ->sortByDesc(fn (CustomerAddress $address): bool => $address->getKey() === $customer->default_shipping_address_id)
-            ->values();
-
         return Inertia::render('Account/Addresses/Index', [
-            'addresses' => CustomerAddressResource::collection($addresses),
+            'addresses' => CustomerAddressResource::collection($customer->addressesDefaultFirst()),
             'limit' => CustomerAddress::MAX_PER_CUSTOMER,
             'createUrl' => route('account.addresses.create', absolute: false),
             'breadcrumbs' => $this->breadcrumbs(null)->toArray(),

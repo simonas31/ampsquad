@@ -31,7 +31,8 @@
     "logIn": "Prisijungti",
     "myAccount": "Mano paskyra",
     "logOut": "Atsijungti",
-    "slideOf": "{number} iš {total}"
+    "slideOf": "{number} iš {total}",
+    "loading": "Kraunama…"
   },
   "footer": {
     "tagline": "Elektros inžinerijos sprendimai, kuriais galite pasitikėti.",
@@ -267,7 +268,18 @@
     "payNote": "Mokate per OPAY, mūsų mokėjimų partnerį, jo saugiame puslapyje. Pinigai nenurašomi, kol ten nepatvirtinsite.",
     "noMethods": "Pristatymo būdai dar nesukonfigūruoti. Susisiekite su mumis, kad pateiktume užsakymą.",
     "backToCart": "Grįžti į krepšelį",
-    "requiredHint": "Laukai, pažymėti *, yra privalomi."
+    "requiredHint": "Laukai, pažymėti *, yra privalomi.",
+    "addressChoice": {
+      "legend": "Pristatymo adresas",
+      "hint": "Pasirinkite vieną iš išsaugotų adresų, įveskite naują arba nurodykite paštomatą.",
+      "newOption": "Naujas adresas",
+      "newHint": "Pristatysime vardu ir telefono numeriu, kuriuos nurodėte aukščiau.",
+      "save": "Išsaugoti šį adresą mano paskyroje",
+      "textOption": "Paštomatas arba kita vieta"
+    },
+    "loggedInAs": "Prisijungta kaip {email}.",
+    "haveAccount": "Turite paskyrą?",
+    "logInToFill": "Prisijunkite, kad naudotumėte išsaugotus duomenis ir adresus."
   },
   "order": {
     "number": "Užsakymas {number}",

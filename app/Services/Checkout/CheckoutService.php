@@ -114,6 +114,7 @@ class CheckoutService
             $totals = OrderTotals::forLines($lines, $method->price_excl_vat_cents);
 
             $order = Order::query()->create([
+                'customer_id' => $data->customerId,
                 'locale' => $data->locale,
                 'currency' => Product::CURRENCY,
                 'vat_rate_percent' => Product::vatRatePercent(),

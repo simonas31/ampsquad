@@ -9,15 +9,18 @@ use App\Enums\CheckoutRefusal;
 use App\Enums\OrderStatus;
 use App\Http\Requests\StoreCheckoutRequest;
 use App\Http\Resources\CartResource;
+use App\Http\Resources\CustomerAddressResource;
 use App\Models\Order;
 use App\Services\CartService;
 use App\Services\Checkout\CheckoutRefused;
 use App\Services\Checkout\CheckoutService;
+use App\Services\Customers\CustomerAddressBook;
 use App\Support\PageUrls;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\SeoData;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -34,6 +37,7 @@ class CheckoutController extends Controller
     public function __construct(
         private readonly CartService $carts,
         private readonly CheckoutService $checkout,
+        private readonly CustomerAddressBook $addressBook,
     ) {}
 
     /**
@@ -66,7 +70,19 @@ class CheckoutController extends Controller
             ['label' => __('nav.checkout'), 'url' => null],
         ]);
 
+        // A customer signed in with a verified address gets their details and
+        // saved addresses; anyone else, an unverified customer included, is
+        // a guest and sees the same form as before.
+        $customer = $request->user('customer');
+        $customer = $customer?->hasVerifiedEmail() ? $customer : null;
+
         return Inertia::render('Checkout', [
+            'customer' => $customer === null ? null : [
+                'fullName' => $customer->full_name,
+                'email' => $customer->email,
+                'phone' => $customer->phone,
+            ],
+            'savedAddresses' => $customer === null ? [] : CustomerAddressResource::collection($customer->addressesDefaultFirst()),
             'cart' => new CartResource($cart),
             'shippingMethods' => $this->checkout->shippingOptions($cart->items),
             'submitUrl' => route('checkout.store', absolute: false),
@@ -99,7 +115,27 @@ class CheckoutController extends Controller
 
         $request->session()->put(self::WAITING_ORDER_KEY, $payment->order->uuid);
 
+        $this->saveNewAddress($request);
+
         return Inertia::location($payment->redirect_url);
+    }
+
+    /**
+     * Keeps the address the customer typed in parts, when they asked for it,
+     * once their order is placed. It is a convenience: a customer who already
+     * keeps the most addresses still has their order.
+     */
+    private function saveNewAddress(StoreCheckoutRequest $request): void
+    {
+        if (! $request->savesNewAddress()) {
+            return;
+        }
+
+        try {
+            $this->addressBook->add($request->checkoutCustomer(), $request->newAddressData(), false);
+        } catch (ValidationException) {
+            // The limit was reached; nothing to do.
+        }
     }
 
     /**

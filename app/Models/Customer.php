@@ -12,6 +12,7 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -141,6 +142,19 @@ class Customer extends Authenticatable implements HasLocalePreference, MustVerif
     public function addresses(): HasMany
     {
         return $this->hasMany(CustomerAddress::class);
+    }
+
+    /**
+     * The customer's addresses with the default first, then in the order they
+     * were saved. How the account lists them and how checkout offers them.
+     *
+     * @return Collection<int, CustomerAddress>
+     */
+    public function addressesDefaultFirst(): Collection
+    {
+        return $this->addresses()->orderBy('id')->get()
+            ->sortByDesc(fn (CustomerAddress $address): bool => $address->getKey() === $this->default_shipping_address_id)
+            ->values();
     }
 
     /**

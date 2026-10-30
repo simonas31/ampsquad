@@ -31,7 +31,8 @@
     "slideOf": "{number} of {total}",
     "logIn": "Log in",
     "myAccount": "My account",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "loading": "Loading…"
   },
   "footer": {
     "tagline": "Electrical engineering solutions you can rely on.",
@@ -267,7 +268,18 @@
     "payNote": "You pay through OPAY, our payment partner, on its secure page. Nothing is charged until you confirm there.",
     "noMethods": "Delivery is not set up yet. Please contact us to place your order.",
     "backToCart": "Back to cart",
-    "requiredHint": "Fields marked * are required."
+    "requiredHint": "Fields marked * are required.",
+    "addressChoice": {
+      "legend": "Delivery address",
+      "hint": "Choose one of your saved addresses, enter a new one, or give a parcel locker.",
+      "newOption": "A new address",
+      "newHint": "We deliver to the name and phone number you gave above.",
+      "save": "Save this address to my account",
+      "textOption": "A parcel locker or another place"
+    },
+    "loggedInAs": "Logged in as {email}.",
+    "haveAccount": "Have an account?",
+    "logInToFill": "Log in to use your saved details and addresses."
   },
   "order": {
     "number": "Order {number}",

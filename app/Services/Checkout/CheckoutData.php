@@ -8,6 +8,10 @@ namespace App\Services\Checkout;
  * What the visitor filled in at checkout, once validated. Deliberately no
  * prices, totals, statuses or ids of anything but the delivery method they
  * picked: the rest comes from the cart and the database.
+ *
+ * The customer is the one exception that is not typed: it is the verified
+ * account the visitor is signed in to, found by the server, or null for a
+ * guest. It is never read from the form.
  */
 final readonly class CheckoutData
 {
@@ -20,5 +24,6 @@ final readonly class CheckoutData
         public ?string $customerNote,
         public string $fingerprint,
         public string $locale,
+        public ?int $customerId = null,
     ) {}
 }
