@@ -125,6 +125,36 @@ return [
         'plural_label' => 'Užklausos',
     ],
 
+    'customers' => [
+        'label' => 'Klientas',
+        'plural_label' => 'Klientai',
+        'sections' => [
+            'account' => 'Paskyra',
+            'closed' => 'Uždaryta paskyra',
+        ],
+        'closed_text' => 'Klientas uždarė paskyrą :closed. Jo duomenys saugomi iki :removed, o paskui pašalinami.',
+        'not_verified' => 'Nepatvirtintas',
+        'no_consent' => 'Sutikimo nėra',
+        'fields' => [
+            'full_name' => 'Vardas',
+            'email' => 'El. paštas',
+            'phone' => 'Telefonas',
+            'locale' => 'Laiškų kalba',
+            'email_verified_at' => 'El. paštas patvirtintas',
+            'marketing_consent_at' => 'Sutikimas gauti naujienas duotas',
+            'pending_email' => 'Naujas el. paštas, laukiantis patvirtinimo',
+            'verified' => 'Patvirtintas',
+            'orders' => 'Užsakymai',
+            'marketing' => 'Naujienos',
+            'closed_at' => 'Uždaryta',
+        ],
+        'filters' => [
+            'closed' => 'Uždarytos paskyros',
+            'verified' => 'El. paštas patvirtintas',
+            'marketing' => 'Sutikimas gauti naujienas',
+        ],
+    ],
+
     'orders' => [
         'label' => 'Užsakymas',
         'plural_label' => 'Užsakymai',
@@ -146,6 +176,7 @@ return [
             'customer_email' => 'El. paštas',
             'customer_phone' => 'Telefonas',
             'customer_note' => 'Pirkėjo pastaba',
+            'account' => 'Pirkėjo paskyra',
             'payment' => 'Mokėjimas',
             'total' => 'Suma su PVM',
             'shipping' => 'Pristatymas',

@@ -125,6 +125,36 @@ return [
         'plural_label' => 'Contact requests',
     ],
 
+    'customers' => [
+        'label' => 'Customer',
+        'plural_label' => 'Customers',
+        'sections' => [
+            'account' => 'Account',
+            'closed' => 'Closed account',
+        ],
+        'closed_text' => 'Closed by the customer on :closed. Their details are kept until :removed and then removed.',
+        'not_verified' => 'Not verified',
+        'no_consent' => 'No consent given',
+        'fields' => [
+            'full_name' => 'Name',
+            'email' => 'Email',
+            'phone' => 'Phone',
+            'locale' => 'Language of emails',
+            'email_verified_at' => 'Email verified',
+            'marketing_consent_at' => 'Marketing consent given',
+            'pending_email' => 'New email waiting for its link',
+            'verified' => 'Verified',
+            'orders' => 'Orders',
+            'marketing' => 'Marketing',
+            'closed_at' => 'Closed',
+        ],
+        'filters' => [
+            'closed' => 'Closed accounts',
+            'verified' => 'Email verified',
+            'marketing' => 'Marketing consent',
+        ],
+    ],
+
     'orders' => [
         'label' => 'Order',
         'plural_label' => 'Orders',
@@ -146,6 +176,7 @@ return [
             'customer_email' => 'Email',
             'customer_phone' => 'Phone',
             'customer_note' => 'Customer\'s note',
+            'account' => 'Customer account',
             'payment' => 'Payment',
             'total' => 'Total incl. VAT',
             'shipping' => 'Delivery',

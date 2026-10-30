@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Enums\PaymentOutcome;
+use App\Filament\Resources\Customers\CustomerResource;
 use App\Models\Order;
 use App\Support\Money;
 use Filament\Infolists\Components\IconEntry;
@@ -75,6 +76,11 @@ class OrderInfolist
                             ->label(__('admin.orders.fields.customer_phone'))
                             ->url(fn (Order $record): ?string => filled($record->customer_phone) ? "tel:{$record->customer_phone}" : null)
                             ->placeholder('—'),
+                        TextEntry::make('account')
+                            ->label(__('admin.orders.fields.account'))
+                            ->state(fn (Order $record): ?string => $record->customer?->full_name)
+                            ->url(fn (Order $record): ?string => $record->customer_id === null ? null : CustomerResource::getUrl('view', ['record' => $record->customer_id]))
+                            ->visible(fn (Order $record): bool => $record->customer_id !== null),
                         TextEntry::make('customer_note')
                             ->label(__('admin.orders.fields.customer_note'))
                             ->visible(fn (Order $record): bool => filled($record->customer_note))

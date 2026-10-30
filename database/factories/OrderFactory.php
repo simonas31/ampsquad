@@ -109,7 +109,9 @@ class OrderFactory extends Factory
         return $this->state(fn (array $attributes): array => [
             'customer_id' => $customer->getKey(),
             'customer_name' => $customer->full_name,
-            'customer_email' => $customer->email,
+            // A closed account has moved its address aside; the order it was
+            // placed with had it.
+            'customer_email' => $customer->email ?? $customer->retained_email,
             'customer_phone' => $customer->phone ?? $attributes['customer_phone'],
             'locale' => $customer->locale,
         ]);

@@ -83,6 +83,7 @@ class CheckoutController extends Controller
                 'phone' => $customer->phone,
             ],
             'savedAddresses' => $customer === null ? [] : CustomerAddressResource::collection($customer->addressesDefaultFirst()),
+            'defaultAddressId' => $customer?->default_shipping_address_id,
             'cart' => new CartResource($cart),
             'shippingMethods' => $this->checkout->shippingOptions($cart->items),
             'submitUrl' => route('checkout.store', absolute: false),

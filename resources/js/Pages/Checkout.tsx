@@ -25,6 +25,8 @@ interface CheckoutProps {
   customer: { fullName: string; email: string; phone: string | null } | null;
   /** Their saved addresses, the default first; none for a guest. */
   savedAddresses: CustomerAddress[];
+  /** The one that is their default; null when they have none. */
+  defaultAddressId: number | null;
   cart: CartData;
   shippingMethods: ShippingMethodOption[];
   submitUrl: string;
@@ -59,6 +61,7 @@ const fieldOrder = [
 export default function Checkout({
   customer,
   savedAddresses,
+  defaultAddressId,
   cart,
   shippingMethods,
   submitUrl,
@@ -81,10 +84,10 @@ export default function Checkout({
     phone: customer?.phone ?? "",
     shipping_method_id: (shippingMethods[0]?.id ?? null) as number | null,
     delivery_address: "",
-    address_choice: (savedAddresses.length > 0
+    address_choice: (defaultAddressId !== null
       ? "saved"
       : "new") as AddressChoiceKind,
-    address_id: (savedAddresses[0]?.id ?? null) as number | null,
+    address_id: defaultAddressId,
     new_street: "",
     new_city: "",
     new_postal_code: "",

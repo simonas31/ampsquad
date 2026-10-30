@@ -96,6 +96,27 @@ class CustomerCheckoutTest extends TestCase
             ->where('savedAddresses.0.id', $home->getKey())
             ->where('savedAddresses.0.isDefault', true)
             ->where('savedAddresses.1.id', $other->getKey())
+            ->where('defaultAddressId', $home->getKey())
+        );
+    }
+
+    public function test_the_page_names_the_default_address_by_id_and_not_by_its_place_in_the_list(): void
+    {
+        $cart = $this->filledCart();
+        $customer = Customer::factory()->create();
+        CustomerAddress::factory()->for($customer)->create();
+
+        $this->actingAs($customer->fresh(), 'customer');
+        $this->visitorWith($cart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('savedAddresses', 1)
+            ->where('defaultAddressId', null)
+        );
+
+        $guestCart = $this->filledCart();
+        auth()->guard('customer')->logout();
+
+        $this->visitorWith($guestCart)->get('/checkout')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('defaultAddressId', null)
         );
     }
 
