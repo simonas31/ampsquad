@@ -20,8 +20,8 @@ use Throwable;
  * Products are matched on SKU. A new SKU creates a product; a known one has
  * the fields the catalog owns overwritten (name, excerpt, description in both
  * languages, price, EAN, image URL, category, manufacturer). What the shop
- * owns is never touched: the stock quantity, is_active, an uploaded image,
- * and the slug. A product the import creates starts switched off, with the
+ * owns is never touched: the stock quantity, is_active, is_featured, an
+ * uploaded image, and the slug. A product the import creates starts switched off, with the
  * file's stock as its quantity, so nothing reaches the shop before someone
  * has looked at it; from then on the shop manages both. A product missing from
  * the file is left alone, as is a product that was deleted in the admin

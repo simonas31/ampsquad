@@ -37,8 +37,16 @@ class ShopController extends Controller
             ['label' => __('nav.shop'), 'url' => null],
         ]);
 
+        // The plain first page opens with the category menu and the popular
+        // shelf; any search, filter or later page is only the results.
+        $isLanding = ! $filters->isActive() && $products->currentPage() === 1;
+
         return Inertia::render('Shop/Index', [
             'products' => ProductResource::collection($products),
+            'popularProducts' => $isLanding
+                ? fn (): array => ProductResource::collection($catalog->popularProducts())->resolve()
+                : null,
+            'categoryMenu' => $isLanding ? fn (): array => $catalog->categoryMenu() : null,
             // A category that no longer exists is dropped, so the form and the
             // links built from it never carry a slug that matches nothing.
             'filters' => [...$filters->toArray(), 'category' => $catalog->selectedCategory($filters)?->slug],

@@ -151,6 +151,38 @@ class ProductResourceTest extends TestCase
         $this->assertTrue($product->fresh()->is_active);
     }
 
+    public function test_a_product_can_be_marked_popular_from_the_list_and_filtered_by_it(): void
+    {
+        $this->signIn();
+        $popular = Product::factory()->create();
+        $ordinary = Product::factory()->create();
+
+        Livewire::test(ListProducts::class)
+            ->call('updateTableColumnState', 'is_featured', (string) $popular->getKey(), true);
+
+        $this->assertTrue($popular->fresh()->is_featured);
+        $this->assertFalse($ordinary->fresh()->is_featured);
+
+        Livewire::test(ListProducts::class)
+            ->filterTable('is_featured', true)
+            ->assertCanSeeTableRecords([$popular])
+            ->assertCanNotSeeTableRecords([$ordinary]);
+    }
+
+    public function test_a_product_can_be_marked_popular_on_its_edit_page(): void
+    {
+        $this->signIn();
+        $product = Product::factory()->create();
+
+        Livewire::test(EditProduct::class, ['record' => $product->id])
+            ->assertFormSet(['is_featured' => false])
+            ->fillForm(['is_featured' => true])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertTrue($product->fresh()->is_featured);
+    }
+
     public function test_products_have_no_manual_order(): void
     {
         $this->assertFalse(Schema::hasColumn('products', 'order'));

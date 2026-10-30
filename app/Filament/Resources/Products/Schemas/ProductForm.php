@@ -41,6 +41,11 @@ class ProductForm
                             ->helperText(__('admin.products.is_active_helper'))
                             ->default(true)
                             ->inline(false),
+                        Toggle::make('is_featured')
+                            ->label(__('admin.products.is_featured'))
+                            ->helperText(__('admin.products.is_featured_helper'))
+                            ->default(false)
+                            ->inline(false),
                         SpatieMediaLibraryFileUpload::make('featured_image')
                             ->label(__('admin.fields.featured_image'))
                             ->collection('featured_image')

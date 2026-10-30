@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { CartData, OrderStatus, ShopFilters } from "@/types";
+import type { CartData, CategoryNode, OrderStatus, ShopFilters } from "@/types";
 import {
   canCheckout,
+  categoryPath,
   clampQuantity,
   formatCents,
   formatClock,
@@ -214,5 +215,38 @@ describe("formatClock", () => {
 
   it("follows the time zone", () => {
     expect(formatClock("2026-10-28T14:35:00Z", "en", "Europe/Vilnius")).toBe("16:35");
+  });
+});
+
+describe("categoryPath", () => {
+  const node = (
+    slug: string,
+    children: CategoryNode[] = [],
+  ): CategoryNode => ({
+    id: slug.length,
+    name: slug,
+    slug,
+    count: 1,
+    isSelected: false,
+    children,
+  });
+
+  const tree = [
+    node("network", [node("switches"), node("routers", [node("wifi")])]),
+    node("cables"),
+  ];
+
+  it("is the chosen category and its ancestors, outermost first", () => {
+    expect(categoryPath(tree, "wifi").map((n) => n.slug)).toEqual([
+      "network",
+      "routers",
+      "wifi",
+    ]);
+    expect(categoryPath(tree, "cables").map((n) => n.slug)).toEqual(["cables"]);
+  });
+
+  it("is empty for no category or one the tree does not hold", () => {
+    expect(categoryPath(tree, null)).toEqual([]);
+    expect(categoryPath(tree, "gone")).toEqual([]);
   });
 });

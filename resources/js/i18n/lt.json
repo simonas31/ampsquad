@@ -125,6 +125,7 @@
     }
   },
   "shop": {
+    "design": "Išdėstymas",
     "noProducts": "Prekių kol kas nėra.",
     "addToCart": "Į krepšelį",
     "adding": "Dedama…",
@@ -170,7 +171,31 @@
     },
     "lowStock": "Liko tik {count} vnt.",
     "addFailed": "Nepavyko įdėti prekės. Patikrinkite ryšį ir bandykite dar kartą.",
-    "pageExpired": "Jūsų sesija baigėsi, puslapis atnaujintas. Bandykite dar kartą."
+    "pageExpired": "Jūsų sesija baigėsi, puslapis atnaujintas. Bandykite dar kartą.",
+    "allProducts": "Visos prekės",
+    "copySku": "Kopijuoti SKU {sku}",
+    "skuCopied": "SKU nukopijuotas",
+    "popular": {
+      "title": "Populiarios prekės"
+    },
+    "menu": {
+      "title": "Prekių katalogas",
+      "allCategories": "Visos kategorijos",
+      "browse": "Naršyti pagal kategorijas",
+      "seeAll": "Visos kategorijos „{name}“ prekės"
+    },
+    "banner": {
+      "eyebrow": "Profesionali įranga",
+      "title": "Viskas saugumo, tinklų ir energetikos sistemoms",
+      "text": "Rinkitės iš tūkstančių pirmaujančių gamintojų prekių arba kreipkitės, ir mes suprojektuosime visą sistemą už jus.",
+      "quote": "Prašyti pasiūlymo",
+      "calculator": "Kainos skaičiuoklė"
+    },
+    "view": {
+      "label": "Rodyti kaip",
+      "grid": "Tinklelis",
+      "list": "Sąrašas"
+    }
   },
   "cart": {
     "linkLabel": "Krepšelis ({count})",

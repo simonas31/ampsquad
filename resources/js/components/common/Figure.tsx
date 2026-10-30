@@ -18,6 +18,11 @@ interface FigureProps {
   /** Scales the image slightly while an ancestor `.group` is hovered. */
   zoom?: boolean;
   /**
+   * `contain` shows the whole picture with room around it, for product
+   * shots on a plain background that must not be cropped.
+   */
+  fit?: "cover" | "contain";
+  /**
    * Rendered in place of the image when no frame is available. Without it
    * the figure renders nothing at all rather than leaving an empty bed,
    * so removing placeholder photography collapses the slot cleanly.
@@ -43,6 +48,7 @@ export function Figure({
   priority = false,
   delay = 0,
   zoom = false,
+  fit = "cover",
   fallback,
   className,
   sizes,
@@ -72,7 +78,8 @@ export function Figure({
           decoding="async"
           style={priority ? riseDelay(delay) : undefined}
           className={cn(
-            "h-full w-full object-cover",
+            "h-full w-full",
+            fit === "contain" ? "object-contain p-3" : "object-cover",
             priority && "animate-unmask",
             zoom &&
               "transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04] group-focus-visible:scale-[1.04]",

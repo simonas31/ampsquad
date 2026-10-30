@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Shop;
 
+use App\Enums\ShopSort;
 use App\Models\Manufacturer;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -24,6 +25,11 @@ use Illuminate\Support\Collection;
 final class ShopCatalog
 {
     public const int PER_PAGE = 12;
+
+    /**
+     * Products on the "Popular products" shelf.
+     */
+    public const int POPULAR_LIMIT = 12;
 
     /**
      * What a listing card shows. The long description stays out: every row
@@ -58,6 +64,29 @@ final class ShopCatalog
     }
 
     /**
+     * The shelf at the top of the shop: the products the owner marked as
+     * popular (those that can be bought first), or, while none is marked,
+     * the newest products in stock so the shelf is never empty on a shop
+     * that has not been curated yet.
+     *
+     * @return Collection<int, Product>
+     */
+    public function popularProducts(): Collection
+    {
+        $listing = fn (): Builder => Product::query()
+            ->active()
+            ->select(self::LISTING_COLUMNS)
+            ->with(['media', 'category', 'manufacturer'])
+            ->limit(self::POPULAR_LIMIT);
+
+        $featured = $listing()->featured()->sortedBy(ShopSort::Availability)->get();
+
+        return $featured->isNotEmpty()
+            ? $featured
+            : $listing()->inStock()->sortedBy(ShopSort::Newest)->get();
+    }
+
+    /**
      * The category the filter names, or null when it names none that exists
      * (an old link to a renamed category).
      */
@@ -69,11 +98,11 @@ final class ShopCatalog
     /**
      * Categories with products under the current filters, as a tree. Only
      * the top level and the branch leading to the chosen category are opened
-     * out; the rest is one click away.
+     * out; the rest is one click away, unless $openAll opens every branch.
      *
      * @return list<array{id: int, name: string, slug: string, count: int, isSelected: bool, children: list<mixed>}>
      */
-    public function categoryTree(ShopFilters $filters): array
+    public function categoryTree(ShopFilters $filters, bool $openAll = false): array
     {
         $counts = $this->countsBy($this->matching($filters, byCategory: false), 'product_category_id');
 
@@ -84,7 +113,19 @@ final class ShopCatalog
         $totals = [];
         $this->addTotals($childrenOf, '', $counts, $totals);
 
-        return $this->branch($childrenOf, '', $totals, $this->pathTo($categories, $selectedId), $selectedId);
+        return $this->branch($childrenOf, '', $totals, $this->pathTo($categories, $selectedId), $selectedId, $openAll);
+    }
+
+    /**
+     * Every category with products, all levels opened out, for the menu on
+     * the plain shop page. Counts are the whole catalog's: the menu only
+     * shows when nothing is filtered.
+     *
+     * @return list<array{id: int, name: string, slug: string, count: int, isSelected: bool, children: list<mixed>}>
+     */
+    public function categoryMenu(): array
+    {
+        return $this->categoryTree(new ShopFilters, openAll: true);
     }
 
     /**
@@ -205,16 +246,18 @@ final class ShopCatalog
      * @param  list<int>  $openPath  The chosen category and its ancestors.
      * @return list<array{id: int, name: string, slug: string, count: int, isSelected: bool, children: list<mixed>}>
      */
-    private function branch(Collection $childrenOf, string $parentKey, array $totals, array $openPath, ?int $selectedId): array
+    private function branch(Collection $childrenOf, string $parentKey, array $totals, array $openPath, ?int $selectedId, bool $openAll): array
     {
         $nodes = [];
 
         foreach ($childrenOf->get($parentKey, []) as $category) {
-            $isOpen = in_array($category->id, $openPath, true);
+            $isOnPath = in_array($category->id, $openPath, true);
 
-            if ($totals[$category->id] === 0 && ! $isOpen) {
+            if ($totals[$category->id] === 0 && ! $isOnPath) {
                 continue;
             }
+
+            $isOpen = $isOnPath || $openAll;
 
             $nodes[] = [
                 'id' => $category->id,
@@ -222,7 +265,7 @@ final class ShopCatalog
                 'slug' => $category->slug,
                 'count' => $totals[$category->id],
                 'isSelected' => $category->id === $selectedId,
-                'children' => $isOpen ? $this->branch($childrenOf, (string) $category->id, $totals, $openPath, $selectedId) : [],
+                'children' => $isOpen ? $this->branch($childrenOf, (string) $category->id, $totals, $openPath, $selectedId, $openAll) : [],
             ];
         }
 

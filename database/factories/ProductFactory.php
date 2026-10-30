@@ -44,6 +44,13 @@ class ProductFactory extends Factory
         ]);
     }
 
+    public function featured(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_featured' => true,
+        ]);
+    }
+
     public function inStock(int $quantity = 5): static
     {
         return $this->state(fn (array $attributes): array => [

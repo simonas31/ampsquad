@@ -35,8 +35,9 @@ use Spatie\Translatable\HasTranslations;
  *
  * Three kinds of data live here, with different owners. The catalog import
  * owns the descriptive fields and the price (see CatalogImporter). The shop
- * owns `stock_quantity` and `is_active`: an import seeds the quantity when it
- * creates a product and never changes it afterwards. After that the stock
+ * owns `stock_quantity`, `is_active` and `is_featured`: an import seeds the
+ * quantity when it creates a product and never changes it afterwards, and
+ * never touches the other two. After that the stock
  * only moves through the admin panel and through orders (takeStock() and
  * returnStock()). Soft deleted rather than removed, so a product that is in a
  * cart or on an order never leaves a dangling reference.
@@ -82,6 +83,7 @@ class Product extends Model implements HasMedia
      */
     protected $attributes = [
         'is_active' => true,
+        'is_featured' => false,
         'stock_quantity' => 0,
     ];
 
@@ -94,6 +96,7 @@ class Product extends Model implements HasMedia
         'description',
         'price_excl_vat_cents',
         'is_active',
+        'is_featured',
         'sku',
         'ean',
         'stock_quantity',
@@ -120,6 +123,7 @@ class Product extends Model implements HasMedia
         return [
             'price_excl_vat_cents' => 'integer',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
             'stock_quantity' => 'integer',
         ];
     }
@@ -279,6 +283,17 @@ class Product extends Model implements HasMedia
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * The products the owner put on the "Popular products" shelf.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeFeatured(Builder $query): Builder
+    {
+        return $query->where('is_featured', true);
     }
 
     /**

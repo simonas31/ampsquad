@@ -283,6 +283,17 @@ class CatalogImporterTest extends TestCase
         $this->assertSame(7, $product->stock_quantity);
     }
 
+    public function test_a_re_import_never_changes_which_products_are_popular(): void
+    {
+        $this->importProducts([$this->product(['sku' => 'A1']), $this->product(['sku' => 'A2'])]);
+        $this->stored('A1')->update(['is_featured' => true]);
+
+        $this->importProducts([$this->product(['sku' => 'A1', 'name' => 'Renamed']), $this->product(['sku' => 'A2'])]);
+
+        $this->assertTrue($this->stored('A1')->is_featured);
+        $this->assertFalse($this->stored('A2')->is_featured);
+    }
+
     public function test_the_file_never_restocks_or_sells_out_a_product_the_shop_manages(): void
     {
         $this->importProducts([

@@ -100,6 +100,8 @@ class ProductsTable
                     ->sortable(),
                 ToggleColumn::make('is_active')
                     ->label(__('admin.fields.is_active')),
+                ToggleColumn::make('is_featured')
+                    ->label(__('admin.products.is_featured')),
                 TextColumn::make('ean')
                     ->label(__('admin.fields.ean'))
                     ->searchable()
@@ -137,6 +139,8 @@ class ProductsTable
                     }),
                 TernaryFilter::make('is_active')
                     ->label(__('admin.fields.is_active')),
+                TernaryFilter::make('is_featured')
+                    ->label(__('admin.products.is_featured')),
                 TernaryFilter::make('has_sku')
                     ->label(__('admin.products.from_catalog'))
                     ->queries(

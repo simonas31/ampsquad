@@ -241,6 +241,8 @@ return [
         'price_helper' => 'Eurais, be PVM, iki dviejų skaitmenų po kablelio, pvz. 19.99.',
         'price_incl_vat_hint' => 'Su :rate% PVM: :price.',
         'is_active_helper' => 'Neaktyvios prekės paslėptos parduotuvėje ir jų negalima įdėti į krepšelį.',
+        'is_featured' => 'Populiari',
+        'is_featured_helper' => 'Rodoma karuselėje „Populiarios prekės“ parduotuvės viršuje. Kai nė viena prekė nepažymėta, rodomos naujausios prekės, esančios sandėlyje.',
         'shop_section' => 'Valdoma parduotuvėje',
         'shop_section_description' => 'Katalogo importai niekada nekeičia likučio, prekės aktyvumo ar įkelto paveikslėlio. Importo sukurtos prekės pradeda neaktyvios, su failo likučiu.',
         'catalog_section' => 'Prekės duomenys',

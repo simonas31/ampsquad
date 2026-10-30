@@ -1,5 +1,11 @@
 import { formatPrice } from "@/lib/utils";
-import type { CartData, Locale, OrderStatus, ShopFilters } from "@/types";
+import type {
+  CartData,
+  CategoryNode,
+  Locale,
+  OrderStatus,
+  ShopFilters,
+} from "@/types";
 
 /**
  * The props a cart change can alter: the cart page's own `cart` and the
@@ -76,6 +82,34 @@ export function shopUrl(base: string, filters: Partial<ShopFilters>): string {
 /** Whether the listing differs from the plain shop in any way, sort included. */
 export function hasActiveFilters(filters: ShopFilters): boolean {
   return shopUrl("", filters) !== "";
+}
+
+/**
+ * The chosen category and each of its ancestors, outermost first, found in
+ * the tree the server opened out. Empty for no category, or for one the
+ * tree does not hold.
+ */
+export function categoryPath(
+  nodes: CategoryNode[],
+  slug: string | null,
+): CategoryNode[] {
+  if (slug === null) {
+    return [];
+  }
+
+  for (const node of nodes) {
+    if (node.slug === slug) {
+      return [node];
+    }
+
+    const below = categoryPath(node.children, slug);
+
+    if (below.length > 0) {
+      return [node, ...below];
+    }
+  }
+
+  return [];
 }
 
 /**

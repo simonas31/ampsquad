@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { useT } from "@/hooks/use-t";
 import { hasActiveFilters, shopUrl } from "@/lib/shop";
+import { cn } from "@/lib/utils";
 import type { ManufacturerOption, ShopFilters, ShopSort } from "@/types";
 
 interface ShopFilterFormProps {
@@ -13,6 +14,8 @@ interface ShopFilterFormProps {
   manufacturers: ManufacturerOption[];
   /** The shop listing's own URL, without a query string. */
   baseUrl: string;
+  /** `stack` is one column for a sidebar; `bar` spreads the same fields across a wide row. */
+  layout?: "stack" | "bar";
 }
 
 const sorts: ShopSort[] = [
@@ -30,13 +33,20 @@ const sorts: ShopSort[] = [
  * filters the server applied, and remounted whenever they change, so it
  * always shows what the page is actually showing. The chosen category lives
  * in the category list, not here, and is carried over untouched.
+ *
+ * The `bar` layout is the same form for a full-width spot above the results:
+ * only the grid around the fields differs.
  */
 export function ShopFilterForm({
   filters,
   manufacturers,
   baseUrl,
+  layout = "stack",
 }: ShopFilterFormProps) {
   const t = useT();
+  const isBar = layout === "bar";
+  /** A field's width in the bar; ignored when stacked. */
+  const span = (classes: string) => (isBar ? classes : undefined);
 
   function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,40 +77,48 @@ export function ShopFilterForm({
       onSubmit={submit}
       role="search"
       aria-label={t("shop.filters.title")}
-      className="space-y-6"
+      className={cn(
+        isBar
+          ? "grid gap-x-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-12 lg:items-end"
+          : "space-y-6",
+      )}
     >
-      <Field id="shop-search" label={t("shop.filters.search")}>
-        {(control) => (
-          <Input
-            {...control}
-            type="search"
-            name="q"
-            defaultValue={filters.search}
-            placeholder={t("shop.filters.searchPlaceholder")}
-            maxLength={100}
-          />
-        )}
-      </Field>
+      <div className={cn(span("sm:col-span-2 lg:col-span-4"))}>
+        <Field id="shop-search" label={t("shop.filters.search")}>
+          {(control) => (
+            <Input
+              {...control}
+              type="search"
+              name="q"
+              defaultValue={filters.search}
+              placeholder={t("shop.filters.searchPlaceholder")}
+              maxLength={100}
+            />
+          )}
+        </Field>
+      </div>
 
-      <Field id="shop-manufacturer" label={t("shop.filters.manufacturer")}>
-        {(control) => (
-          <Select
-            {...control}
-            name="manufacturer"
-            defaultValue={filters.manufacturer ?? ""}
-            onChange={applyNow}
-          >
-            <option value="">{t("shop.filters.allManufacturers")}</option>
-            {manufacturers.map((manufacturer) => (
-              <option key={manufacturer.id} value={manufacturer.id}>
-                {manufacturer.name} ({manufacturer.count})
-              </option>
-            ))}
-          </Select>
-        )}
-      </Field>
+      <div className={cn(span("lg:col-span-3"))}>
+        <Field id="shop-manufacturer" label={t("shop.filters.manufacturer")}>
+          {(control) => (
+            <Select
+              {...control}
+              name="manufacturer"
+              defaultValue={filters.manufacturer ?? ""}
+              onChange={applyNow}
+            >
+              <option value="">{t("shop.filters.allManufacturers")}</option>
+              {manufacturers.map((manufacturer) => (
+                <option key={manufacturer.id} value={manufacturer.id}>
+                  {manufacturer.name} ({manufacturer.count})
+                </option>
+              ))}
+            </Select>
+          )}
+        </Field>
+      </div>
 
-      <fieldset>
+      <fieldset className={cn(span("lg:col-span-5"))}>
         <legend className="meta text-ink-soft mb-2">
           {t("shop.filters.price")}
         </legend>
@@ -128,7 +146,12 @@ export function ShopFilterForm({
         </div>
       </fieldset>
 
-      <label className="text-ink flex min-h-11 cursor-pointer items-center gap-3">
+      <label
+        className={cn(
+          "text-ink flex min-h-11 cursor-pointer items-center gap-3",
+          span("lg:col-span-4"),
+        )}
+      >
         <input
           type="checkbox"
           name="in_stock"
@@ -140,24 +163,31 @@ export function ShopFilterForm({
         {t("shop.filters.inStockOnly")}
       </label>
 
-      <Field id="shop-sort" label={t("shop.filters.sort")}>
-        {(control) => (
-          <Select
-            {...control}
-            name="sort"
-            defaultValue={filters.sort}
-            onChange={applyNow}
-          >
-            {sorts.map((sort) => (
-              <option key={sort} value={sort}>
-                {t(`shop.sort.${sort}`)}
-              </option>
-            ))}
-          </Select>
-        )}
-      </Field>
+      <div className={cn(span("lg:col-span-4"))}>
+        <Field id="shop-sort" label={t("shop.filters.sort")}>
+          {(control) => (
+            <Select
+              {...control}
+              name="sort"
+              defaultValue={filters.sort}
+              onChange={applyNow}
+            >
+              {sorts.map((sort) => (
+                <option key={sort} value={sort}>
+                  {t(`shop.sort.${sort}`)}
+                </option>
+              ))}
+            </Select>
+          )}
+        </Field>
+      </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div
+        className={cn(
+          "flex flex-wrap items-center gap-3",
+          span("lg:col-span-4"),
+        )}
+      >
         <Button type="submit">
           <Search aria-hidden="true" />
           {t("shop.filters.apply")}

@@ -241,6 +241,8 @@ return [
         'price_helper' => 'In euros, without VAT, with up to two decimals, e.g. 19.99.',
         'price_incl_vat_hint' => 'With :rate% VAT: :price.',
         'is_active_helper' => 'Inactive products are hidden from the shop and cannot be added to a cart.',
+        'is_featured' => 'Popular',
+        'is_featured_helper' => 'Shown in the "Popular products" carousel at the top of the shop. When no product is marked, the newest products in stock are shown instead.',
         'shop_section' => 'Managed in the shop',
         'shop_section_description' => 'Catalog imports never change the stock, whether the product is active, or the uploaded photo. Products an import creates start inactive, with the file\'s stock.',
         'catalog_section' => 'Product data',

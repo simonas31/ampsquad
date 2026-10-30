@@ -125,6 +125,7 @@
     }
   },
   "shop": {
+    "design": "Design",
     "noProducts": "No products available yet.",
     "addToCart": "Add to cart",
     "adding": "Adding…",
@@ -170,7 +171,31 @@
     },
     "lowStock": "Only {count} left",
     "addFailed": "Could not add this product. Check your connection and try again.",
-    "pageExpired": "Your session expired and the page was refreshed. Please try again."
+    "pageExpired": "Your session expired and the page was refreshed. Please try again.",
+    "allProducts": "All products",
+    "copySku": "Copy SKU {sku}",
+    "skuCopied": "SKU copied",
+    "popular": {
+      "title": "Popular products"
+    },
+    "menu": {
+      "title": "Product catalog",
+      "allCategories": "All categories",
+      "browse": "Browse by category",
+      "seeAll": "See all in {name}"
+    },
+    "banner": {
+      "eyebrow": "Professional equipment",
+      "title": "Everything for security, networks and energy",
+      "text": "Choose from thousands of products from leading manufacturers, or ask us and we will design the whole system for you.",
+      "quote": "Request a quote",
+      "calculator": "Price calculator"
+    },
+    "view": {
+      "label": "View as",
+      "grid": "Grid",
+      "list": "List"
+    }
   },
   "cart": {
     "linkLabel": "Cart ({count})",

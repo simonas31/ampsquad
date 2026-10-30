@@ -9,6 +9,7 @@ interface ProductImageProps {
   ratio?: string;
   priority?: boolean;
   zoom?: boolean;
+  fit?: "cover" | "contain";
   sizes?: string;
   className?: string;
 }
@@ -25,6 +26,7 @@ export function ProductImage({
   ratio,
   priority,
   zoom,
+  fit,
   sizes,
   className,
 }: ProductImageProps) {
@@ -42,6 +44,7 @@ export function ProductImage({
       ratio={ratio}
       priority={priority}
       zoom={zoom}
+      fit={fit}
       sizes={sizes}
       className={className}
       onError={() => setFailedUrl(imageUrl)}
