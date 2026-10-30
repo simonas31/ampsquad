@@ -140,11 +140,15 @@ class HasSlugTest extends TestCase
         $this->actingAs(User::factory()->create());
 
         Livewire::test(CreatePage::class)
-            ->assertFormFieldDoesNotExist('slug')
-            ->fillForm(['key' => 'faq', 'title' => 'DUK'])
+            ->assertFormFieldDoesNotExist('slug.lt')
+            ->assertFormFieldDoesNotExist('slug.en')
+            ->fillForm(['key' => 'faq', 'title' => ['lt' => 'DUK', 'en' => 'FAQ']])
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $this->assertSame('duk', Page::query()->where('key', 'faq')->firstOrFail()->getTranslation('slug', app()->getLocale()));
+        $page = Page::query()->where('key', 'faq')->firstOrFail();
+
+        $this->assertSame('duk', $page->getTranslation('slug', 'lt'));
+        $this->assertSame('faq', $page->getTranslation('slug', 'en'));
     }
 }

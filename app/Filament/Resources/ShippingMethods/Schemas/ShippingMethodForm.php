@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ShippingMethods\Schemas;
 
+use App\Filament\Schemas\BilingualFields;
 use App\Models\Product;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -17,15 +18,23 @@ class ShippingMethodForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label(__('admin.fields.name'))
-                    ->required()
-                    ->maxLength(100),
-                Textarea::make('description')
-                    ->label(__('admin.fields.description'))
-                    ->helperText(__('admin.shipping_methods.description_helper'))
-                    ->rows(3)
-                    ->maxLength(500),
+                BilingualFields::make(
+                    TextInput::class,
+                    'name',
+                    __('admin.fields.name'),
+                    fn (TextInput $field) => $field->maxLength(100),
+                    required: true,
+                    requiredWith: ['description'],
+                ),
+                BilingualFields::make(
+                    Textarea::class,
+                    'description',
+                    __('admin.fields.description'),
+                    fn (Textarea $field) => $field
+                        ->helperText(__('admin.shipping_methods.description_helper'))
+                        ->rows(3)
+                        ->maxLength(500),
+                ),
                 // Edited in euros without VAT, stored as whole cents, like a
                 // product's price. Free is allowed, which pickup usually is.
                 TextInput::make('price_excl_vat_cents')

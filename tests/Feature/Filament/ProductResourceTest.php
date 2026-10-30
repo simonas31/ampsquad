@@ -38,9 +38,9 @@ class ProductResourceTest extends TestCase
     private function validForm(array $overrides = []): array
     {
         return array_merge([
-            'name' => 'EV charger consultation',
-            'excerpt' => 'Help choosing a charger.',
-            'description' => 'A longer description of the consultation.',
+            'name' => ['lt' => 'EV įkroviklio konsultacija', 'en' => 'EV charger consultation'],
+            'excerpt' => ['lt' => 'Pagalba renkantis įkroviklį.', 'en' => 'Help choosing a charger.'],
+            'description' => ['lt' => 'Ilgesnis konsultacijos aprašymas.', 'en' => 'A longer description of the consultation.'],
             'price_excl_vat_cents' => '19.99',
             'stock_quantity' => 4,
             'is_active' => true,
@@ -197,11 +197,12 @@ class ProductResourceTest extends TestCase
             ->assertHasNoFormErrors();
 
         $product = Product::query()->firstOrFail();
-        $locale = app()->getLocale();
 
-        $this->assertSame('EV charger consultation', $product->getTranslation('name', $locale));
-        $this->assertSame('Help choosing a charger.', $product->getTranslation('excerpt', $locale));
-        $this->assertSame('ev-charger-consultation', $product->getTranslation('slug', $locale));
+        $this->assertSame('EV įkroviklio konsultacija', $product->getTranslation('name', 'lt'));
+        $this->assertSame('EV charger consultation', $product->getTranslation('name', 'en'));
+        $this->assertSame('Help choosing a charger.', $product->getTranslation('excerpt', 'en'));
+        $this->assertSame('ev-ikroviklio-konsultacija', $product->getTranslation('slug', 'lt'));
+        $this->assertSame('ev-charger-consultation', $product->getTranslation('slug', 'en'));
         $this->assertSame(1999, $product->price_excl_vat_cents);
         $this->assertSame(4, $product->stock_quantity);
         $this->assertTrue($product->is_active);
@@ -224,9 +225,9 @@ class ProductResourceTest extends TestCase
         $this->signIn();
 
         Livewire::test(CreateProduct::class)
-            ->fillForm($this->validForm(['name' => '', 'price_excl_vat_cents' => null]))
+            ->fillForm($this->validForm(['name' => ['lt' => '', 'en' => ''], 'excerpt' => [], 'description' => [], 'price_excl_vat_cents' => null]))
             ->call('create')
-            ->assertHasFormErrors(['name' => 'required', 'price_excl_vat_cents' => 'required']);
+            ->assertHasFormErrors(['name.lt' => 'required', 'price_excl_vat_cents' => 'required']);
 
         $this->assertSame(0, Product::query()->count());
     }
@@ -315,13 +316,13 @@ class ProductResourceTest extends TestCase
         $slug = $product->getTranslation('slug', app()->getLocale());
 
         Livewire::test(EditProduct::class, ['record' => $product->id])
-            ->fillForm(['name' => 'A new name', 'price_excl_vat_cents' => '25.50', 'is_active' => false])
+            ->fillForm(['name' => ['lt' => 'Naujas pavadinimas'], 'price_excl_vat_cents' => '25.50', 'is_active' => false])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $product->refresh();
 
-        $this->assertSame('A new name', $product->getTranslation('name', app()->getLocale()));
+        $this->assertSame('Naujas pavadinimas', $product->getTranslation('name', 'lt'));
         $this->assertSame(2550, $product->price_excl_vat_cents);
         $this->assertFalse($product->is_active);
         $this->assertSame($slug, $product->getTranslation('slug', app()->getLocale()));
@@ -338,7 +339,7 @@ class ProductResourceTest extends TestCase
         $this->assertSame($oldSlug, $product->fresh()->getTranslation('slug', $locale));
 
         Livewire::test(EditProduct::class, ['record' => $product->id])
-            ->callAction('regenerateSlug');
+            ->callAction('regenerateSlug', ['locales' => [$locale]]);
 
         $this->assertSame('brand-new-name', $product->fresh()->getTranslation('slug', $locale));
         $this->assertTrue(SlugRedirect::query()->where('old_slug', $oldSlug)->exists());

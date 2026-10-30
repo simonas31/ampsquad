@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Videos\Schemas;
 
 use App\Enums\VideoType;
+use App\Filament\Schemas\BilingualFields;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
@@ -18,9 +19,12 @@ class VideoForm
     {
         return $schema
             ->components([
-                TextInput::make('title')
-                    ->label(__('admin.fields.title'))
-                    ->helperText(__('admin.videos.title_helper')),
+                BilingualFields::make(
+                    TextInput::class,
+                    'title',
+                    __('admin.fields.title'),
+                    fn (TextInput $field) => $field->helperText(__('admin.videos.title_helper')),
+                ),
                 Select::make('type')
                     ->label(__('admin.fields.type'))
                     ->options(VideoType::class)

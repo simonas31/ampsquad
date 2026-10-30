@@ -246,9 +246,12 @@ class SlugRedirectTest extends TestCase
         $this->actingAs(User::factory()->create());
         $page = Page::factory()->create(['key' => 'faq']);
 
-        Livewire::test(CreatePage::class)->assertFormFieldDoesNotExist('slug');
+        Livewire::test(CreatePage::class)
+            ->assertFormFieldDoesNotExist('slug.lt')
+            ->assertFormFieldDoesNotExist('slug.en');
         Livewire::test(EditPage::class, ['record' => $page->id])
-            ->assertFormFieldExists('slug', fn ($field) => $field->isDisabled());
+            ->assertFormFieldExists('slug.lt', fn ($field) => $field->isDisabled())
+            ->assertFormFieldExists('slug.en', fn ($field) => $field->isDisabled());
     }
 
     public function test_admin_regenerate_action_updates_the_slug_and_records_a_redirect(): void
@@ -257,8 +260,7 @@ class SlugRedirectTest extends TestCase
         $page = $this->pageWithRenamedTitle();
 
         Livewire::test(EditPage::class, ['record' => $page->id])
-            ->set('activeLocale', 'lt')
-            ->callAction(RegenerateSlugAction::class)
+            ->callAction(RegenerateSlugAction::class, ['locales' => ['lt']])
             ->assertNotified(__('admin.slug.regenerated'));
 
         $this->assertSame('pagalba', $page->fresh()->getTranslation('slug', 'lt'));
@@ -271,8 +273,7 @@ class SlugRedirectTest extends TestCase
         $page = Page::query()->create(['key' => 'faq', 'title' => ['lt' => 'Klausimai', 'en' => 'Questions']]);
 
         Livewire::test(EditPage::class, ['record' => $page->id])
-            ->set('activeLocale', 'lt')
-            ->callAction(RegenerateSlugAction::class)
+            ->callAction(RegenerateSlugAction::class, ['locales' => ['lt']])
             ->assertNotified(__('admin.slug.unchanged'));
 
         $this->assertSame(0, SlugRedirect::query()->count());

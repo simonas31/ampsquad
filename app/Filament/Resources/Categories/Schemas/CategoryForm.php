@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use App\Filament\Schemas\BilingualFields;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -20,12 +21,8 @@ class CategoryForm
                     ->relationship('parent', 'name')
                     ->searchable()
                     ->preload(),
-                TextInput::make('name')
-                    ->label(__('admin.fields.name'))
-                    ->required(),
-                Textarea::make('description')
-                    ->label(__('admin.fields.description'))
-                    ->columnSpanFull(),
+                BilingualFields::make(TextInput::class, 'name', __('admin.fields.name'), required: true, requiredWith: ['description']),
+                BilingualFields::make(Textarea::class, 'description', __('admin.fields.description')),
                 TextInput::make('order')
                     ->label(__('admin.fields.order'))
                     ->required()

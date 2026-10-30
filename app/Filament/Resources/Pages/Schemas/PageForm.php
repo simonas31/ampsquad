@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Pages\Schemas;
 
+use App\Filament\Schemas\BilingualFields;
 use App\Filament\Schemas\ContentBlocksBuilder;
 use App\Models\Page;
 use Filament\Forms\Components\Checkbox;
@@ -21,22 +22,14 @@ class PageForm
                 Section::make(__('admin.pages.main_section'))
                     ->columnSpanFull()
                     ->schema([
-                        TextInput::make('title')
-                            ->label(__('admin.fields.title'))
-                            ->required()
-                            ->columnSpanFull(),
+                        BilingualFields::make(TextInput::class, 'title', __('admin.fields.title'), required: true),
                         TextInput::make('key')
                             ->label(__('admin.pages.key'))
                             ->required()
                             ->unique(Page::class, 'key', ignoreRecord: true)
                             ->helperText(__('admin.pages.key_helper'))
                             ->disabled(fn (?Page $record): bool => $record?->isProtected() ?? false),
-                        TextInput::make('slug')
-                            ->label(__('admin.fields.slug'))
-                            ->helperText(__('admin.slug.helper'))
-                            ->disabled()
-                            ->saved(false)
-                            ->visibleOn('edit'),
+                        BilingualFields::slug(),
                         Checkbox::make('show_in_header')
                             ->label(__('admin.pages.show_in_header'))
                             ->helperText(fn (?Page $record): ?string => $record?->isAlwaysInMenus() ? __('admin.pages.always_in_menus_helper') : null)

@@ -24,7 +24,7 @@ class PageResourceTest extends TestCase
             ->assertFormSet(['show_in_header' => false, 'show_in_footer' => false])
             ->fillForm([
                 'key' => 'faq',
-                'title' => 'DUK',
+                'title' => ['lt' => 'DUK', 'en' => 'FAQ'],
                 'show_in_header' => true,
                 'show_in_footer' => true,
             ])
@@ -74,7 +74,7 @@ class PageResourceTest extends TestCase
         Livewire::test(CreatePage::class)
             ->fillForm([
                 'key' => 'faq',
-                'title' => 'DUK',
+                'title' => ['lt' => 'DUK'],
                 'blocks' => [
                     [
                         'type' => 'heading',

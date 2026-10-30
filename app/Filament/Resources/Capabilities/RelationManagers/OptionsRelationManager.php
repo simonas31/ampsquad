@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Capabilities\RelationManagers;
 
+use App\Filament\Schemas\BilingualFields;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -15,13 +16,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\RelationManagers\Concerns\Translatable;
 
 class OptionsRelationManager extends RelationManager
 {
-    use Translatable;
-
     protected static string $relationship = 'options';
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
@@ -33,9 +30,7 @@ class OptionsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label(__('admin.fields.name'))
-                    ->required(),
+                BilingualFields::make(TextInput::class, 'name', __('admin.fields.name'), required: true),
                 TextInput::make('order')
                     ->label(__('admin.fields.order'))
                     ->required()
@@ -62,11 +57,26 @@ class OptionsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                LocaleSwitcher::make(),
-                CreateAction::make(),
+                CreateAction::make()
+                    ->using(function (array $data): Model {
+                        $relationship = $this->getRelationship();
+                        $record = $relationship->getRelated()->newInstance();
+
+                        BilingualFields::fillRecord($record, $data);
+                        $relationship->save($record);
+
+                        return $record;
+                    }),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->mutateRecordDataUsing(fn (array $data, Model $record): array => BilingualFields::stateFor($record, $data))
+                    ->using(function (Model $record, array $data): Model {
+                        BilingualFields::fillRecord($record, $data);
+                        $record->save();
+
+                        return $record;
+                    }),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

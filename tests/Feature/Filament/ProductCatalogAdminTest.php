@@ -62,7 +62,7 @@ class ProductCatalogAdminTest extends TestCase
      */
     private function validForm(array $overrides = []): array
     {
-        return array_merge(['name' => 'Cable', 'price_excl_vat_cents' => '5.00', 'stock_quantity' => 0], $overrides);
+        return array_merge(['name' => ['lt' => 'Kabelis', 'en' => 'Cable'], 'price_excl_vat_cents' => '5.00', 'stock_quantity' => 0], $overrides);
     }
 
     public function test_the_list_shows_catalog_details_and_the_suppliers_image(): void
@@ -187,7 +187,7 @@ class ProductCatalogAdminTest extends TestCase
 
     public function test_emptied_catalog_fields_are_stored_as_null_so_products_without_a_sku_do_not_collide(): void
     {
-        foreach (['Cable', 'Plug'] as $name) {
+        foreach ([['lt' => 'Kabelis'], ['lt' => 'Kištukas']] as $name) {
             Livewire::test(CreateProduct::class)
                 ->fillForm($this->validForm(['name' => $name, 'sku' => '', 'ean' => '', 'image_url' => '']))
                 ->call('create')

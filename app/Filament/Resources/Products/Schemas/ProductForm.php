@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Filament\Schemas\BilingualFields;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Filament\Forms\Components\Select;
@@ -55,29 +56,30 @@ class ProductForm
                 Section::make(__('admin.products.catalog_section'))
                     ->description(__('admin.products.catalog_section_description'))
                     ->schema([
-                        TextInput::make('name')
-                            ->label(__('admin.fields.name'))
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        TextInput::make('slug')
-                            ->label(__('admin.fields.slug'))
-                            ->helperText(__('admin.slug.helper'))
-                            ->disabled()
-                            ->saved(false)
-                            ->visibleOn('edit')
-                            ->columnSpanFull(),
-                        Textarea::make('excerpt')
-                            ->label(__('admin.fields.excerpt'))
-                            ->helperText(__('admin.products.excerpt_helper'))
-                            ->rows(2)
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        Textarea::make('description')
-                            ->label(__('admin.fields.description'))
-                            ->rows(6)
-                            ->maxLength(5000)
-                            ->columnSpanFull(),
+                        BilingualFields::make(
+                            TextInput::class,
+                            'name',
+                            __('admin.fields.name'),
+                            fn (TextInput $field) => $field->maxLength(255),
+                            required: true,
+                            requiredWith: ['excerpt', 'description'],
+                        ),
+                        BilingualFields::slug(),
+                        BilingualFields::make(
+                            Textarea::class,
+                            'excerpt',
+                            __('admin.fields.excerpt'),
+                            fn (Textarea $field) => $field
+                                ->helperText(__('admin.products.excerpt_helper'))
+                                ->rows(2)
+                                ->maxLength(255),
+                        ),
+                        BilingualFields::make(
+                            Textarea::class,
+                            'description',
+                            __('admin.fields.description'),
+                            fn (Textarea $field) => $field->rows(6)->maxLength(5000),
+                        ),
                         // Edited in euros without VAT, stored as whole cents.
                         // The sub-cent rule keeps "1.005" from being silently
                         // rounded to a price the admin never typed. The helper

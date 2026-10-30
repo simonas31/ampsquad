@@ -35,8 +35,8 @@ class ShippingMethodResourceTest extends TestCase
     {
         Livewire::test(CreateShippingMethod::class)
             ->fillForm([
-                'name' => 'LP Express',
-                'description' => 'Within 2-3 business days.',
+                'name' => ['lt' => 'LP Express', 'en' => 'LP Express (EN)'],
+                'description' => ['lt' => '2-3 darbo dienos.', 'en' => 'Within 2-3 business days.'],
                 'price_excl_vat_cents' => '3.99',
                 'is_pickup' => false,
                 'is_active' => true,
@@ -47,14 +47,16 @@ class ShippingMethodResourceTest extends TestCase
         $method = ShippingMethod::query()->sole();
 
         $this->assertSame(399, $method->price_excl_vat_cents);
-        $this->assertSame('LP Express', $method->getTranslation('name', app()->getLocale()));
+        $this->assertSame('LP Express', $method->getTranslation('name', 'lt'));
+        $this->assertSame('LP Express (EN)', $method->getTranslation('name', 'en'));
+        $this->assertSame('Within 2-3 business days.', $method->getTranslation('description', 'en'));
         $this->assertFalse($method->is_pickup);
     }
 
     public function test_pickup_can_be_free(): void
     {
         Livewire::test(CreateShippingMethod::class)
-            ->fillForm(['name' => 'Pickup', 'price_excl_vat_cents' => '0', 'is_pickup' => true])
+            ->fillForm(['name' => ['lt' => 'Atsiėmimas'], 'price_excl_vat_cents' => '0', 'is_pickup' => true])
             ->call('create')
             ->assertHasNoFormErrors();
 
@@ -67,12 +69,12 @@ class ShippingMethodResourceTest extends TestCase
     public function test_a_name_is_required_and_a_price_cannot_be_negative_or_have_sub_cents(): void
     {
         Livewire::test(CreateShippingMethod::class)
-            ->fillForm(['name' => '', 'price_excl_vat_cents' => '-1'])
+            ->fillForm(['name' => ['lt' => ''], 'price_excl_vat_cents' => '-1'])
             ->call('create')
-            ->assertHasFormErrors(['name' => 'required', 'price_excl_vat_cents']);
+            ->assertHasFormErrors(['name.lt' => 'required', 'price_excl_vat_cents']);
 
         Livewire::test(CreateShippingMethod::class)
-            ->fillForm(['name' => 'X', 'price_excl_vat_cents' => '1.005'])
+            ->fillForm(['name' => ['lt' => 'X'], 'price_excl_vat_cents' => '1.005'])
             ->call('create')
             ->assertHasFormErrors(['price_excl_vat_cents']);
 

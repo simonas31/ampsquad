@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Enums\ProjectStatus;
+use App\Filament\Schemas\BilingualFields;
 use App\Filament\Schemas\ContentBlocksBuilder;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -33,20 +34,14 @@ class ProjectForm
                     ->multiple()
                     ->searchable()
                     ->preload(),
-                TextInput::make('title')
-                    ->label(__('admin.fields.title'))
-                    ->required()
-                    ->columnSpanFull(),
-                TextInput::make('slug')
-                    ->label(__('admin.fields.slug'))
-                    ->helperText(__('admin.slug.helper'))
-                    ->disabled()
-                    ->saved(false)
-                    ->visibleOn('edit'),
-                Textarea::make('excerpt')
-                    ->label(__('admin.fields.excerpt'))
-                    ->rows(2)
-                    ->columnSpanFull(),
+                BilingualFields::make(TextInput::class, 'title', __('admin.fields.title'), required: true, requiredWith: ['excerpt', 'location']),
+                BilingualFields::slug(),
+                BilingualFields::make(
+                    Textarea::class,
+                    'excerpt',
+                    __('admin.fields.excerpt'),
+                    fn (Textarea $field) => $field->rows(2),
+                ),
                 SpatieMediaLibraryFileUpload::make('featured_image')
                     ->label(__('admin.fields.featured_image'))
                     ->collection('featured_image')
@@ -81,8 +76,7 @@ class ProjectForm
                     ->required()
                     ->numeric()
                     ->default(0),
-                TextInput::make('location')
-                    ->label(__('admin.fields.location')),
+                BilingualFields::make(TextInput::class, 'location', __('admin.fields.location')),
                 TextInput::make('client_name')
                     ->label(__('admin.fields.client')),
                 DatePicker::make('completed_at')

@@ -57,12 +57,17 @@ return [
         'image_url' => 'Image URL',
     ],
 
+    'bilingual' => [
+        'optional_placeholder' => 'Optional. Leave empty if there is no English version.',
+    ],
+
     'slug' => [
         'helper' => 'Generated automatically from the title.',
         'regenerate' => 'Regenerate URL',
-        'regenerate_description' => 'Rebuilds the URL from the saved title for this language. The old URL keeps redirecting to the new one, but links and search results may take a while to update. Save your changes first.',
+        'regenerate_description' => 'Rebuilds the URL from the saved title in the chosen languages. The old URL keeps redirecting to the new one, but links and search results may take a while to update. Save your changes first.',
         'regenerated' => 'URL regenerated',
         'unchanged' => 'URL already matches the title',
+        'languages' => 'Languages',
     ],
 
     'projects' => [
