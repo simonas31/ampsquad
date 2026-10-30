@@ -309,7 +309,8 @@
       "passwordReset": "Jūsų slaptažodis pakeistas. Prisijunkite su nauju.",
       "passwordChanged": "Jūsų slaptažodis pakeistas ir jūs atjungti visuose įrenginiuose. Prisijunkite su nauju.",
       "emailChanged": "Jūsų el. pašto adresas pakeistas. Nuo šiol prisijunkite su juo.",
-      "emailChangeFailed": "Nepavyko pakeisti el. pašto adreso, nes jį jau naudoja kita paskyra."
+      "emailChangeFailed": "Nepavyko pakeisti el. pašto adreso, nes jį jau naudoja kita paskyra.",
+      "accountDeleted": "Jūsų paskyra ištrinta."
     },
     "register": {
       "title": "Sukurti paskyrą",
@@ -356,8 +357,6 @@
   },
   "account": {
     "greeting": "Sveiki, {name}",
-    "loggedInAs": "Esate prisijungę kaip {email}.",
-    "securityLink": "El. paštas ir slaptažodis",
     "security": {
       "title": "El. paštas ir slaptažodis",
       "intro": "Pakeiskite paskyros el. pašto adresą arba pasirinkite naują slaptažodį.",
@@ -379,6 +378,42 @@
       "passwordHint": "Bent {count} simbolių.",
       "changePassword": "Pakeisti slaptažodį",
       "saving": "Saugoma…"
+    },
+    "nav": {
+      "label": "Paskyros skyriai",
+      "overview": "Apžvalga",
+      "profile": "Profilis",
+      "security": "El. paštas ir slaptažodis"
+    },
+    "dashboard": {
+      "details": "Jūsų duomenys",
+      "name": "Vardas",
+      "email": "El. paštas",
+      "phone": "Telefonas",
+      "notGiven": "Nenurodyta",
+      "language": "Mūsų laiškų kalba",
+      "editProfile": "Redaguoti profilį"
+    },
+    "profile": {
+      "title": "Profilis",
+      "intro": "Jūsų vardas, telefono numeris ir kaip su jumis bendraujame.",
+      "fullName": "Vardas ir pavardė",
+      "phone": "Telefonas",
+      "optional": "nebūtina",
+      "language": "Mūsų laiškų kalba",
+      "languageHint": "Kalba, kuria jums rašome. Parduotuvės puslapiai keičiasi pagal kalbą, kurią pasirenkate viršuje.",
+      "marketing": "Siųskite man naujienas ir pasiūlymus el. paštu. Galiu bet kada atsisakyti.",
+      "emailNote": "El. pašto adresą keiskite skyriuje",
+      "save": "Išsaugoti pakeitimus",
+      "saving": "Saugoma…",
+      "saved": "Pakeitimai išsaugoti."
+    },
+    "delete": {
+      "title": "Ištrinti paskyrą",
+      "text": "Paskyra uždaroma iš karto ir prisijungti prie jos nebegalėsite. Jūsų duomenis ir užsakymus saugome savo įrašuose {years} m., o paskui pašaliname. Naują paskyrą su tuo pačiu el. pašto adresu galite susikurti bet kada.",
+      "confirm": "Suprantu ir noriu ištrinti savo paskyrą.",
+      "submit": "Ištrinti mano paskyrą",
+      "deleting": "Trinama…"
     }
   },
   "errors": {

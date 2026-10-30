@@ -25,4 +25,5 @@ return [
     'forgot_password' => 'Pamiršote slaptažodį?',
     'reset_password' => 'Pasirinkite naują slaptažodį',
     'security' => 'El. paštas ir slaptažodis',
+    'profile' => 'Profilis',
 ];

@@ -309,7 +309,8 @@
       "passwordReset": "Your password was changed. Log in with the new one.",
       "passwordChanged": "Your password was changed and you were logged out on every device. Log in with the new one.",
       "emailChanged": "Your email address was changed. Log in with it from now on.",
-      "emailChangeFailed": "The email address could not be changed, because another account already uses it."
+      "emailChangeFailed": "The email address could not be changed, because another account already uses it.",
+      "accountDeleted": "Your account was deleted."
     },
     "register": {
       "title": "Create an account",
@@ -356,8 +357,6 @@
   },
   "account": {
     "greeting": "Hello, {name}",
-    "loggedInAs": "You are logged in as {email}.",
-    "securityLink": "Email and password",
     "security": {
       "title": "Email and password",
       "intro": "Change the email address of your account or choose a new password.",
@@ -379,6 +378,42 @@
       "passwordHint": "At least {count} characters.",
       "changePassword": "Change password",
       "saving": "Saving…"
+    },
+    "nav": {
+      "label": "Account sections",
+      "overview": "Overview",
+      "profile": "Profile",
+      "security": "Email and password"
+    },
+    "dashboard": {
+      "details": "Your details",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "notGiven": "Not given",
+      "language": "Language of our emails",
+      "editProfile": "Edit profile"
+    },
+    "profile": {
+      "title": "Profile",
+      "intro": "Your name, your phone number and how we write to you.",
+      "fullName": "Full name",
+      "phone": "Phone",
+      "optional": "optional",
+      "language": "Language of our emails",
+      "languageHint": "The language we write to you in. The pages of the shop follow the language you choose in the header.",
+      "marketing": "Send me news and offers by email. I can stop this at any time.",
+      "emailNote": "To change your email address, go to",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Your changes are saved."
+    },
+    "delete": {
+      "title": "Delete account",
+      "text": "Your account is closed at once and you can no longer log in. We keep your details and your orders in our records for {years} years and then remove them. You can create a new account with the same email address at any time.",
+      "confirm": "I understand and want to delete my account.",
+      "submit": "Delete my account",
+      "deleting": "Deleting…"
     }
   },
   "errors": {

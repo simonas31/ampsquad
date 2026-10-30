@@ -91,6 +91,8 @@ export interface AccountSummary {
   loginUrl: string;
   registerUrl: string;
   dashboardUrl: string;
+  profileUrl: string;
+  securityUrl: string;
   /** POST here to sign out. */
   logoutUrl: string;
 }
@@ -429,7 +431,9 @@ declare module "@inertiajs/core" {
         | "password-changed"
         | "email-change-requested"
         | "email-changed"
-        | "email-change-failed";
+        | "email-change-failed"
+        | "profile-updated"
+        | "account-deleted";
     };
   }
 }

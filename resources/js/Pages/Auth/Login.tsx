@@ -40,6 +40,7 @@ export default function Login({
     "password-changed": t("auth.login.passwordChanged"),
     "email-changed": t("auth.login.emailChanged"),
     "email-change-failed": t("auth.login.emailChangeFailed"),
+    "account-deleted": t("auth.login.accountDeleted"),
   };
   const statusMessage = flash.accountStatus
     ? statusMessages[flash.accountStatus]

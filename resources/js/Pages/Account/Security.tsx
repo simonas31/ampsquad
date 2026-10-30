@@ -1,6 +1,5 @@
 import { useForm, usePage } from "@inertiajs/react";
-import { Container } from "@/components/layout/Container";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { AccountPage } from "@/components/account/AccountPage";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,9 @@ interface SecurityProps {
   pendingEmail: string | null;
   emailUrl: string;
   passwordUrl: string;
+  deleteUrl: string;
+  /** How long a deleted account's details are kept. */
+  retentionYears: number;
   breadcrumbs: Breadcrumb[];
 }
 
@@ -28,6 +30,8 @@ export default function Security({
   pendingEmail,
   emailUrl,
   passwordUrl,
+  deleteUrl,
+  retentionYears,
   breadcrumbs,
 }: SecurityProps) {
   const t = useT();
@@ -40,10 +44,12 @@ export default function Security({
     password: "",
     password_confirmation: "",
   });
+  const deleteForm = useForm({ current_password: "", confirm: false });
 
   const emailErrors: Record<string, string | undefined> = emailForm.errors;
   const passwordErrors: Record<string, string | undefined> =
     passwordForm.errors;
+  const deleteErrors: Record<string, string | undefined> = deleteForm.errors;
 
   function submitEmail(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,16 +92,32 @@ export default function Security({
     });
   }
 
-  return (
-    <>
-      <PageHeader
-        breadcrumbs={breadcrumbs}
-        title={t("account.security.title")}
-        description={t("account.security.intro")}
-        size="narrow"
-      />
+  function submitDelete(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-      <Container size="narrow" className="space-y-20 py-14 lg:py-20">
+    deleteForm.delete(deleteUrl, {
+      errorBag: "delete",
+      preserveScroll: true,
+      onError: (errors) => {
+        const firstInvalid = (["current_password", "confirm"] as const).find(
+          (name) => errors[name],
+        );
+
+        if (firstInvalid) {
+          document.getElementById(`delete-${firstInvalid}`)?.focus();
+        }
+      },
+      onFinish: () => deleteForm.reset("current_password"),
+    });
+  }
+
+  return (
+    <AccountPage
+      breadcrumbs={breadcrumbs}
+      title={t("account.security.title")}
+      description={t("account.security.intro")}
+    >
+      <div className="space-y-20">
         <div role="status">
           {flash.accountStatus === "email-changed" && (
             <p className="border-signal text-ink border-l-2 py-1 pl-4 text-sm">
@@ -134,7 +156,9 @@ export default function Security({
 
           <div role="alert">
             {emailErrors.page_expired && (
-              <p className="text-destructive text-sm">{t("auth.pageExpired")}</p>
+              <p className="text-destructive text-sm">
+                {t("auth.pageExpired")}
+              </p>
             )}
           </div>
 
@@ -205,7 +229,9 @@ export default function Security({
 
           <div role="alert">
             {passwordErrors.page_expired && (
-              <p className="text-destructive text-sm">{t("auth.pageExpired")}</p>
+              <p className="text-destructive text-sm">
+                {t("auth.pageExpired")}
+              </p>
             )}
           </div>
 
@@ -292,7 +318,92 @@ export default function Security({
             </div>
           </form>
         </section>
-      </Container>
-    </>
+
+        <section aria-labelledby="delete-heading" className="space-y-7">
+          <h2 id="delete-heading" className="display text-ink text-2xl">
+            {t("account.delete.title")}
+          </h2>
+          <p className="text-ink-soft max-w-[60ch]">
+            {t("account.delete.text", { years: retentionYears })}
+          </p>
+
+          <div role="alert">
+            {deleteErrors.page_expired && (
+              <p className="text-destructive text-sm">
+                {t("auth.pageExpired")}
+              </p>
+            )}
+          </div>
+
+          <form
+            className="space-y-7"
+            onSubmit={submitDelete}
+            aria-busy={deleteForm.processing}
+            noValidate
+          >
+            <Field
+              id="delete-current_password"
+              label={t("account.security.currentPassword")}
+              error={deleteForm.errors.current_password}
+              required
+            >
+              {(control) => (
+                <Input
+                  {...control}
+                  type="password"
+                  value={deleteForm.data.current_password}
+                  onChange={(event) =>
+                    deleteForm.setData("current_password", event.target.value)
+                  }
+                  autoComplete="current-password"
+                />
+              )}
+            </Field>
+
+            <div className="space-y-2">
+              <div className="flex items-start gap-3">
+                <input
+                  id="delete-confirm"
+                  type="checkbox"
+                  checked={deleteForm.data.confirm}
+                  onChange={(event) =>
+                    deleteForm.setData("confirm", event.target.checked)
+                  }
+                  aria-invalid={deleteForm.errors.confirm ? true : undefined}
+                  aria-describedby={
+                    deleteForm.errors.confirm
+                      ? "delete-confirm-error"
+                      : undefined
+                  }
+                  className="accent-ink size-5 shrink-0"
+                />
+                <label htmlFor="delete-confirm" className="text-ink text-sm">
+                  {t("account.delete.confirm")}
+                </label>
+              </div>
+              {deleteForm.errors.confirm && (
+                <p
+                  id="delete-confirm-error"
+                  className="text-destructive text-sm"
+                >
+                  {deleteForm.errors.confirm}
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              variant="outline"
+              className="border-destructive text-destructive hover:bg-destructive hover:border-destructive hover:text-white"
+              disabled={deleteForm.processing}
+            >
+              {deleteForm.processing
+                ? t("account.delete.deleting")
+                : t("account.delete.submit")}
+            </Button>
+          </form>
+        </section>
+      </div>
+    </AccountPage>
   );
 }

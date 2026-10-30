@@ -58,6 +58,15 @@ return [
         'ignore' => 'If you did not ask for this, ignore this email and nothing will change.',
     ],
 
+    'customer_account_deleted' => [
+        'subject' => 'Your account was deleted',
+        'greeting' => 'Hello, :name.',
+        'text' => 'Your account at :app was deleted. You can no longer log in with it.',
+        'retention' => 'We keep your details and your orders in our records for :years years and then remove them.',
+        'again' => 'You can create a new account with the same email address at any time.',
+        'not_you' => 'If you did not delete this account, write to :email at once so that we can help.',
+    ],
+
     'customer_email_changed' => [
         'subject' => 'The email address of your account was changed',
         'greeting' => 'Hello, :name.',

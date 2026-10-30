@@ -8,6 +8,7 @@ use App\Enums\NotificationType;
 use App\Enums\PaymentOutcome;
 use App\Events\PaymentNeedsAPerson;
 use App\Mail\ContactRequestReceivedMail;
+use App\Mail\CustomerAccountDeletedMail;
 use App\Mail\CustomerConfirmNewEmailMail;
 use App\Mail\CustomerEmailChangedMail;
 use App\Mail\CustomerPasswordChangedMail;
@@ -56,6 +57,7 @@ class EmailLanguagesTest extends TestCase
             'customer password changed' => new CustomerPasswordChangedMail($customer),
             'customer confirm new email' => new CustomerConfirmNewEmailMail($waiting),
             'customer email changed' => new CustomerEmailChangedMail($customer),
+            'customer account deleted' => new CustomerAccountDeletedMail($customer->full_name),
         ];
     }
 

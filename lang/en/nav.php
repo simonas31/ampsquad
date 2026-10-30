@@ -19,4 +19,5 @@ return [
     'forgot_password' => 'Forgot your password?',
     'reset_password' => 'Choose a new password',
     'security' => 'Email and password',
+    'profile' => 'Profile',
 ];

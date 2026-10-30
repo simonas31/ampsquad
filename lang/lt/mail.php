@@ -58,6 +58,15 @@ return [
         'ignore' => 'Jei šio prašymo nesiuntėte, ignoruokite šį laišką ir nieko nepasikeis.',
     ],
 
+    'customer_account_deleted' => [
+        'subject' => 'Jūsų paskyra ištrinta',
+        'greeting' => 'Sveiki, :name.',
+        'text' => 'Jūsų paskyra svetainėje :app ištrinta. Prisijungti su ja daugiau nebegalėsite.',
+        'retention' => 'Jūsų duomenis ir užsakymus saugome savo įrašuose :years m., o paskui pašaliname.',
+        'again' => 'Naują paskyrą su tuo pačiu el. pašto adresu galite susikurti bet kada.',
+        'not_you' => 'Jei šios paskyros netrynėte, nedelsdami parašykite adresu :email, kad padėtume.',
+    ],
+
     'customer_email_changed' => [
         'subject' => 'Jūsų paskyros el. pašto adresas pakeistas',
         'greeting' => 'Sveiki, :name.',

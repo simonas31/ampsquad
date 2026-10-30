@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Customers;
 
+use App\Mail\CustomerAccountDeletedMail;
 use App\Mail\CustomerConfirmNewEmailMail;
 use App\Mail\CustomerEmailChangedMail;
 use App\Mail\CustomerPasswordChangedMail;
@@ -11,6 +12,7 @@ use App\Models\Customer;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 /**
@@ -44,6 +46,60 @@ class CustomerAccountService
         $customer->sendEmailVerificationNotification();
 
         return $customer;
+    }
+
+    /**
+     * Saves what the customer changed about themselves. Marketing consent is
+     * a moment, not a flag: it is stamped when it is given, kept as it was
+     * while it stays given, and cleared when it is withdrawn.
+     *
+     * @param  array{full_name: string, phone?: ?string, locale: string, marketing_consent?: bool}  $data
+     */
+    public function updateProfile(Customer $customer, array $data): void
+    {
+        $customer->fill([
+            'full_name' => $data['full_name'],
+            'phone' => $data['phone'] ?? null,
+            'locale' => $data['locale'],
+        ]);
+
+        if (! ($data['marketing_consent'] ?? false)) {
+            $customer->marketing_consent_at = null;
+        } elseif ($customer->marketing_consent_at === null) {
+            $customer->marketing_consent_at = now();
+        }
+
+        $customer->save();
+    }
+
+    /**
+     * Closes the account (the caller has checked who is asking). It is only
+     * soft deleted: the customer can no longer sign in, but their details are
+     * kept for Customer::RETENTION_YEARS and then removed by the scheduler
+     * (see Customer::prunable()), and their orders stay as they are. The
+     * address is moved aside so that it can be used for a new account at
+     * once, and the password is replaced with one nobody knows. The customer
+     * is told by mail.
+     */
+    public function deleteAccount(Customer $customer): void
+    {
+        $email = (string) $customer->email;
+
+        DB::transaction(function () use ($customer, $email): void {
+            Password::broker('customers')->deleteToken($customer);
+
+            $customer->forceFill([
+                'retained_email' => $email,
+                'email' => null,
+                'pending_email' => null,
+                'password' => Str::random(64),
+                'remember_token' => Str::random(60),
+            ])->save();
+
+            $customer->delete();
+        });
+
+        Mail::to($email)->locale($customer->locale)->queue(new CustomerAccountDeletedMail($customer->full_name));
     }
 
     /**

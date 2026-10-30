@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\SeoData;
 use Illuminate\Http\Request;
@@ -28,6 +29,8 @@ class SecurityController extends Controller
             'pendingEmail' => $request->user('customer')->pending_email,
             'emailUrl' => route('account.email.update', absolute: false),
             'passwordUrl' => route('account.password.update', absolute: false),
+            'deleteUrl' => route('account.destroy', absolute: false),
+            'retentionYears' => Customer::RETENTION_YEARS,
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.security'), noindex: true),
         ]);

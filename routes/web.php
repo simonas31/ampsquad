@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Account\DashboardController;
+use App\Http\Controllers\Account\DeleteAccountController;
 use App\Http\Controllers\Account\EmailController;
 use App\Http\Controllers\Account\PasswordController;
+use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SecurityController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -131,10 +133,14 @@ Route::localized(function (): void {
             Route::middleware('customer.verified')->group(function (): void {
                 Route::get('/account', DashboardController::class)->name('account.dashboard');
 
+                Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
+                Route::patch('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
+
                 Route::get('/account/security', SecurityController::class)->name('account.security');
                 Route::middleware('throttle:customer-account')->group(function (): void {
                     Route::post('/account/email', [EmailController::class, 'update'])->name('account.email.update');
                     Route::put('/account/password', [PasswordController::class, 'update'])->name('account.password.update');
+                    Route::delete('/account', DeleteAccountController::class)->name('account.destroy');
                 });
             });
         });
