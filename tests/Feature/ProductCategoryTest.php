@@ -94,4 +94,23 @@ class ProductCategoryTest extends TestCase
         $this->assertNull($product->fresh()->product_category_id);
         $this->assertNull($child->fresh()->parent_id);
     }
+
+    public function test_the_trail_runs_from_the_top_ancestor_down_to_the_category(): void
+    {
+        $top = ProductCategory::factory()->create();
+        $mid = ProductCategory::factory()->childOf($top)->create();
+        $leaf = ProductCategory::factory()->childOf($mid)->create();
+
+        $this->assertSame([$top->id, $mid->id, $leaf->id], array_map(fn (ProductCategory $node): int => $node->id, $leaf->fresh()->trail()));
+        $this->assertSame([$top->id], array_map(fn (ProductCategory $node): int => $node->id, $top->fresh()->trail()));
+    }
+
+    public function test_the_trail_stops_at_a_loop_in_the_data(): void
+    {
+        $first = ProductCategory::factory()->create();
+        $second = ProductCategory::factory()->childOf($first)->create();
+        $first->update(['parent_id' => $second->id]);
+
+        $this->assertSame([$second->id, $first->id], array_map(fn (ProductCategory $node): int => $node->id, $first->fresh()->trail()));
+    }
 }

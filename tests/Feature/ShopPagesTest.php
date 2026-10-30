@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Services\Shop\ShopCatalog;
 use App\Settings\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -314,5 +315,175 @@ class ShopPagesTest extends TestCase
             $this->assertSame('24.19', $schema['offers']['price'], 'the offer is the price with VAT');
             $this->assertSame('EUR', $schema['offers']['priceCurrency']);
         });
+    }
+
+    // -- breadcrumbs -------------------------------------------------------
+
+    /**
+     * @return array{ProductCategory, ProductCategory, ProductCategory}
+     */
+    private function networkCategories(): array
+    {
+        $network = ProductCategory::factory()->create(['name' => ['lt' => 'Tinklo įranga', 'en' => 'Network']]);
+        $switches = ProductCategory::factory()->childOf($network)->create(['name' => ['lt' => 'Komutatoriai', 'en' => 'Switches']]);
+        $poe = ProductCategory::factory()->childOf($switches)->create(['name' => ['lt' => 'PoE komutatoriai', 'en' => 'PoE switches']]);
+
+        return [$network, $switches, $poe];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function pageProps(string $url): array
+    {
+        $props = [];
+
+        $this->get($url)->assertOk()->assertInertia(function (AssertableInertia $page) use (&$props): void {
+            $props = $page->toArray()['props'];
+        });
+
+        return $props;
+    }
+
+    private function categoryUrl(string $slug): string
+    {
+        return route('shop.index', ['category' => $slug]);
+    }
+
+    public function test_a_chosen_category_adds_its_whole_path_to_the_listing_breadcrumbs(): void
+    {
+        $this->networkCategories();
+
+        $this->assertSame([
+            ['label' => __('nav.home'), 'url' => route('home')],
+            ['label' => __('nav.shop'), 'url' => route('shop.index')],
+            ['label' => 'Tinklo įranga', 'url' => $this->categoryUrl('tinklo-iranga')],
+            ['label' => 'Komutatoriai', 'url' => $this->categoryUrl('komutatoriai')],
+            ['label' => 'PoE komutatoriai', 'url' => null],
+        ], $this->pageProps('/shop?category=poe-komutatoriai')['breadcrumbs']);
+    }
+
+    public function test_a_top_level_category_is_the_last_crumb_without_a_link(): void
+    {
+        $this->networkCategories();
+
+        $this->assertSame([
+            ['label' => __('nav.home'), 'url' => route('home')],
+            ['label' => __('nav.shop'), 'url' => route('shop.index')],
+            ['label' => 'Tinklo įranga', 'url' => null],
+        ], $this->pageProps('/shop?category=tinklo-iranga')['breadcrumbs']);
+    }
+
+    public function test_an_unknown_category_leaves_the_plain_shop_breadcrumbs(): void
+    {
+        $crumbs = $this->pageProps('/shop?category=no-such-category')['breadcrumbs'];
+
+        $this->assertSame([__('nav.home'), __('nav.shop')], array_column($crumbs, 'label'));
+        $this->assertNull($crumbs[1]['url']);
+    }
+
+    public function test_search_and_other_filters_never_end_up_in_the_breadcrumb_links(): void
+    {
+        $this->networkCategories();
+
+        $crumbs = $this->pageProps('/shop?category=poe-komutatoriai&q=switch&sort=newest&in_stock=1&min_price=5&page=1')['breadcrumbs'];
+
+        $this->assertSame(
+            [route('home'), route('shop.index'), $this->categoryUrl('tinklo-iranga'), $this->categoryUrl('komutatoriai'), null],
+            array_column($crumbs, 'url'),
+        );
+    }
+
+    public function test_the_listing_breadcrumbs_are_also_structured_data(): void
+    {
+        $this->networkCategories();
+
+        $schema = collect($this->pageProps('/shop?category=komutatoriai')['seo']['jsonLd'])->firstWhere('@type', 'BreadcrumbList');
+
+        $this->assertSame([1, 2, 3, 4], array_column($schema['itemListElement'], 'position'));
+        $this->assertSame([__('nav.home'), __('nav.shop'), 'Tinklo įranga', 'Komutatoriai'], array_column($schema['itemListElement'], 'name'));
+        $this->assertSame($this->categoryUrl('tinklo-iranga'), $schema['itemListElement'][2]['item']);
+        $this->assertArrayNotHasKey('item', $schema['itemListElement'][3], 'the page itself carries no link');
+    }
+
+    public function test_the_category_path_is_named_in_the_visitors_language(): void
+    {
+        $this->networkCategories();
+
+        // A real /en/ URL cannot be requested in tests; see HomeTest.
+        app()->setLocale('en');
+
+        $crumbs = $this->pageProps('/shop?category=poe-switches')['breadcrumbs'];
+
+        $this->assertSame(['Network', 'Switches', 'PoE switches'], array_slice(array_column($crumbs, 'label'), 2));
+        $this->assertSame($this->categoryUrl('network'), $crumbs[2]['url']);
+        $this->assertSame($this->categoryUrl('switches'), $crumbs[3]['url']);
+        $this->assertNull($crumbs[4]['url']);
+    }
+
+    public function test_a_product_page_shows_its_categorys_whole_path_with_every_step_linked(): void
+    {
+        [,, $poe] = $this->networkCategories();
+        $product = Product::factory()->create(['product_category_id' => $poe->id]);
+
+        $this->assertSame([
+            ['label' => __('nav.home'), 'url' => route('home')],
+            ['label' => __('nav.shop'), 'url' => route('shop.index')],
+            ['label' => 'Tinklo įranga', 'url' => $this->categoryUrl('tinklo-iranga')],
+            ['label' => 'Komutatoriai', 'url' => $this->categoryUrl('komutatoriai')],
+            ['label' => 'PoE komutatoriai', 'url' => $this->categoryUrl('poe-komutatoriai')],
+            ['label' => $product->name, 'url' => null],
+        ], $this->pageProps(route('shop.show', $product->slug))['breadcrumbs']);
+    }
+
+    public function test_a_product_in_a_top_level_category_has_just_that_one_step(): void
+    {
+        [$network] = $this->networkCategories();
+        $product = Product::factory()->create(['product_category_id' => $network->id]);
+
+        $crumbs = $this->pageProps(route('shop.show', $product->slug))['breadcrumbs'];
+
+        $this->assertSame([__('nav.home'), __('nav.shop'), 'Tinklo įranga', $product->name], array_column($crumbs, 'label'));
+        $this->assertSame($this->categoryUrl('tinklo-iranga'), $crumbs[2]['url']);
+    }
+
+    public function test_a_product_without_a_category_goes_straight_from_the_shop_to_the_product(): void
+    {
+        $product = Product::factory()->create(['product_category_id' => null]);
+
+        $crumbs = $this->pageProps(route('shop.show', $product->slug))['breadcrumbs'];
+
+        $this->assertSame([__('nav.home'), __('nav.shop'), $product->name], array_column($crumbs, 'label'));
+        $this->assertSame(route('shop.index'), $crumbs[1]['url']);
+    }
+
+    public function test_the_product_breadcrumbs_are_also_structured_data_ending_on_the_product(): void
+    {
+        [,, $poe] = $this->networkCategories();
+        $product = Product::factory()->create(['product_category_id' => $poe->id]);
+
+        $schema = collect($this->pageProps(route('shop.show', $product->slug))['seo']['jsonLd'])->firstWhere('@type', 'BreadcrumbList');
+        $items = $schema['itemListElement'];
+
+        $this->assertSame([1, 2, 3, 4, 5, 6], array_column($items, 'position'));
+        $this->assertSame($product->name, $items[5]['name']);
+        $this->assertArrayNotHasKey('item', $items[5]);
+        $this->assertSame($this->categoryUrl('poe-komutatoriai'), $items[4]['item']);
+    }
+
+    public function test_the_product_page_names_the_category_path_in_the_visitors_language(): void
+    {
+        [,, $poe] = $this->networkCategories();
+        $product = Product::factory()->create([
+            'product_category_id' => $poe->id,
+            'slug' => ['lt' => 'lietuviskas-slug', 'en' => 'english-slug'],
+        ]);
+
+        app()->setLocale('en');
+
+        $crumbs = $this->pageProps('/shop/english-slug')['breadcrumbs'];
+
+        $this->assertSame(['Network', 'Switches', 'PoE switches', $product->getTranslation('name', 'en')], array_slice(array_column($crumbs, 'label'), 2));
+        $this->assertSame($this->categoryUrl('poe-switches'), $crumbs[4]['url']);
     }
 }

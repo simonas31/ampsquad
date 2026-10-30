@@ -136,6 +136,27 @@ class ProductCategory extends Model
     }
 
     /**
+     * The category and each of its ancestors, outermost first: the path a
+     * breadcrumb shows. It climbs one parent at a time, which in a tree this
+     * shallow is a few queries, and stops at a loop in the data instead of
+     * following it for ever.
+     *
+     * @return list<static>
+     */
+    public function trail(): array
+    {
+        $trail = [$this];
+        $seen = [$this->id => true];
+
+        for ($node = $this->parent; $node !== null && ! isset($seen[$node->id]); $node = $node->parent) {
+            $seen[$node->id] = true;
+            array_unshift($trail, $node);
+        }
+
+        return $trail;
+    }
+
+    /**
      * Whether the category still holds anything: products (soft deleted ones
      * too, since they can be restored) or sub-categories. Deleting such a
      * category would leave its products with no category and lift its

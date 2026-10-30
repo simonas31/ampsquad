@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ShopIndexRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Services\Shop\ShopCatalog;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\LocalizedUrls;
@@ -32,10 +33,8 @@ class ShopController extends Controller
             return redirect()->route('shop.index', [...$request->query(), 'page' => $lastPage > 1 ? $lastPage : null]);
         }
 
-        $breadcrumbs = Breadcrumbs::make([
-            ['label' => __('nav.home'), 'url' => route('home')],
-            ['label' => __('nav.shop'), 'url' => null],
-        ]);
+        $selectedCategory = $catalog->selectedCategory($filters);
+        $breadcrumbs = $this->breadcrumbs($selectedCategory);
 
         // The plain first page opens with the category menu and the popular
         // shelf; any search, filter or later page is only the results.
@@ -49,7 +48,7 @@ class ShopController extends Controller
             'categoryMenu' => $isLanding ? fn (): array => $catalog->categoryMenu() : null,
             // A category that no longer exists is dropped, so the form and the
             // links built from it never carry a slug that matches nothing.
-            'filters' => [...$filters->toArray(), 'category' => $catalog->selectedCategory($filters)?->slug],
+            'filters' => [...$filters->toArray(), 'category' => $selectedCategory?->slug],
             'categories' => $catalog->categoryTree($filters),
             'manufacturers' => $catalog->manufacturers($filters),
             'shopUrl' => route('shop.index'),
@@ -81,11 +80,7 @@ class ShopController extends Controller
 
         LocalizedUrls::useSlugs($product->getTranslations('slug'));
 
-        $breadcrumbs = Breadcrumbs::make([
-            ['label' => __('nav.home'), 'url' => route('home')],
-            ['label' => __('nav.shop'), 'url' => route('shop.index')],
-            ['label' => $product->name, 'url' => null],
-        ]);
+        $breadcrumbs = $this->breadcrumbs($product->category, $product->name);
 
         $description = $product->excerpt ?: Str::limit((string) $product->description, 160);
         $image = $product->featuredImageUrl('large');
@@ -100,6 +95,40 @@ class ShopController extends Controller
                 jsonLd: [$breadcrumbs->jsonLd(), $this->productJsonLd($product, $description, $image)],
             ),
         ]);
+    }
+
+    /**
+     * Home, the shop, then the category's whole path from its top-level
+     * ancestor down, each step linking to that category's listing. Ends on
+     * the page itself: the product when one is given, otherwise the category
+     * (a trail with no category is just Home and the shop). Only the
+     * category is carried in the links, never a search or other filter, so
+     * every step is a clean address a search engine can follow.
+     */
+    private function breadcrumbs(?ProductCategory $category, ?string $productName = null): Breadcrumbs
+    {
+        $trail = $category?->trail() ?? [];
+        $isOnShopPage = $trail === [] && $productName === null;
+
+        $items = [
+            ['label' => __('nav.home'), 'url' => route('home')],
+            ['label' => __('nav.shop'), 'url' => $isOnShopPage ? null : route('shop.index')],
+        ];
+
+        foreach ($trail as $position => $node) {
+            $isCurrentPage = $productName === null && $position === array_key_last($trail);
+
+            $items[] = [
+                'label' => $node->name,
+                'url' => $isCurrentPage || blank($node->slug) ? null : route('shop.index', ['category' => $node->slug]),
+            ];
+        }
+
+        if ($productName !== null) {
+            $items[] = ['label' => $productName, 'url' => null];
+        }
+
+        return Breadcrumbs::make($items);
     }
 
     /**
