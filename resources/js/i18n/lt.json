@@ -125,7 +125,13 @@
     }
   },
   "shop": {
-    "design": "Išdėstymas",
+    "design": {
+      "label": "Išdėstymas",
+      "group": "Parduotuvės puslapio išdėstymas",
+      "a": "Portalas",
+      "b": "Plytelės",
+      "c": "Kompaktiškas"
+    },
     "noProducts": "Prekių kol kas nėra.",
     "addToCart": "Į krepšelį",
     "adding": "Dedama…",
@@ -182,7 +188,8 @@
       "title": "Prekių katalogas",
       "allCategories": "Visos kategorijos",
       "browse": "Naršyti pagal kategorijas",
-      "seeAll": "Visos kategorijos „{name}“ prekės"
+      "seeAll": "Visos kategorijos „{name}“ prekės",
+      "fewerCategories": "Rodyti mažiau"
     },
     "banner": {
       "eyebrow": "Profesionali įranga",

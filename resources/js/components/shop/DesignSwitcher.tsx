@@ -1,19 +1,15 @@
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/use-t";
+import { cn } from "@/lib/utils";
 
 export type ShopDesign = "a" | "b" | "c";
 
 const STORAGE_KEY = "shop-design";
 
-const designs: { id: ShopDesign; name: string }[] = [
-  { id: "a", name: "Portal" },
-  { id: "b", name: "Tiles" },
-  { id: "c", name: "Dense" },
-];
+const designs: ShopDesign[] = ["a", "b", "c"];
 
 const isDesign = (value: unknown): value is ShopDesign =>
-  designs.some((design) => design.id === value);
+  designs.some((design) => design === value);
 
 /** From `?design=` on the first visit, else what was chosen last, else A. */
 function readDesign(): ShopDesign {
@@ -46,7 +42,7 @@ export function useShopDesign(): [ShopDesign, (design: ShopDesign) => void] {
 /**
  * TEMPORARY. A pill pinned to the bottom of the shop page for comparing the
  * layout designs on real data. Once one is chosen this, the other layouts and
- * their shared state are deleted, so none of it is translated.
+ * their shared state are deleted.
  */
 export function DesignSwitcher({
   design,
@@ -60,13 +56,13 @@ export function DesignSwitcher({
   return (
     <div
       role="group"
-      aria-label="Shop layout design"
+      aria-label={t("shop.design.group")}
       className="bg-ink text-bone shadow-ink/30 fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full p-1.5 shadow-xl"
     >
       <span className="text-bone-soft pr-1 pl-3 text-xs">
-        {t("shop.design")}
+        {t("shop.design.label")}
       </span>
-      {designs.map(({ id, name }) => (
+      {designs.map((id) => (
         <button
           key={id}
           type="button"
@@ -77,7 +73,7 @@ export function DesignSwitcher({
             design === id ? "bg-signal text-ink" : "hover:bg-ink-raised",
           )}
         >
-          {id.toUpperCase()} · {name}
+          {id.toUpperCase()} · {t(`shop.design.${id}`)}
         </button>
       ))}
     </div>

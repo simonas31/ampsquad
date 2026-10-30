@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/react";
-import { ChevronDown, ChevronRight, Menu } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, ChevronRight, Menu, Minus, Plus } from "lucide-react";
+import { useRef, useState } from "react";
 import { useT } from "@/hooks/use-t";
 import { categoryIcon } from "@/lib/category-icons";
 import { shopUrl } from "@/lib/shop";
@@ -14,6 +14,14 @@ interface CategoryMenuProps {
   baseUrl: string;
 }
 
+/**
+ * How many categories the menu lists before the rest go behind its
+ * "All categories" button, and the height of one entry (`min-h-11`), which
+ * together fix the height the expanded list scrolls within.
+ */
+const MENU_LIMIT = 12;
+const ENTRY_HEIGHT = "2.75rem";
+
 const titleClasses =
   "bg-ink text-bone flex h-14 w-full items-center gap-3 rounded-t-xl px-5 text-left text-sm font-semibold tracking-wide uppercase";
 
@@ -24,10 +32,27 @@ const titleClasses =
  * to its category, so the menu works without the panels: on a phone the
  * list folds away behind its title and the panels are left out, and a
  * category's own page lists what is under it.
+ *
+ * Past MENU_LIMIT categories the rest are held back behind a button at the
+ * foot of the list. It opens them in the same box, which then scrolls, so
+ * the menu never grows taller than the banner beside it. The panels still
+ * show over a scrolling list: they are positioned against the menu, not
+ * the list, so the list's overflow does not cut them off.
  */
 export function CategoryMenu({ nodes, baseUrl }: CategoryMenuProps) {
   const t = useT();
   const [open, setOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const listRef = useRef<HTMLUListElement>(null);
+  const hasOverflow = nodes.length > MENU_LIMIT;
+
+  function toggleAll() {
+    if (showAll) {
+      listRef.current?.scrollTo({ top: 0 });
+    }
+
+    setShowAll((isShown) => !isShown);
+  }
 
   return (
     <nav aria-label={t("shop.menu.title")} className="relative">
@@ -53,7 +78,7 @@ export function CategoryMenu({ nodes, baseUrl }: CategoryMenuProps) {
         />
       </button>
 
-      <ul
+      <div
         id="shop-menu-list"
         className={cn(
           "border-rule rounded-b-xl border border-t-0 bg-white py-1",
@@ -61,10 +86,46 @@ export function CategoryMenu({ nodes, baseUrl }: CategoryMenuProps) {
           "lg:block",
         )}
       >
-        {nodes.map((node) => (
-          <MenuItem key={node.id} node={node} baseUrl={baseUrl} />
-        ))}
-      </ul>
+        <ul
+          id="shop-menu-categories"
+          ref={listRef}
+          className={cn(showAll && "overscroll-contain overflow-y-auto")}
+          style={
+            showAll
+              ? { maxHeight: `calc(${MENU_LIMIT} * ${ENTRY_HEIGHT})` }
+              : undefined
+          }
+        >
+          {(showAll ? nodes : nodes.slice(0, MENU_LIMIT)).map((node) => (
+            <MenuItem key={node.id} node={node} baseUrl={baseUrl} />
+          ))}
+        </ul>
+
+        {hasOverflow && (
+          <button
+            type="button"
+            aria-expanded={showAll}
+            aria-controls="shop-menu-categories"
+            onClick={toggleAll}
+            className="text-ink hover:bg-plaster flex min-h-11 w-full items-center gap-3 px-4 text-left text-[0.9375rem] font-medium"
+          >
+            {showAll ? (
+              <Minus
+                className="text-ink-soft size-5 shrink-0"
+                aria-hidden="true"
+              />
+            ) : (
+              <Plus
+                className="text-ink-soft size-5 shrink-0"
+                aria-hidden="true"
+              />
+            )}
+            {showAll
+              ? t("shop.menu.fewerCategories")
+              : t("shop.menu.allCategories")}
+          </button>
+        )}
+      </div>
     </nav>
   );
 }

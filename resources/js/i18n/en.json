@@ -125,7 +125,13 @@
     }
   },
   "shop": {
-    "design": "Design",
+    "design": {
+      "label": "Design",
+      "group": "Shop layout design",
+      "a": "Portal",
+      "b": "Tiles",
+      "c": "Dense"
+    },
     "noProducts": "No products available yet.",
     "addToCart": "Add to cart",
     "adding": "Adding…",
@@ -182,7 +188,8 @@
       "title": "Product catalog",
       "allCategories": "All categories",
       "browse": "Browse by category",
-      "seeAll": "See all in {name}"
+      "seeAll": "See all in {name}",
+      "fewerCategories": "Show fewer"
     },
     "banner": {
       "eyebrow": "Professional equipment",
