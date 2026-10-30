@@ -6,6 +6,7 @@ import { useMenuLinks } from "@/hooks/use-menu-links";
 import { useNavUrl } from "@/hooks/use-nav-url";
 import { useT } from "@/hooks/use-t";
 import { cn, telHref } from "@/lib/utils";
+import { AccountLink } from "./AccountLink";
 import { CartLink } from "./CartLink";
 import { Container } from "./Container";
 import { LanguageSwitch } from "./LanguageSwitch";
@@ -78,6 +79,7 @@ export function AppHeader() {
                 <ArrowUpRight aria-hidden="true" />
               </Link>
             </Button>
+            <AccountLink className="hidden sm:inline-flex" />
             <CartLink />
             <MobileNav />
           </div>

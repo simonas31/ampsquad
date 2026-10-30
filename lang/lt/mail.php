@@ -23,6 +23,15 @@ return [
 
     'thanks' => 'Ačiū,',
 
+    'customer_verify_email' => [
+        'subject' => 'Patvirtinkite savo el. pašto adresą',
+        'greeting' => 'Sveiki, :name.',
+        'intro' => 'Ačiū, kad susikūrėte paskyrą :app. Patvirtinkite savo el. pašto adresą, kad galėtumėte ją naudoti.',
+        'button' => 'Patvirtinti el. pašto adresą',
+        'expires' => 'Ši nuoroda galioja :hours val. Jei ji nebegalioja, prisijunkite ir paprašykite naujos.',
+        'ignore' => 'Jei šios paskyros nekūrėte, ignoruokite šį laišką. Paskyra bus pašalinta.',
+    ],
+
     'contact_request' => [
         'subject' => 'Nauja užklausa nuo :name',
         'title' => 'Nauja užklausa',

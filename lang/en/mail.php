@@ -23,6 +23,15 @@ return [
 
     'thanks' => 'Thanks,',
 
+    'customer_verify_email' => [
+        'subject' => 'Confirm your email address',
+        'greeting' => 'Welcome, :name.',
+        'intro' => 'Thank you for creating an account at :app. Confirm your email address to start using it.',
+        'button' => 'Confirm email address',
+        'expires' => 'This link works for :hours hours. If it has expired, log in and ask for a new one.',
+        'ignore' => 'If you did not create this account, ignore this email and the account will be removed.',
+    ],
+
     'contact_request' => [
         'subject' => 'New contact request from :name',
         'title' => 'New contact request',

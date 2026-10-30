@@ -28,7 +28,10 @@
     "callUs": "Call us",
     "emailUs": "Email us",
     "opensInNewTab": "(opens in a new tab)",
-    "slideOf": "{number} of {total}"
+    "slideOf": "{number} of {total}",
+    "logIn": "Log in",
+    "myAccount": "My account",
+    "logOut": "Log out"
   },
   "footer": {
     "tagline": "Electrical engineering solutions you can rely on.",
@@ -287,6 +290,49 @@
     "summary": "Order summary",
     "delivery": "Delivery",
     "address": "Address"
+  },
+  "auth": {
+    "pageExpired": "Your session expired and the page was refreshed. Please try again.",
+    "requiredHint": "Fields marked * are required.",
+    "email": "Email",
+    "password": "Password",
+    "login": {
+      "title": "Log in",
+      "intro": "Log in to see your orders and manage your account.",
+      "remember": "Keep me logged in",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "noAccount": "No account yet?",
+      "createAccount": "Create an account",
+      "emailVerified": "Your email address is confirmed. Log in to continue."
+    },
+    "register": {
+      "title": "Create an account",
+      "intro": "An account keeps your details and your orders in one place. You can still order without one.",
+      "fullName": "Full name",
+      "phone": "Phone",
+      "optional": "optional",
+      "passwordHint": "At least {count} characters.",
+      "passwordConfirmation": "Repeat the password",
+      "marketing": "Send me news and offers by email. I can stop this at any time.",
+      "submit": "Create account",
+      "submitting": "Creating your account…",
+      "haveAccount": "Already have an account?",
+      "logIn": "Log in"
+    },
+    "verify": {
+      "title": "Confirm your email",
+      "text": "We sent a link to {email}. Open it to confirm your address and start using your account.",
+      "spam": "Nothing there? Check your spam folder or send the link again.",
+      "resend": "Send the link again",
+      "sending": "Sending…",
+      "sent": "A new link is on its way.",
+      "logOut": "Log out"
+    }
+  },
+  "account": {
+    "greeting": "Hello, {name}",
+    "loggedInAs": "You are logged in as {email}."
   },
   "errors": {
     "backHome": "Back to homepage",

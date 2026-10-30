@@ -11,7 +11,9 @@ use App\Mail\ContactRequestReceivedMail;
 use App\Mail\OrderConfirmationMail;
 use App\Mail\OrderPaidMail;
 use App\Mail\PaymentNeedsAPersonMail;
+use App\Mail\VerifyCustomerEmailMail;
 use App\Models\ContactRequest;
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Recipient;
 use App\Services\RecipientNotifier;
@@ -42,6 +44,7 @@ class EmailLanguagesTest extends TestCase
             'paid order' => new OrderPaidMail($order),
             'payment needs a person' => new PaymentNeedsAPersonMail($order, PaymentOutcome::DoublePayment),
             'order confirmation' => new OrderConfirmationMail($order),
+            'customer verify email' => new VerifyCustomerEmailMail(Customer::factory()->unverified()->create()),
         ];
     }
 

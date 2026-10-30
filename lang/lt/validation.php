@@ -64,6 +64,11 @@ return [
 
     'attributes' => [
         'name' => 'vardas',
+        'full_name' => 'vardas ir pavardė',
+        'password' => 'slaptažodis',
+        'password_confirmation' => 'slaptažodžio patvirtinimas',
+        'remember' => 'prisiminti mane',
+        'marketing_consent' => 'sutikimas gauti naujienas',
         'email' => 'el. paštas',
         'phone' => 'telefonas',
         'message' => 'žinutė',

@@ -77,6 +77,24 @@ export interface CartSummary {
   count: number;
 }
 
+/**
+ * Who is signed in as a customer (nobody, usually) and where the account
+ * pages are. The URLs are relative, like the cart's.
+ */
+export interface AccountSummary {
+  customer: {
+    fullName: string;
+    email: string;
+    /** An unverified customer is kept out of the account area. */
+    isVerified: boolean;
+  } | null;
+  loginUrl: string;
+  registerUrl: string;
+  dashboardUrl: string;
+  /** POST here to sign out. */
+  logoutUrl: string;
+}
+
 export interface SharedData {
   locale: {
     current: Locale;
@@ -89,6 +107,7 @@ export interface SharedData {
   };
   site: SiteData;
   cartSummary: CartSummary | null;
+  account: AccountSummary;
 }
 
 export interface Category {
@@ -402,6 +421,7 @@ declare module "@inertiajs/core" {
     sharedPageProps: SharedData;
     flashDataType: {
       contactSubmitted?: boolean;
+      accountStatus?: "verification-link-sent" | "email-verified";
     };
   }
 }

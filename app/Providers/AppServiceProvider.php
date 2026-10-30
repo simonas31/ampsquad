@@ -68,6 +68,16 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('checkout', fn (Request $request): Limit => Limit::perMinute(10)->by($request->ip()));
         RateLimiter::for('order-page', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
         RateLimiter::for('payment-callback', fn (Request $request): Limit => Limit::perMinute(120)->by($request->ip()));
+
+        // The login also locks an address after five wrong tries (see
+        // LoginCustomerRequest); this is the allowance of a whole place, so
+        // that trying many addresses from one is slowed down too.
+        RateLimiter::for('customer-login', fn (Request $request): Limit => Limit::perMinute(30)->by($request->ip()));
+        RateLimiter::for('customer-register', fn (Request $request): array => [
+            Limit::perMinute(3)->by($request->ip()),
+            Limit::perHour(15)->by($request->ip()),
+        ]);
+        RateLimiter::for('customer-verification', fn (Request $request): Limit => Limit::perMinute(6)->by($request->user('customer')?->getKey() ?? $request->ip()));
     }
 
     /**

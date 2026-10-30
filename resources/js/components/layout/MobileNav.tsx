@@ -20,7 +20,7 @@ import { Logo } from "./Logo";
 export function MobileNav() {
   const t = useT();
   const [open, setOpen] = useState(false);
-  const { site } = usePage().props;
+  const { site, account } = usePage().props;
   const links = useMenuLinks("header");
   const getCurrent = useActiveLink();
   const contactUrl = useNavUrl("nav.contact", "/contact");
@@ -91,6 +91,41 @@ export function MobileNav() {
               {t("common.requestQuote")}
             </Link>
           </Button>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            {account.customer ? (
+              <>
+                <Button asChild variant="inverse">
+                  <Link href={account.dashboardUrl} onClick={close}>
+                    {t("common.myAccount")}
+                  </Link>
+                </Button>
+                <Button asChild variant="inverse">
+                  <Link
+                    href={account.logoutUrl}
+                    method="post"
+                    as="button"
+                    onClick={close}
+                  >
+                    {t("common.logOut")}
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="inverse">
+                  <Link href={account.loginUrl} onClick={close}>
+                    {t("common.logIn")}
+                  </Link>
+                </Button>
+                <Button asChild variant="inverse">
+                  <Link href={account.registerUrl} onClick={close}>
+                    {t("auth.register.title")}
+                  </Link>
+                </Button>
+              </>
+            )}
+          </div>
 
           <div className="border-bone-soft/25 mt-auto space-y-4 border-t pt-8">
             <a

@@ -28,7 +28,10 @@
     "callUs": "Skambinkite",
     "emailUs": "Rašykite",
     "opensInNewTab": "(atsidaro naujame skirtuke)",
-    "slideOf": "{number} iš {total}"
+    "logIn": "Prisijungti",
+    "myAccount": "Mano paskyra",
+    "logOut": "Atsijungti",
+    "slideOf":"{number} iš {total}"
   },
   "footer": {
     "tagline": "Elektros inžinerijos sprendimai, kuriais galite pasitikėti.",
@@ -287,6 +290,49 @@
     "summary": "Užsakymo suvestinė",
     "delivery": "Pristatymas",
     "address": "Adresas"
+  },
+  "auth": {
+    "pageExpired": "Jūsų sesija baigėsi, puslapis atnaujintas. Bandykite dar kartą.",
+    "requiredHint": "Laukai, pažymėti *, yra privalomi.",
+    "email": "El. paštas",
+    "password": "Slaptažodis",
+    "login": {
+      "title": "Prisijungti",
+      "intro": "Prisijunkite, kad matytumėte savo užsakymus ir tvarkytumėte paskyrą.",
+      "remember": "Likti prisijungus",
+      "submit": "Prisijungti",
+      "submitting": "Jungiamasi…",
+      "noAccount": "Dar neturite paskyros?",
+      "createAccount": "Sukurti paskyrą",
+      "emailVerified": "Jūsų el. paštas patvirtintas. Prisijunkite, kad tęstumėte."
+    },
+    "register": {
+      "title": "Sukurti paskyrą",
+      "intro": "Paskyroje vienoje vietoje saugomi jūsų duomenys ir užsakymai. Užsakyti galite ir be jos.",
+      "fullName": "Vardas ir pavardė",
+      "phone": "Telefonas",
+      "optional": "nebūtina",
+      "passwordHint": "Bent {count} simbolių.",
+      "passwordConfirmation": "Pakartokite slaptažodį",
+      "marketing": "Siųskite man naujienas ir pasiūlymus el. paštu. Galiu bet kada atsisakyti.",
+      "submit": "Sukurti paskyrą",
+      "submitting": "Kuriama paskyra…",
+      "haveAccount": "Jau turite paskyrą?",
+      "logIn": "Prisijungti"
+    },
+    "verify": {
+      "title": "Patvirtinkite el. paštą",
+      "text": "Išsiuntėme nuorodą adresu {email}. Atidarykite ją, kad patvirtintumėte adresą ir galėtumėte naudotis paskyra.",
+      "spam": "Laiško nėra? Patikrinkite šlamšto aplanką arba nusiųskite nuorodą dar kartą.",
+      "resend": "Siųsti nuorodą dar kartą",
+      "sending": "Siunčiama…",
+      "sent": "Nauja nuoroda išsiųsta.",
+      "logOut": "Atsijungti"
+    }
+  },
+  "account": {
+    "greeting": "Sveiki, {name}",
+    "loggedInAs": "Esate prisijungę kaip {email}."
   },
   "errors": {
     "backHome": "Grįžti į pradžią",

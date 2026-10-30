@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\EnsureCheckoutEnabled;
+use App\Http\Middleware\EnsureCustomerIsVerified;
 use App\Http\Middleware\EnsureShopEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\SetNoStoreHeader;
 use App\Support\Seo\SeoData;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -33,7 +35,18 @@ return Application::configure(basePath: dirname(__DIR__))
         // token; the message is authenticated by its signature instead.
         $middleware->preventRequestForgery(except: ['payments/*/callback']);
 
+        // Guests on a customer page go to the customer login. Any other
+        // route keeps what it had: the admin panel sends its own guests to
+        // its own login.
+        $middleware->redirectGuestsTo(
+            fn (Request $request): ?string => $request->routeIs('account.*', 'customer.*') ? route('customer.login') : null,
+        );
+        // Signed-in customers who open the login or register page.
+        $middleware->redirectUsersTo(fn (): string => route('account.dashboard'));
+
         $middleware->alias([
+            'customer.verified' => EnsureCustomerIsVerified::class,
+            'no-store' => SetNoStoreHeader::class,
             'shop.enabled' => EnsureShopEnabled::class,
             'checkout.enabled' => EnsureCheckoutEnabled::class,
             'localize' => LaravelLocalizationRoutes::class,

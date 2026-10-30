@@ -10,6 +10,7 @@ use App\Settings\GeneralSettings;
 use App\Settings\ShopSettings;
 use App\Support\Seo\LocalizedUrls;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
@@ -66,6 +67,32 @@ class HandleInertiaRequests extends Middleware
             'pageLinks' => fn () => $this->pageLinks($this->navigation()),
             'site' => fn () => $this->siteContact(),
             'cartSummary' => fn () => $this->cartSummary($request),
+            'account' => fn () => $this->account(),
+        ];
+    }
+
+    /**
+     * What the header's account link needs: who is signed in as a customer
+     * (nobody, usually) and where the account pages are. Reading the guard
+     * costs a query only when the visitor's session holds a customer. The
+     * URLs are relative, like the cart's.
+     *
+     * @return array{customer: array{fullName: string, email: string, isVerified: bool}|null, loginUrl: string, registerUrl: string, dashboardUrl: string, logoutUrl: string}
+     */
+    private function account(): array
+    {
+        $customer = Auth::guard('customer')->user();
+
+        return [
+            'customer' => $customer === null ? null : [
+                'fullName' => $customer->full_name,
+                'email' => $customer->email,
+                'isVerified' => $customer->hasVerifiedEmail(),
+            ],
+            'loginUrl' => route('customer.login', absolute: false),
+            'registerUrl' => route('customer.register', absolute: false),
+            'dashboardUrl' => route('account.dashboard', absolute: false),
+            'logoutUrl' => route('customer.logout', absolute: false),
         ];
     }
 

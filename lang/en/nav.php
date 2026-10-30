@@ -12,4 +12,8 @@ return [
     'checkout' => 'Checkout',
     'order' => 'Order',
     'contact' => 'Contact',
+    'login' => 'Log in',
+    'register' => 'Create an account',
+    'account' => 'My account',
+    'verify_email' => 'Confirm your email',
 ];

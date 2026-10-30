@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Account\DashboardController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CheckoutController;
@@ -28,6 +33,15 @@ Route::post('/payments/{provider}/callback', PaymentCallbackController::class)
     ->where('provider', '[a-z]+')
     ->middleware('throttle:payment-callback')
     ->name('payments.callback');
+
+// The link in the mail that verifies a customer's address. Outside the
+// localized group too: a mail is built by the queue worker, which has no
+// visitor and so no language, and the signature covers the exact URL, so the
+// link has no language prefix. The controller sends the customer on in theirs.
+Route::get('/account/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+    ->whereNumber('id')
+    ->middleware(['signed', 'throttle:customer-verification'])
+    ->name('customer.verification.verify');
 
 Route::localized(function (): void {
     Route::get('/', HomeController::class)->name('home');
@@ -68,6 +82,37 @@ Route::localized(function (): void {
                 ->whereNumber('cartItem')
                 ->name('items.destroy');
             Route::delete('/', [CartController::class, 'destroy'])->name('destroy');
+        });
+    });
+
+    // Customer accounts. Not behind the shop switch: a customer must still be
+    // able to sign in and see their orders while the shop is off. Every page
+    // here is about one person, so none is stored by a browser or a proxy.
+    Route::middleware('no-store')->group(function (): void {
+        Route::middleware('guest:customer')->group(function (): void {
+            Route::get('/login', [LoginController::class, 'show'])->name('customer.login');
+            Route::post('/login', [LoginController::class, 'store'])
+                ->middleware('throttle:customer-login')
+                ->name('customer.login.store');
+
+            Route::get('/register', [RegisterController::class, 'show'])->name('customer.register');
+            Route::post('/register', [RegisterController::class, 'store'])
+                ->middleware('throttle:customer-register')
+                ->name('customer.register.store');
+        });
+
+        Route::middleware('auth:customer')->group(function (): void {
+            Route::post('/logout', LogoutController::class)->name('customer.logout');
+
+            Route::get('/account/verify-email', [VerifyEmailController::class, 'notice'])
+                ->name('customer.verification.notice');
+            Route::post('/account/verify-email/resend', [VerifyEmailController::class, 'resend'])
+                ->middleware('throttle:customer-verification')
+                ->name('customer.verification.send');
+
+            Route::middleware('customer.verified')->group(function (): void {
+                Route::get('/account', DashboardController::class)->name('account.dashboard');
+            });
         });
     });
 

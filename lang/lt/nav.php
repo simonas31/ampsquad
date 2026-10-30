@@ -18,4 +18,8 @@ return [
     'checkout' => 'Užsakymo pateikimas',
     'order' => 'Užsakymas',
     'contact' => 'Kontaktai',
+    'login' => 'Prisijungti',
+    'register' => 'Sukurti paskyrą',
+    'account' => 'Mano paskyra',
+    'verify_email' => 'Patvirtinkite el. paštą',
 ];

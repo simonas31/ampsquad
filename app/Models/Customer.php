@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mail\VerifyCustomerEmailMail;
 use Database\Factories\CustomerFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * Someone with an account in the shop. Not a User: those are the people who
@@ -45,6 +48,13 @@ class Customer extends Authenticatable implements HasLocalePreference, MustVerif
      * How long an account may wait for its email to be verified.
      */
     public const int UNVERIFIED_LIFETIME_DAYS = 7;
+
+    /**
+     * How long the link in the verification mail works.
+     */
+    public const int VERIFICATION_LINK_HOURS = 24;
+
+    public const int PASSWORD_MIN_LENGTH = 10;
 
     /**
      * @var array<string, mixed>
@@ -81,6 +91,25 @@ class Customer extends Authenticatable implements HasLocalePreference, MustVerif
                 ->whereNull('deleted_at')
                 ->where('created_at', '<', now()->subDays(self::UNVERIFIED_LIFETIME_DAYS)))
             ->orWhere('deleted_at', '<', now()->subYears(self::RETENTION_YEARS)));
+    }
+
+    /**
+     * What a customer's password must be, wherever they choose one. Length is
+     * what counts; nothing is asked of its characters, and nothing is sent to
+     * another service to check it.
+     */
+    public static function passwordRule(): Password
+    {
+        return Password::min(self::PASSWORD_MIN_LENGTH);
+    }
+
+    /**
+     * The mail with the link that verifies the address, in the customer's
+     * language. Replaces Laravel's notification, which is in English only.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        Mail::to($this->email)->locale($this->locale)->queue(new VerifyCustomerEmailMail($this));
     }
 
     /**
