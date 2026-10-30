@@ -117,8 +117,11 @@ class CustomerPasswordResetTest extends TestCase
         $lithuanian = new CustomerPasswordResetMail(Customer::factory()->create(['email' => 'jonas@example.com']), 'the-token');
         $english = new CustomerPasswordResetMail(Customer::factory()->inLocale('en')->create(['email' => 'john@example.com']), 'the-token');
 
-        $this->assertSame('http://localhost/reset-password/the-token?email=jonas%40example.com', $lithuanian->resetUrl());
-        $this->assertSame('http://localhost/en/reset-password/the-token?email=john%40example.com', $english->resetUrl());
+        // Whatever host the application runs on (APP_URL), not a fixed one.
+        $root = rtrim(url('/'), '/');
+
+        $this->assertSame($root.'/reset-password/the-token?email=jonas%40example.com', $lithuanian->resetUrl());
+        $this->assertSame($root.'/en/reset-password/the-token?email=john%40example.com', $english->resetUrl());
         $this->assertStringContainsString($lithuanian->resetUrl(), $lithuanian->render());
     }
 
