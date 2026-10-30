@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -135,5 +136,18 @@ class Customer extends Authenticatable implements HasLocalePreference, MustVerif
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(CustomerAddress::class);
+    }
+
+    /**
+     * The address checkout offers first, if the customer has one.
+     */
+    public function defaultShippingAddress(): BelongsTo
+    {
+        return $this->belongsTo(CustomerAddress::class, 'default_shipping_address_id');
     }
 }

@@ -19,6 +19,7 @@ export function AccountNav() {
   const items = [
     { href: account.dashboardUrl, label: t("account.nav.overview") },
     { href: account.profileUrl, label: t("account.nav.profile") },
+    { href: account.addressesUrl, label: t("account.nav.addresses") },
     { href: account.securityUrl, label: t("account.nav.security") },
   ];
 
@@ -26,7 +27,13 @@ export function AccountNav() {
     <nav aria-label={t("account.nav.label")}>
       <ul className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:px-8 lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0">
         {items.map((item) => {
-          const current = currentPath === item.href.replace(/\/$/, "");
+          const path = item.href.replace(/\/$/, "");
+          // The overview matches only itself; the other sections also match
+          // their own pages (the form for a new address is still "Addresses").
+          const current =
+            currentPath === path ||
+            (item.href !== account.dashboardUrl &&
+              currentPath.startsWith(`${path}/`));
 
           return (
             <li key={item.href}>

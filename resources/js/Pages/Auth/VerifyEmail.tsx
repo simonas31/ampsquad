@@ -39,13 +39,14 @@ export default function VerifyEmail({
           {t("auth.verify.spam")}
         </p>
 
-        <div role="status">
-          {flash.accountStatus === "verification-link-sent" && (
-            <p className="border-signal text-ink border-l-2 py-1 pl-4 text-sm">
-              {t("auth.verify.sent")}
-            </p>
-          )}
-        </div>
+        {flash.accountStatus === "verification-link-sent" && (
+          <p
+            role="status"
+            className="border-signal text-ink border-l-2 py-1 pl-4 text-sm"
+          >
+            {t("auth.verify.sent")}
+          </p>
+        )}
 
         <div className="flex flex-wrap items-center gap-4">
           <Button

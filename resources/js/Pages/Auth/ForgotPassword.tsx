@@ -51,21 +51,20 @@ export default function ForgotPassword({
       />
 
       <Container size="narrow" className="py-14 lg:py-20">
-        <div role="status">
-          {flash.accountStatus === "reset-link-sent" && (
-            <p className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm">
-              {t("auth.forgot.sent")}
-            </p>
-          )}
-        </div>
+        {flash.accountStatus === "reset-link-sent" && (
+          <p
+            role="status"
+            className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm"
+          >
+            {t("auth.forgot.sent")}
+          </p>
+        )}
 
-        <div role="alert">
-          {errors.page_expired && (
-            <p className="text-destructive mb-8 text-sm">
-              {t("auth.pageExpired")}
-            </p>
-          )}
-        </div>
+        {errors.page_expired && (
+          <p role="alert" className="text-destructive mb-8 text-sm">
+            {t("auth.pageExpired")}
+          </p>
+        )}
 
         <form
           className="space-y-7"

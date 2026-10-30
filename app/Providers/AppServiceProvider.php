@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\CartItem;
+use App\Models\CustomerAddress;
 use App\Services\CartService;
 use App\Services\Payment\FakeGateway;
 use App\Services\Payment\OpayGateway;
@@ -45,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->registerLocalizedRouteMacro();
         $this->registerCartItemBinding();
+        $this->registerCustomerAddressBinding();
         $this->configureAdminTables();
         $this->configureRateLimiting();
 
@@ -87,6 +89,7 @@ class AppServiceProvider extends ServiceProvider
         // Changing the email or the password asks for the current password,
         // so these are also what a stranger at an open session would hammer.
         RateLimiter::for('customer-account', fn (Request $request): Limit => Limit::perMinute(5)->by($request->user('customer')?->getKey() ?? $request->ip()));
+        RateLimiter::for('customer-addresses', fn (Request $request): Limit => Limit::perMinute(30)->by($request->user('customer')?->getKey() ?? $request->ip()));
         RateLimiter::for('customer-verification', fn (Request $request): Limit => Limit::perMinute(6)->by($request->user('customer')?->getKey() ?? $request->ip()));
     }
 
@@ -116,6 +119,22 @@ class AppServiceProvider extends ServiceProvider
             abort_if($cart === null, 404);
 
             return $cart->items()->whereKey($value)->firstOrFail();
+        });
+    }
+
+    /**
+     * {customerAddress} only ever resolves one of the signed-in customer's own
+     * addresses, so an id belonging to anyone else is a plain 404 (no
+     * existence leak). The policy is asked as well before anything changes.
+     */
+    private function registerCustomerAddressBinding(): void
+    {
+        Route::bind('customerAddress', function (string $value): CustomerAddress {
+            $customer = request()->user('customer');
+
+            abort_if($customer === null, 404);
+
+            return $customer->addresses()->whereKey($value)->firstOrFail();
         });
     }
 

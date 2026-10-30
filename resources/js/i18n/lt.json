@@ -383,7 +383,8 @@
       "label": "Paskyros skyriai",
       "overview": "Apžvalga",
       "profile": "Profilis",
-      "security": "El. paštas ir slaptažodis"
+      "security": "El. paštas ir slaptažodis",
+      "addresses": "Adresai"
     },
     "dashboard": {
       "details": "Jūsų duomenys",
@@ -414,6 +415,42 @@
       "confirm": "Suprantu ir noriu ištrinti savo paskyrą.",
       "submit": "Ištrinti mano paskyrą",
       "deleting": "Trinama…"
+    },
+    "addresses": {
+      "title": "Adresai",
+      "intro": "Vietos, į kurias pristatome jūsų užsakymus. Užsakydami pasirinkite vieną, o ne rašykite iš naujo.",
+      "add": "Pridėti adresą",
+      "empty": "Išsaugotų adresų dar neturite.",
+      "emptyHint": "Išsaugokite čia, kad galėtumėte pasirinkti užsakydami.",
+      "default": "Numatytasis",
+      "makeDefault": "Naudoti kaip numatytąjį adresą",
+      "edit": "Redaguoti",
+      "delete": "Ištrinti",
+      "confirmDelete": "Ištrinti šį adresą?",
+      "confirmYes": "Taip, ištrinti",
+      "confirmNo": "Palikti",
+      "count": "Išsaugota adresų: {count} iš {max}",
+      "limitReached": "Išsaugojote daugiausia adresų, kiek galima. Ištrinkite vieną, kad pridėtumėte naują.",
+      "saved": "Adresas išsaugotas.",
+      "deleted": "Adresas ištrintas.",
+      "defaultSet": "Numatytasis adresas pakeistas.",
+      "newTitle": "Naujas adresas",
+      "editTitle": "Redaguoti adresą",
+      "formIntro": "Kur ir kam turime pristatyti?",
+      "label": "Adreso pavadinimas",
+      "labelOptional": "nebūtina",
+      "labelHint": "Pavyzdžiui, Namai arba Biuras.",
+      "recipientName": "Gavėjo vardas",
+      "phone": "Gavėjo telefonas",
+      "street": "Gatvė, namo ir buto numeris",
+      "city": "Miestas",
+      "postalCode": "Pašto kodas",
+      "country": "Šalis",
+      "isDefault": "Tai jūsų numatytasis adresas.",
+      "save": "Išsaugoti adresą",
+      "saving": "Saugoma…",
+      "cancel": "Atšaukti",
+      "lithuania": "Lietuva"
     }
   },
   "errors": {

@@ -68,13 +68,11 @@ export default function ResetPassword({
       />
 
       <Container size="narrow" className="py-14 lg:py-20">
-        <div role="alert">
-          {errors.page_expired && (
-            <p className="text-destructive mb-8 text-sm">
-              {t("auth.pageExpired")}
-            </p>
-          )}
-        </div>
+        {errors.page_expired && (
+          <p role="alert" className="text-destructive mb-8 text-sm">
+            {t("auth.pageExpired")}
+          </p>
+        )}
 
         <form
           className="space-y-7"

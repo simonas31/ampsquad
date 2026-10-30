@@ -26,4 +26,7 @@ return [
     'reset_password' => 'Pasirinkite naują slaptažodį',
     'security' => 'El. paštas ir slaptažodis',
     'profile' => 'Profilis',
+    'addresses' => 'Adresai',
+    'new_address' => 'Naujas adresas',
+    'edit_address' => 'Redaguoti adresą',
 ];

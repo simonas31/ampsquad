@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Account\DashboardController;
+use App\Http\Controllers\Account\DefaultAddressController;
 use App\Http\Controllers\Account\DeleteAccountController;
 use App\Http\Controllers\Account\EmailController;
 use App\Http\Controllers\Account\PasswordController;
@@ -135,6 +137,16 @@ Route::localized(function (): void {
 
                 Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
                 Route::patch('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
+
+                Route::middleware('throttle:customer-addresses')->whereNumber('customerAddress')->group(function (): void {
+                    Route::get('/account/addresses', [AddressController::class, 'index'])->name('account.addresses.index');
+                    Route::get('/account/addresses/create', [AddressController::class, 'create'])->name('account.addresses.create');
+                    Route::post('/account/addresses', [AddressController::class, 'store'])->name('account.addresses.store');
+                    Route::get('/account/addresses/{customerAddress}/edit', [AddressController::class, 'edit'])->name('account.addresses.edit');
+                    Route::put('/account/addresses/{customerAddress}', [AddressController::class, 'update'])->name('account.addresses.update');
+                    Route::delete('/account/addresses/{customerAddress}', [AddressController::class, 'destroy'])->name('account.addresses.destroy');
+                    Route::patch('/account/addresses/{customerAddress}/default', DefaultAddressController::class)->name('account.addresses.default');
+                });
 
                 Route::get('/account/security', SecurityController::class)->name('account.security');
                 Route::middleware('throttle:customer-account')->group(function (): void {

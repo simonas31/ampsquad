@@ -77,7 +77,7 @@ class HandleInertiaRequests extends Middleware
      * costs a query only when the visitor's session holds a customer. The
      * URLs are relative, like the cart's.
      *
-     * @return array{customer: array{fullName: string, email: string, isVerified: bool}|null, loginUrl: string, registerUrl: string, dashboardUrl: string, profileUrl: string, securityUrl: string, logoutUrl: string}
+     * @return array{customer: array{fullName: string, email: string, isVerified: bool}|null, loginUrl: string, registerUrl: string, dashboardUrl: string, profileUrl: string, addressesUrl: string, securityUrl: string, logoutUrl: string}
      */
     private function account(): array
     {
@@ -93,6 +93,7 @@ class HandleInertiaRequests extends Middleware
             'registerUrl' => route('customer.register', absolute: false),
             'dashboardUrl' => route('account.dashboard', absolute: false),
             'profileUrl' => route('account.profile', absolute: false),
+            'addressesUrl' => route('account.addresses.index', absolute: false),
             'securityUrl' => route('account.security', absolute: false),
             'logoutUrl' => route('customer.logout', absolute: false),
         ];

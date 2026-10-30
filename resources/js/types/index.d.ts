@@ -92,6 +92,7 @@ export interface AccountSummary {
   registerUrl: string;
   dashboardUrl: string;
   profileUrl: string;
+  addressesUrl: string;
   securityUrl: string;
   /** POST here to sign out. */
   logoutUrl: string;
@@ -367,6 +368,29 @@ export interface OrderData {
   totalInclVatCents: number;
 }
 
+/** One of the customer's saved delivery addresses. The URLs are relative. */
+export interface CustomerAddress {
+  id: number;
+  /** What the customer calls it, such as "Home". */
+  label: string | null;
+  recipientName: string;
+  phone: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  countryName: string;
+  /** The address checkout offers first. */
+  isDefault: boolean;
+  editUrl: string;
+  /** PUT here to change it. */
+  updateUrl: string;
+  /** DELETE here to remove it. */
+  deleteUrl: string;
+  /** PATCH here to make it the default. */
+  defaultUrl: string;
+}
+
 export interface Video {
   id: number;
   title: string | null;
@@ -433,7 +457,10 @@ declare module "@inertiajs/core" {
         | "email-changed"
         | "email-change-failed"
         | "profile-updated"
-        | "account-deleted";
+        | "account-deleted"
+        | "address-saved"
+        | "address-deleted"
+        | "address-default-set";
     };
   }
 }

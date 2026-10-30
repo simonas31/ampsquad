@@ -66,6 +66,12 @@ return [
     'attributes' => [
         'name' => 'vardas',
         'full_name' => 'vardas ir pavardė',
+        'label' => 'pavadinimas',
+        'recipient_name' => 'gavėjo vardas',
+        'street' => 'gatvė ir namo numeris',
+        'city' => 'miestas',
+        'postal_code' => 'pašto kodas',
+        'country' => 'šalis',
         'password' => 'slaptažodis',
         'current_password' => 'dabartinis slaptažodis',
         'password_confirmation' => 'slaptažodžio patvirtinimas',

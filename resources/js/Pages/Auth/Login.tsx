@@ -74,21 +74,20 @@ export default function Login({
       />
 
       <Container size="narrow" className="py-14 lg:py-20">
-        <div role="status">
-          {statusMessage && (
-            <p className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm">
-              {statusMessage}
-            </p>
-          )}
-        </div>
+        {statusMessage && (
+          <p
+            role="status"
+            className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm"
+          >
+            {statusMessage}
+          </p>
+        )}
 
-        <div role="alert">
-          {errors.page_expired && (
-            <p className="text-destructive mb-8 text-sm">
-              {t("auth.pageExpired")}
-            </p>
-          )}
-        </div>
+        {errors.page_expired && (
+          <p role="alert" className="text-destructive mb-8 text-sm">
+            {t("auth.pageExpired")}
+          </p>
+        )}
 
         <form
           className="space-y-7"

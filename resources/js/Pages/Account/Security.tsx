@@ -118,18 +118,22 @@ export default function Security({
       description={t("account.security.intro")}
     >
       <div className="space-y-20">
-        <div role="status">
-          {flash.accountStatus === "email-changed" && (
-            <p className="border-signal text-ink border-l-2 py-1 pl-4 text-sm">
-              {t("account.security.emailChanged")}
-            </p>
-          )}
-          {flash.accountStatus === "email-change-failed" && (
-            <p className="border-signal text-ink border-l-2 py-1 pl-4 text-sm">
-              {t("account.security.emailChangeFailed")}
-            </p>
-          )}
-        </div>
+        {flash.accountStatus === "email-changed" && (
+          <p
+            role="status"
+            className="border-signal text-ink border-l-2 py-1 pl-4 text-sm"
+          >
+            {t("account.security.emailChanged")}
+          </p>
+        )}
+        {flash.accountStatus === "email-change-failed" && (
+          <p
+            role="status"
+            className="border-signal text-ink border-l-2 py-1 pl-4 text-sm"
+          >
+            {t("account.security.emailChangeFailed")}
+          </p>
+        )}
 
         <section aria-labelledby="email-heading" className="space-y-7">
           <h2 id="email-heading" className="display text-ink text-2xl">
@@ -141,26 +145,25 @@ export default function Security({
             })}
           </p>
 
-          <div role="status">
-            {flash.accountStatus === "email-change-requested" && (
-              <p className="border-signal text-ink border-l-2 py-1 pl-4 text-sm">
-                {t("account.security.emailRequested")}
-              </p>
-            )}
-          </div>
+          {flash.accountStatus === "email-change-requested" && (
+            <p
+              role="status"
+              className="border-signal text-ink border-l-2 py-1 pl-4 text-sm"
+            >
+              {t("account.security.emailRequested")}
+            </p>
+          )}
           {pendingEmail && (
             <p className="text-ink border-l-2 border-current py-1 pl-4 text-sm">
               {t("account.security.pending", { email: pendingEmail })}
             </p>
           )}
 
-          <div role="alert">
-            {emailErrors.page_expired && (
-              <p className="text-destructive text-sm">
-                {t("auth.pageExpired")}
-              </p>
-            )}
-          </div>
+          {emailErrors.page_expired && (
+            <p role="alert" className="text-destructive text-sm">
+              {t("auth.pageExpired")}
+            </p>
+          )}
 
           <form
             className="space-y-7"
@@ -227,13 +230,11 @@ export default function Security({
             {t("account.security.passwordNotice")}
           </p>
 
-          <div role="alert">
-            {passwordErrors.page_expired && (
-              <p className="text-destructive text-sm">
-                {t("auth.pageExpired")}
-              </p>
-            )}
-          </div>
+          {passwordErrors.page_expired && (
+            <p role="alert" className="text-destructive text-sm">
+              {t("auth.pageExpired")}
+            </p>
+          )}
 
           <form
             className="space-y-7"
@@ -327,13 +328,11 @@ export default function Security({
             {t("account.delete.text", { years: retentionYears })}
           </p>
 
-          <div role="alert">
-            {deleteErrors.page_expired && (
-              <p className="text-destructive text-sm">
-                {t("auth.pageExpired")}
-              </p>
-            )}
-          </div>
+          {deleteErrors.page_expired && (
+            <p role="alert" className="text-destructive text-sm">
+              {t("auth.pageExpired")}
+            </p>
+          )}
 
           <form
             className="space-y-7"

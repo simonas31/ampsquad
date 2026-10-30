@@ -65,21 +65,20 @@ export default function Profile({
       title={t("account.profile.title")}
       description={t("account.profile.intro")}
     >
-      <div role="status">
-        {flash.accountStatus === "profile-updated" && (
-          <p className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm">
-            {t("account.profile.saved")}
-          </p>
-        )}
-      </div>
+      {flash.accountStatus === "profile-updated" && (
+        <p
+          role="status"
+          className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm"
+        >
+          {t("account.profile.saved")}
+        </p>
+      )}
 
-      <div role="alert">
-        {errors.page_expired && (
-          <p className="text-destructive mb-8 text-sm">
-            {t("auth.pageExpired")}
-          </p>
-        )}
-      </div>
+      {errors.page_expired && (
+        <p role="alert" className="text-destructive mb-8 text-sm">
+          {t("auth.pageExpired")}
+        </p>
+      )}
 
       <form
         className="space-y-7"

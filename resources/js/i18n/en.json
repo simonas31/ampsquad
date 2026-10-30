@@ -383,7 +383,8 @@
       "label": "Account sections",
       "overview": "Overview",
       "profile": "Profile",
-      "security": "Email and password"
+      "security": "Email and password",
+      "addresses": "Addresses"
     },
     "dashboard": {
       "details": "Your details",
@@ -414,6 +415,42 @@
       "confirm": "I understand and want to delete my account.",
       "submit": "Delete my account",
       "deleting": "Deleting…"
+    },
+    "addresses": {
+      "title": "Addresses",
+      "intro": "The places we deliver your orders to. Pick one at checkout instead of typing it again.",
+      "add": "Add an address",
+      "empty": "You have no saved addresses yet.",
+      "emptyHint": "Save one here to pick it at checkout.",
+      "default": "Default",
+      "makeDefault": "Use as my default address",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete this address?",
+      "confirmYes": "Yes, delete",
+      "confirmNo": "Keep",
+      "count": "{count} of {max} addresses saved",
+      "limitReached": "You have saved the most addresses you can. Delete one to add another.",
+      "saved": "The address is saved.",
+      "deleted": "The address is deleted.",
+      "defaultSet": "Your default address is changed.",
+      "newTitle": "New address",
+      "editTitle": "Edit address",
+      "formIntro": "Where should we deliver, and to whom?",
+      "label": "Name of the address",
+      "labelOptional": "optional",
+      "labelHint": "For example Home or Office.",
+      "recipientName": "Recipient name",
+      "phone": "Recipient phone",
+      "street": "Street, house and flat number",
+      "city": "City",
+      "postalCode": "Postal code",
+      "country": "Country",
+      "isDefault": "This is your default address.",
+      "save": "Save address",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "lithuania": "Lithuania"
     }
   },
   "errors": {

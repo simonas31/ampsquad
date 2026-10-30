@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Customer;
+use App\Models\CustomerAddress;
 use Illuminate\Database\Seeder;
 
 class CustomerSeeder extends Seeder
@@ -15,7 +16,7 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
-        Customer::unguarded(fn () => Customer::query()->firstOrCreate(
+        $customer = Customer::unguarded(fn () => Customer::query()->firstOrCreate(
             ['email' => 'customer@ampsquad.test'],
             [
                 'full_name' => 'Demo Customer',
@@ -24,5 +25,10 @@ class CustomerSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
         ));
+
+        if (! $customer->addresses()->exists()) {
+            CustomerAddress::factory()->for($customer)->labelled('Home')->asDefault()->create();
+            CustomerAddress::factory()->for($customer)->labelled('Office')->create();
+        }
     }
 }
