@@ -32,6 +32,39 @@ return [
         'ignore' => 'Jei šios paskyros nekūrėte, ignoruokite šį laišką. Paskyra bus pašalinta.',
     ],
 
+    'customer_password_reset' => [
+        'subject' => 'Atstatykite slaptažodį',
+        'greeting' => 'Sveiki, :name.',
+        'intro' => 'Gavome prašymą atstatyti jūsų paskyros slaptažodį. Paspaudę mygtuką pasirinkite naują.',
+        'button' => 'Pasirinkti naują slaptažodį',
+        'expires' => 'Nuoroda galioja :minutes min. ir naudojama vieną kartą.',
+        'ignore' => 'Jei šio prašymo nesiuntėte, ignoruokite šį laišką. Jūsų slaptažodis nepasikeis.',
+    ],
+
+    'customer_password_changed' => [
+        'subject' => 'Jūsų slaptažodis pakeistas',
+        'greeting' => 'Sveiki, :name.',
+        'text' => 'Jūsų paskyros slaptažodis ką tik pakeistas. Dabar galite prisijungti su nauju.',
+        'not_you' => 'Jei tai padarėte ne jūs, nedelsdami pasirinkite naują slaptažodį ir parašykite adresu :email, kad padėtume.',
+        'button' => 'Atstatyti slaptažodį',
+    ],
+
+    'customer_confirm_new_email' => [
+        'subject' => 'Patvirtinkite naują el. pašto adresą',
+        'greeting' => 'Sveiki, :name.',
+        'intro' => 'Paprašėte šį adresą naudoti savo paskyrai svetainėje :app. Patvirtinkite jį, kad pakeitimas įsigaliotų.',
+        'button' => 'Patvirtinti naują adresą',
+        'expires' => 'Nuoroda galioja :hours val. Kol nepatvirtinsite, paskyra naudos seną adresą.',
+        'ignore' => 'Jei šio prašymo nesiuntėte, ignoruokite šį laišką ir nieko nepasikeis.',
+    ],
+
+    'customer_email_changed' => [
+        'subject' => 'Jūsų paskyros el. pašto adresas pakeistas',
+        'greeting' => 'Sveiki, :name.',
+        'text' => 'Jūsų paskyros el. pašto adresas pakeistas į :email. Nuo šiol rašysime tuo adresu.',
+        'not_you' => 'Jei tai padarėte ne jūs, nedelsdami parašykite adresu :email, kad padėtume.',
+    ],
+
     'contact_request' => [
         'subject' => 'Nauja užklausa nuo :name',
         'title' => 'Nauja užklausa',

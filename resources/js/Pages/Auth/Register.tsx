@@ -9,6 +9,8 @@ import type { Breadcrumb } from "@/types";
 
 interface RegisterProps {
   submitUrl: string;
+  /** The shop's privacy policy; null until the shop has made the page. */
+  privacyUrl: string | null;
   breadcrumbs: Breadcrumb[];
 }
 
@@ -29,7 +31,11 @@ const PASSWORD_MIN_LENGTH = 10;
  * signed in, but its area stays closed until they follow the link in the
  * mail the server sends.
  */
-export default function Register({ submitUrl, breadcrumbs }: RegisterProps) {
+export default function Register({
+  submitUrl,
+  privacyUrl,
+  breadcrumbs,
+}: RegisterProps) {
   const t = useT();
   const { account } = usePage().props;
 
@@ -199,6 +205,10 @@ export default function Register({ submitUrl, breadcrumbs }: RegisterProps) {
             </label>
           </div>
 
+          <p className="text-ink-soft text-sm">
+            <PrivacyNotice privacyUrl={privacyUrl} />
+          </p>
+
           {/* Honeypot: hidden from real visitors, bots fill it in blindly. */}
           <div className="sr-only" aria-hidden="true">
             <label htmlFor="company">Company</label>
@@ -237,6 +247,40 @@ export default function Register({ submitUrl, breadcrumbs }: RegisterProps) {
           </Link>
         </p>
       </Container>
+    </>
+  );
+}
+
+/**
+ * Tells the customer what their details are used for, with the policy named
+ * as a link (in a new tab, so the form is not lost). When the shop has not
+ * made the page, the sentence has no link.
+ */
+function PrivacyNotice({ privacyUrl }: { privacyUrl: string | null }) {
+  const t = useT();
+
+  if (!privacyUrl) {
+    return <>{t("auth.register.privacyNoticePlain")}</>;
+  }
+
+  // The sentence has the policy's name in the middle of it, so split it there.
+  const [before, after] = t("auth.register.privacyNotice", {
+    privacy: "\u0000",
+  }).split("\u0000");
+
+  return (
+    <>
+      {before}
+      <a
+        href={privacyUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="text-ink underline underline-offset-4"
+      >
+        {t("auth.register.privacyLink")}
+        <span className="sr-only"> {t("common.opensInNewTab")}</span>
+      </a>
+      {after}
     </>
   );
 }

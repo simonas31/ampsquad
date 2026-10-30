@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\AuthenticateCustomerSession;
 use App\Http\Middleware\EnsureCheckoutEnabled;
 use App\Http\Middleware\EnsureCustomerIsVerified;
 use App\Http\Middleware\EnsureShopEnabled;
@@ -45,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(fn (): string => route('account.dashboard'));
 
         $middleware->alias([
+            'customer.session' => AuthenticateCustomerSession::class,
             'customer.verified' => EnsureCustomerIsVerified::class,
             'no-store' => SetNoStoreHeader::class,
             'shop.enabled' => EnsureShopEnabled::class,

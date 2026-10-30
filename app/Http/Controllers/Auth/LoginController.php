@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AuthenticateCustomerSession;
 use App\Http\Requests\LoginCustomerRequest;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\SeoData;
@@ -23,6 +24,7 @@ class LoginController extends Controller
 
         return Inertia::render('Auth/Login', [
             'submitUrl' => route('customer.login.store', absolute: false),
+            'forgotPasswordUrl' => route('customer.password.request', absolute: false),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.login'), noindex: true),
         ]);
@@ -37,6 +39,7 @@ class LoginController extends Controller
     {
         $request->authenticate();
         $request->session()->regenerate();
+        AuthenticateCustomerSession::stamp($request);
 
         return redirect()->intended(route('account.dashboard'));
     }

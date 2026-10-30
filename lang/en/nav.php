@@ -16,4 +16,7 @@ return [
     'register' => 'Create an account',
     'account' => 'My account',
     'verify_email' => 'Confirm your email',
+    'forgot_password' => 'Forgot your password?',
+    'reset_password' => 'Choose a new password',
+    'security' => 'Email and password',
 ];

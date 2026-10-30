@@ -8,4 +8,5 @@ return [
     'failed' => 'Neteisingas el. paštas arba slaptažodis.',
     'password' => 'Neteisingas slaptažodis.',
     'throttle' => 'Per daug prisijungimo bandymų. Bandykite dar kartą po :seconds sek.',
+    'email_unchanged' => 'Tai jau jūsų paskyros el. pašto adresas.',
 ];

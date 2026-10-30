@@ -421,7 +421,15 @@ declare module "@inertiajs/core" {
     sharedPageProps: SharedData;
     flashDataType: {
       contactSubmitted?: boolean;
-      accountStatus?: "verification-link-sent" | "email-verified";
+      accountStatus?:
+        | "verification-link-sent"
+        | "email-verified"
+        | "reset-link-sent"
+        | "password-reset"
+        | "password-changed"
+        | "email-change-requested"
+        | "email-changed"
+        | "email-change-failed";
     };
   }
 }

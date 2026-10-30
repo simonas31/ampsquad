@@ -18,6 +18,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use RuntimeException;
 
@@ -77,6 +78,15 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(3)->by($request->ip()),
             Limit::perHour(15)->by($request->ip()),
         ]);
+        // Asking for a link: a few a minute from one place, and a few an hour
+        // for one address, so that nobody's inbox can be filled through the form.
+        RateLimiter::for('customer-password-reset', fn (Request $request): array => [
+            Limit::perMinute(3)->by($request->ip()),
+            Limit::perHour(5)->by('reset|'.Str::lower((string) $request->input('email'))),
+        ]);
+        // Changing the email or the password asks for the current password,
+        // so these are also what a stranger at an open session would hammer.
+        RateLimiter::for('customer-account', fn (Request $request): Limit => Limit::perMinute(5)->by($request->user('customer')?->getKey() ?? $request->ip()));
         RateLimiter::for('customer-verification', fn (Request $request): Limit => Limit::perMinute(6)->by($request->user('customer')?->getKey() ?? $request->ip()));
     }
 

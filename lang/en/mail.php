@@ -32,6 +32,39 @@ return [
         'ignore' => 'If you did not create this account, ignore this email and the account will be removed.',
     ],
 
+    'customer_password_reset' => [
+        'subject' => 'Reset your password',
+        'greeting' => 'Hello, :name.',
+        'intro' => 'We received a request to reset the password of your account. Use the button below to choose a new one.',
+        'button' => 'Choose a new password',
+        'expires' => 'This link works for :minutes minutes and can be used once.',
+        'ignore' => 'If you did not ask for this, ignore this email. Your password stays as it is.',
+    ],
+
+    'customer_password_changed' => [
+        'subject' => 'Your password was changed',
+        'greeting' => 'Hello, :name.',
+        'text' => 'The password of your account was just changed. You can now log in with the new one.',
+        'not_you' => 'If this was not you, choose a new password now and write to :email so that we can help.',
+        'button' => 'Reset your password',
+    ],
+
+    'customer_confirm_new_email' => [
+        'subject' => 'Confirm your new email address',
+        'greeting' => 'Hello, :name.',
+        'intro' => 'You asked to use this address for your account at :app. Confirm it to finish the change.',
+        'button' => 'Confirm new email address',
+        'expires' => 'This link works for :hours hours. Until you confirm, your account keeps using its old address.',
+        'ignore' => 'If you did not ask for this, ignore this email and nothing will change.',
+    ],
+
+    'customer_email_changed' => [
+        'subject' => 'The email address of your account was changed',
+        'greeting' => 'Hello, :name.',
+        'text' => 'The email address of your account was changed to :email. From now on we write to that address.',
+        'not_you' => 'If this was not you, write to :email at once so that we can help.',
+    ],
+
     'contact_request' => [
         'subject' => 'New contact request from :name',
         'title' => 'New contact request',

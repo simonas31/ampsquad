@@ -20,6 +20,7 @@ class DashboardController extends Controller
         ]);
 
         return Inertia::render('Account/Dashboard', [
+            'securityUrl' => route('account.security', absolute: false),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.account'), noindex: true),
         ]);

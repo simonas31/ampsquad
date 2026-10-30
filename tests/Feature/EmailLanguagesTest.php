@@ -8,6 +8,10 @@ use App\Enums\NotificationType;
 use App\Enums\PaymentOutcome;
 use App\Events\PaymentNeedsAPerson;
 use App\Mail\ContactRequestReceivedMail;
+use App\Mail\CustomerConfirmNewEmailMail;
+use App\Mail\CustomerEmailChangedMail;
+use App\Mail\CustomerPasswordChangedMail;
+use App\Mail\CustomerPasswordResetMail;
 use App\Mail\OrderConfirmationMail;
 use App\Mail\OrderPaidMail;
 use App\Mail\PaymentNeedsAPersonMail;
@@ -38,6 +42,9 @@ class EmailLanguagesTest extends TestCase
     private function mails(): array
     {
         $order = Order::factory()->paid()->create();
+        $customer = Customer::factory()->create();
+        $waiting = Customer::factory()->create();
+        $waiting->forceFill(['pending_email' => 'new-address@example.com'])->save();
 
         return [
             'contact request' => new ContactRequestReceivedMail(ContactRequest::factory()->create()),
@@ -45,6 +52,10 @@ class EmailLanguagesTest extends TestCase
             'payment needs a person' => new PaymentNeedsAPersonMail($order, PaymentOutcome::DoublePayment),
             'order confirmation' => new OrderConfirmationMail($order),
             'customer verify email' => new VerifyCustomerEmailMail(Customer::factory()->unverified()->create()),
+            'customer password reset' => new CustomerPasswordResetMail($customer, 'the-token'),
+            'customer password changed' => new CustomerPasswordChangedMail($customer),
+            'customer confirm new email' => new CustomerConfirmNewEmailMail($waiting),
+            'customer email changed' => new CustomerEmailChangedMail($customer),
         ];
     }
 

@@ -9,6 +9,7 @@ import type { Breadcrumb } from "@/types";
 
 interface LoginProps {
   submitUrl: string;
+  forgotPasswordUrl: string;
   breadcrumbs: Breadcrumb[];
 }
 
@@ -17,7 +18,11 @@ interface LoginProps {
  * form never tells whether an address has an account. The password is
  * cleared after every try; the email stays.
  */
-export default function Login({ submitUrl, breadcrumbs }: LoginProps) {
+export default function Login({
+  submitUrl,
+  forgotPasswordUrl,
+  breadcrumbs,
+}: LoginProps) {
   const t = useT();
   const { props, flash } = usePage();
   const { account } = props;
@@ -27,6 +32,18 @@ export default function Login({ submitUrl, breadcrumbs }: LoginProps) {
   // Besides the form's own fields, the server answers a session that ran out
   // under another name (page_expired).
   const errors: Record<string, string | undefined> = form.errors;
+
+  // What happened elsewhere that sent the customer here to log in.
+  const statusMessages: Partial<Record<string, string>> = {
+    "email-verified": t("auth.login.emailVerified"),
+    "password-reset": t("auth.login.passwordReset"),
+    "password-changed": t("auth.login.passwordChanged"),
+    "email-changed": t("auth.login.emailChanged"),
+    "email-change-failed": t("auth.login.emailChangeFailed"),
+  };
+  const statusMessage = flash.accountStatus
+    ? statusMessages[flash.accountStatus]
+    : undefined;
 
   function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,9 +74,9 @@ export default function Login({ submitUrl, breadcrumbs }: LoginProps) {
 
       <Container size="narrow" className="py-14 lg:py-20">
         <div role="status">
-          {flash.accountStatus === "email-verified" && (
+          {statusMessage && (
             <p className="border-signal text-ink mb-8 border-l-2 py-1 pl-4 text-sm">
-              {t("auth.login.emailVerified")}
+              {statusMessage}
             </p>
           )}
         </div>
@@ -95,24 +112,34 @@ export default function Login({ submitUrl, breadcrumbs }: LoginProps) {
             )}
           </Field>
 
-          <Field
-            id="password"
-            label={t("auth.password")}
-            error={form.errors.password}
-            required
-          >
-            {(control) => (
-              <Input
-                {...control}
-                type="password"
-                value={form.data.password}
-                onChange={(event) =>
-                  form.setData("password", event.target.value)
-                }
-                autoComplete="current-password"
-              />
-            )}
-          </Field>
+          <div className="space-y-2">
+            <Field
+              id="password"
+              label={t("auth.password")}
+              error={form.errors.password}
+              required
+            >
+              {(control) => (
+                <Input
+                  {...control}
+                  type="password"
+                  value={form.data.password}
+                  onChange={(event) =>
+                    form.setData("password", event.target.value)
+                  }
+                  autoComplete="current-password"
+                />
+              )}
+            </Field>
+            <p className="text-sm">
+              <Link
+                href={forgotPasswordUrl}
+                className="text-ink-soft hover:text-ink underline underline-offset-4"
+              >
+                {t("auth.login.forgot")}
+              </Link>
+            </p>
+          </div>
 
           <div className="flex items-center gap-3">
             <input

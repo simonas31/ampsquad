@@ -31,7 +31,7 @@
     "logIn": "Prisijungti",
     "myAccount": "Mano paskyra",
     "logOut": "Atsijungti",
-    "slideOf":"{number} iš {total}"
+    "slideOf": "{number} iš {total}"
   },
   "footer": {
     "tagline": "Elektros inžinerijos sprendimai, kuriais galite pasitikėti.",
@@ -304,7 +304,12 @@
       "submitting": "Jungiamasi…",
       "noAccount": "Dar neturite paskyros?",
       "createAccount": "Sukurti paskyrą",
-      "emailVerified": "Jūsų el. paštas patvirtintas. Prisijunkite, kad tęstumėte."
+      "emailVerified": "Jūsų el. paštas patvirtintas. Prisijunkite, kad tęstumėte.",
+      "forgot": "Pamiršote slaptažodį?",
+      "passwordReset": "Jūsų slaptažodis pakeistas. Prisijunkite su nauju.",
+      "passwordChanged": "Jūsų slaptažodis pakeistas ir jūs atjungti visuose įrenginiuose. Prisijunkite su nauju.",
+      "emailChanged": "Jūsų el. pašto adresas pakeistas. Nuo šiol prisijunkite su juo.",
+      "emailChangeFailed": "Nepavyko pakeisti el. pašto adreso, nes jį jau naudoja kita paskyra."
     },
     "register": {
       "title": "Sukurti paskyrą",
@@ -318,7 +323,10 @@
       "submit": "Sukurti paskyrą",
       "submitting": "Kuriama paskyra…",
       "haveAccount": "Jau turite paskyrą?",
-      "logIn": "Prisijungti"
+      "logIn": "Prisijungti",
+      "privacyNotice": "Jūsų duomenis naudojame paskyrai ir užsakymams tvarkyti, kaip aprašyta {privacy}.",
+      "privacyNoticePlain": "Jūsų duomenis naudojame paskyrai ir užsakymams tvarkyti.",
+      "privacyLink": "Privatumo politikoje"
     },
     "verify": {
       "title": "Patvirtinkite el. paštą",
@@ -328,11 +336,50 @@
       "sending": "Siunčiama…",
       "sent": "Nauja nuoroda išsiųsta.",
       "logOut": "Atsijungti"
+    },
+    "forgot": {
+      "title": "Pamiršote slaptažodį?",
+      "intro": "Įveskite savo paskyros el. pašto adresą ir atsiųsime nuorodą naujam slaptažodžiui pasirinkti.",
+      "submit": "Siųsti nuorodą",
+      "submitting": "Siunčiama…",
+      "sent": "Jei šiuo adresu paskyra yra, išsiuntėme nuorodą. Patikrinkite gautuosius ir šlamšto aplanką.",
+      "backToLogin": "Atgal į prisijungimą"
+    },
+    "reset": {
+      "title": "Pasirinkite naują slaptažodį",
+      "intro": "Pasirinkite slaptažodį, kurio nenaudojate niekur kitur.",
+      "password": "Naujas slaptažodis",
+      "passwordConfirmation": "Pakartokite naują slaptažodį",
+      "submit": "Išsaugoti slaptažodį",
+      "submitting": "Saugoma…"
     }
   },
   "account": {
     "greeting": "Sveiki, {name}",
-    "loggedInAs": "Esate prisijungę kaip {email}."
+    "loggedInAs": "Esate prisijungę kaip {email}.",
+    "securityLink": "El. paštas ir slaptažodis",
+    "security": {
+      "title": "El. paštas ir slaptažodis",
+      "intro": "Pakeiskite paskyros el. pašto adresą arba pasirinkite naują slaptažodį.",
+      "emailSection": "El. pašto adresas",
+      "currentEmail": "Jūsų paskyra naudoja {email}.",
+      "newEmail": "Naujas el. pašto adresas",
+      "emailHint": "Nuorodą atsiųsime į naują adresą. Kol jos nepaspausite, paskyra naudos seną adresą.",
+      "pending": "Laukiame, kol patvirtinsite {email}. Paspauskite ten išsiųstą nuorodą. Jei norite kito adreso, pateikite naują prašymą žemiau.",
+      "currentPassword": "Dabartinis slaptažodis",
+      "sendLink": "Siųsti patvirtinimo nuorodą",
+      "sending": "Siunčiama…",
+      "emailRequested": "Nuorodą išsiuntėme į naują adresą. Paspauskite ją, kad pakeitimas įsigaliotų.",
+      "emailChanged": "Jūsų el. pašto adresas pakeistas.",
+      "emailChangeFailed": "Nepavyko pakeisti el. pašto adreso, nes jį jau naudoja kita paskyra.",
+      "passwordSection": "Slaptažodis",
+      "passwordNotice": "Pakeitę slaptažodį būsite atjungti visuose įrenginiuose, įskaitant šį, ir turėsite prisijungti iš naujo su nauju slaptažodžiu.",
+      "newPassword": "Naujas slaptažodis",
+      "newPasswordConfirmation": "Pakartokite naują slaptažodį",
+      "passwordHint": "Bent {count} simbolių.",
+      "changePassword": "Pakeisti slaptažodį",
+      "saving": "Saugoma…"
+    }
   },
   "errors": {
     "backHome": "Grįžti į pradžią",

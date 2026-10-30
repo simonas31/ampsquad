@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mail\CustomerPasswordResetMail;
 use App\Mail\VerifyCustomerEmailMail;
 use Database\Factories\CustomerFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -110,6 +111,17 @@ class Customer extends Authenticatable implements HasLocalePreference, MustVerif
     public function sendEmailVerificationNotification(): void
     {
         Mail::to($this->email)->locale($this->locale)->queue(new VerifyCustomerEmailMail($this));
+    }
+
+    /**
+     * The mail with the link that lets the customer choose a new password.
+     * Replaces Laravel's notification, which is in English only.
+     *
+     * @param  string  $token
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        Mail::to($this->email)->locale($this->locale)->queue(new CustomerPasswordResetMail($this, $token));
     }
 
     /**

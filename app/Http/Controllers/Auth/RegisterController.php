@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AuthenticateCustomerSession;
 use App\Http\Requests\RegisterCustomerRequest;
 use App\Services\Customers\CustomerAccountService;
+use App\Support\PageUrls;
 use App\Support\Seo\Breadcrumbs;
 use App\Support\Seo\SeoData;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +29,7 @@ class RegisterController extends Controller
 
         return Inertia::render('Auth/Register', [
             'submitUrl' => route('customer.register.store', absolute: false),
+            'privacyUrl' => PageUrls::privacyPolicy(),
             'breadcrumbs' => $breadcrumbs->toArray(),
             'seo' => SeoData::make(pageTitle: __('nav.register'), noindex: true),
         ]);
@@ -42,6 +45,7 @@ class RegisterController extends Controller
 
         Auth::guard('customer')->login($customer);
         $request->session()->regenerate();
+        AuthenticateCustomerSession::stamp($request);
 
         return redirect()->route('customer.verification.notice');
     }

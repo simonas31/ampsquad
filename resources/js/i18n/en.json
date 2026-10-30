@@ -304,7 +304,12 @@
       "submitting": "Logging in…",
       "noAccount": "No account yet?",
       "createAccount": "Create an account",
-      "emailVerified": "Your email address is confirmed. Log in to continue."
+      "emailVerified": "Your email address is confirmed. Log in to continue.",
+      "forgot": "Forgot your password?",
+      "passwordReset": "Your password was changed. Log in with the new one.",
+      "passwordChanged": "Your password was changed and you were logged out on every device. Log in with the new one.",
+      "emailChanged": "Your email address was changed. Log in with it from now on.",
+      "emailChangeFailed": "The email address could not be changed, because another account already uses it."
     },
     "register": {
       "title": "Create an account",
@@ -318,7 +323,10 @@
       "submit": "Create account",
       "submitting": "Creating your account…",
       "haveAccount": "Already have an account?",
-      "logIn": "Log in"
+      "logIn": "Log in",
+      "privacyNotice": "We use your details to run your account and orders, as described in the {privacy}.",
+      "privacyNoticePlain": "We use your details to run your account and orders.",
+      "privacyLink": "Privacy Policy"
     },
     "verify": {
       "title": "Confirm your email",
@@ -328,11 +336,50 @@
       "sending": "Sending…",
       "sent": "A new link is on its way.",
       "logOut": "Log out"
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "intro": "Enter the email address of your account and we will send you a link to choose a new password.",
+      "submit": "Send the link",
+      "submitting": "Sending…",
+      "sent": "If an account exists for this address, we have sent a link. Check your inbox and your spam folder.",
+      "backToLogin": "Back to login"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "intro": "Choose a password you do not use anywhere else.",
+      "password": "New password",
+      "passwordConfirmation": "Repeat the new password",
+      "submit": "Save password",
+      "submitting": "Saving…"
     }
   },
   "account": {
     "greeting": "Hello, {name}",
-    "loggedInAs": "You are logged in as {email}."
+    "loggedInAs": "You are logged in as {email}.",
+    "securityLink": "Email and password",
+    "security": {
+      "title": "Email and password",
+      "intro": "Change the email address of your account or choose a new password.",
+      "emailSection": "Email address",
+      "currentEmail": "Your account uses {email}.",
+      "newEmail": "New email address",
+      "emailHint": "We send a link to the new address. Your account keeps its old address until you follow it.",
+      "pending": "Waiting for you to confirm {email}. Follow the link we sent there. To use another address, send a new request below.",
+      "currentPassword": "Current password",
+      "sendLink": "Send confirmation link",
+      "sending": "Sending…",
+      "emailRequested": "We sent a link to the new address. Follow it to finish the change.",
+      "emailChanged": "Your email address was changed.",
+      "emailChangeFailed": "The email address could not be changed, because another account already uses it.",
+      "passwordSection": "Password",
+      "passwordNotice": "After you change your password you are logged out on every device, this one included, and must log in again with the new password.",
+      "newPassword": "New password",
+      "newPasswordConfirmation": "Repeat the new password",
+      "passwordHint": "At least {count} characters.",
+      "changePassword": "Change password",
+      "saving": "Saving…"
+    }
   },
   "errors": {
     "backHome": "Back to homepage",

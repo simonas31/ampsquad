@@ -22,4 +22,7 @@ return [
     'register' => 'Sukurti paskyrą',
     'account' => 'Mano paskyra',
     'verify_email' => 'Patvirtinkite el. paštą',
+    'forgot_password' => 'Pamiršote slaptažodį?',
+    'reset_password' => 'Pasirinkite naują slaptažodį',
+    'security' => 'El. paštas ir slaptažodis',
 ];

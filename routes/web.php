@@ -3,9 +3,14 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Account\DashboardController;
+use App\Http\Controllers\Account\EmailController;
+use App\Http\Controllers\Account\PasswordController;
+use App\Http\Controllers\Account\SecurityController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartItemController;
@@ -34,14 +39,17 @@ Route::post('/payments/{provider}/callback', PaymentCallbackController::class)
     ->middleware('throttle:payment-callback')
     ->name('payments.callback');
 
-// The link in the mail that verifies a customer's address. Outside the
-// localized group too: a mail is built by the queue worker, which has no
-// visitor and so no language, and the signature covers the exact URL, so the
-// link has no language prefix. The controller sends the customer on in theirs.
-Route::get('/account/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
-    ->whereNumber('id')
-    ->middleware(['signed', 'throttle:customer-verification'])
-    ->name('customer.verification.verify');
+// The links in the mails that verify a customer's address and confirm a new
+// one. Outside the localized group too: a mail is built by the queue worker,
+// which has no visitor and so no language, and the signature covers the exact
+// URL, so the links have no language prefix. The controllers send the
+// customer on in theirs.
+Route::middleware(['signed', 'throttle:customer-verification'])->whereNumber('id')->group(function (): void {
+    Route::get('/account/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+        ->name('customer.verification.verify');
+    Route::get('/account/email/confirm/{id}/{hash}', [EmailController::class, 'confirm'])
+        ->name('customer.email.confirm');
+});
 
 Route::localized(function (): void {
     Route::get('/', HomeController::class)->name('home');
@@ -99,9 +107,19 @@ Route::localized(function (): void {
             Route::post('/register', [RegisterController::class, 'store'])
                 ->middleware('throttle:customer-register')
                 ->name('customer.register.store');
+
+            Route::get('/forgot-password', [ForgotPasswordController::class, 'show'])->name('customer.password.request');
+            Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+                ->middleware('throttle:customer-password-reset')
+                ->name('customer.password.email');
+
+            Route::get('/reset-password/{token}', [ResetPasswordController::class, 'show'])->name('customer.password.reset');
+            Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+                ->middleware('throttle:customer-password-reset')
+                ->name('customer.password.store');
         });
 
-        Route::middleware('auth:customer')->group(function (): void {
+        Route::middleware(['auth:customer', 'customer.session'])->group(function (): void {
             Route::post('/logout', LogoutController::class)->name('customer.logout');
 
             Route::get('/account/verify-email', [VerifyEmailController::class, 'notice'])
@@ -112,6 +130,12 @@ Route::localized(function (): void {
 
             Route::middleware('customer.verified')->group(function (): void {
                 Route::get('/account', DashboardController::class)->name('account.dashboard');
+
+                Route::get('/account/security', SecurityController::class)->name('account.security');
+                Route::middleware('throttle:customer-account')->group(function (): void {
+                    Route::post('/account/email', [EmailController::class, 'update'])->name('account.email.update');
+                    Route::put('/account/password', [PasswordController::class, 'update'])->name('account.password.update');
+                });
             });
         });
     });

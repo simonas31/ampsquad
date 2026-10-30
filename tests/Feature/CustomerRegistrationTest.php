@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Mail\VerifyCustomerEmailMail;
 use App\Models\Customer;
+use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -41,6 +42,19 @@ class CustomerRegistrationTest extends TestCase
             ->where('submitUrl', '/register')
             ->where('seo.noindex', true)
             ->where('seo.title', 'Sukurti paskyrą - '.config('app.name'))
+        );
+    }
+
+    public function test_the_register_page_links_to_the_privacy_policy_once_the_shop_has_made_it(): void
+    {
+        $this->get('/register')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('privacyUrl', null)
+        );
+
+        Page::factory()->privacyPolicy()->create();
+
+        $this->get('/register')->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('privacyUrl', '/privatumo-politika')
         );
     }
 
